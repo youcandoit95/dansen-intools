@@ -11,3 +11,8 @@ Route::get('/', function () {
 
 Route::get('/login', fn () => view('login'))->name('login');
 
+use App\Http\Controllers\CabangController;
+
+Route::get('/cabang', [CabangController::class, 'index'])->name('cabang.index');
+
+
