@@ -9,19 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('cabangs', function (Blueprint $table) {
+        Schema::create('domisili', function (Blueprint $table) {
             $table->id();
+            $table->string('nama')->unique();
             $table->timestamps();
+            $table->softDeletes()->index();
         });
     }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('cabangs');
+        Schema::dropIfExists('domisili');
     }
 };
