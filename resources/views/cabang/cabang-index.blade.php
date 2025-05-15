@@ -30,7 +30,7 @@
             <tr class="border-b">
                 <td class="px-4 py-2">{{ $cabang->nama_cabang }}</td>
                 <td class="px-4 py-2">{{ $cabang->alamat }}</td>
-                <td class="px-4 py-2 text-center">{{ $cabang->telepon }}</td>
+                <td class="px-4 py-2">{{ $cabang->telepon }}</td>
                 <td class="px-4 py-2">{{ $cabang->nama_pic }}</td>
                 <td class="px-4 py-2 text-center">
                     <span class="inline-block px-2 py-1 rounded text-xs font-medium
