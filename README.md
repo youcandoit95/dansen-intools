@@ -63,3 +63,4 @@ php artisan key:generate
 php artisan serve
 
 php artisan migrate:fresh --seed
+php artisan route:list

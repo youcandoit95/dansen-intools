@@ -40,6 +40,15 @@
                 <i class="bi bi-building"></i> Cabang
             </a>
 
+            <!-- Cabang -->
+            <a href="/sales-agent"
+            class="flex items-center gap-2 p-2 rounded ml-4
+                    {{ ($activeMenu ?? '') === 'sa'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100' }}">
+                <i class="bi bi-building"></i> Sales Agent
+            </a>
+
 
             <a href="/logout" class="flex items-center gap-2 text-red-600 hover:bg-red-100 p-2 rounded mt-6">
                 <i class="bi bi-box-arrow-right"></i> Logout
