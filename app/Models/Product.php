@@ -12,7 +12,13 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'barcode', 'kategori', 'brand', 'ras', 'nama', 'deskripsi', 'status'
+        'barcode',
+        'kategori',
+        'brand',
+        'ras',
+        'nama',
+        'deskripsi',
+        'status'
     ];
 
     public function images()
@@ -20,25 +26,28 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
-    // Decode kategori
     public function getKategoriLabelAttribute()
     {
         return match ($this->kategori) {
             1 => 'Loaf/Kg',
             2 => 'Cut/Kg',
             3 => 'Pcs/Pack',
-            default => 'Tidak diketahui',
+            default => 'Tidak diketahui'
         };
     }
 
-    // Decode brand
     public function getBrandLabelAttribute()
     {
         return match ($this->brand) {
             1 => 'Tokusen',
             2 => 'Sher Wagyu',
             3 => 'Angus Pure/G',
-            default => 'Tidak diketahui',
+            default => 'Tidak diketahui'
         };
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        return $this->status ? 'Aktif' : 'Tidak Aktif';
     }
 }

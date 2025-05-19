@@ -7,6 +7,8 @@ use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use App\Exports\ProductExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -53,7 +55,12 @@ class ProductController extends Controller
 
 
         $product = Product::create($request->only([
-            'barcode', 'kategori', 'brand', 'nama', 'deskripsi', 'status'
+            'barcode',
+            'kategori',
+            'brand',
+            'nama',
+            'deskripsi',
+            'status'
         ]));
 
         if ($request->hasFile('images')) {
@@ -104,7 +111,12 @@ class ProductController extends Controller
         ]);
 
         $product->update($request->only([
-            'barcode', 'kategori', 'brand', 'nama', 'deskripsi', 'status'
+            'barcode',
+            'kategori',
+            'brand',
+            'nama',
+            'deskripsi',
+            'status'
         ]));
 
         if ($request->hasFile('images')) {
@@ -142,5 +154,12 @@ class ProductController extends Controller
         $product->save();
 
         return back()->with('success', 'Status produk diperbarui.');
+    }
+
+    public function show()
+    {
+        $products = Product::select('barcode', 'nama', 'kategori', 'brand', 'status', 'deskripsi')->get();
+
+        return Excel::download(new ProductExport, 'produk.xlsx');
     }
 }

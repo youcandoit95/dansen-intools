@@ -67,3 +67,4 @@ php artisan route:list
 
 php artisan migrate
 php artisan storage:link
+chmod -R 775 storage bootstrap/cache
