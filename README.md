@@ -64,3 +64,6 @@ php artisan serve
 
 php artisan migrate:fresh --seed
 php artisan route:list
+
+php artisan migrate
+php artisan storage:link

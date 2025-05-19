@@ -40,13 +40,22 @@
                 <i class="bi bi-building"></i> Cabang
             </a>
 
-            <!-- Cabang -->
+            <!-- Sales Agent -->
             <a href="/sales-agent"
             class="flex items-center gap-2 p-2 rounded ml-4
-                    {{ ($activeMenu ?? '') === 'sa'
+                    {{ ($activeMenu ?? '') === 'sales-agent'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
                 <i class="bi bi-building"></i> Sales Agent
+            </a>
+
+            <!-- Product -->
+            <a href="/products"
+            class="flex items-center gap-2 p-2 rounded ml-4
+                    {{ ($activeMenu ?? '') === 'products'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100' }}">
+                <i class="bi bi-building"></i> Product
             </a>
 
 
@@ -62,6 +71,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('scripts')
 </body>
 
