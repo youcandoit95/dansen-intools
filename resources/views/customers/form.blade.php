@@ -17,7 +17,7 @@
 <div class="mb-4">
     <label for="sales_agent_id" class="block text-sm font-medium text-gray-700">Sales Agent</label>
     <select name="sales_agent_id" id="sales_agent_id"
-            class="mt-1 block w-full border rounded px-3 py-2 focus:outline-none focus:ring">
+            class="sa-select w-full border rounded px-3 py-2">
         <option value="">-- Pilih Sales Agent --</option>
         @foreach($salesAgents as $agent)
             <option value="{{ $agent->id }}"
@@ -71,6 +71,15 @@
                 direction: "asc"
             },
             placeholder: "Cari domisili...",
+        });
+
+        new TomSelect('.sa-select', {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            },
+            placeholder: "Cari sales agent...",
         });
     });
 </script>
