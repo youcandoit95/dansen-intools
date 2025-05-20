@@ -17,7 +17,9 @@ class CreateSalesAgentsTable extends Migration
             $table->string('email')->nullable()->index(); // Nullable dan indexed
             $table->foreignId('domisili')->constrained('domisili')->index(); // Relasi ke table `domisili`
             $table->timestamps();
-            $table->softDeletes();
+            $table->softDeletes()->index();
+            $table->index('created_at');
+            $table->index('updated_at');
         });
     }
 

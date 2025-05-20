@@ -13,11 +13,14 @@ class CreateProductsTable extends Migration
             $table->string('barcode')->unique();
             $table->tinyInteger('kategori'); // 1 = loaf/kg, 2 = cut/kg, 3 = pcs/pack
             $table->tinyInteger('brand');    // 1 = Tokusen, 2 = Sher Wagyu, 3 = Angus Pure/G
-            $table->string('nama');
+            $table->string('nama')->index();
             $table->text('deskripsi')->nullable();
             $table->boolean('status')->default(true); // true = aktif
             $table->timestamps();
-            $table->softDeletes();
+            $table->softDeletes()->index();
+
+            $table->index('created_at');
+            $table->index('updated_at');
         });
     }
 

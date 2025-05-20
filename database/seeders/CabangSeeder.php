@@ -32,5 +32,13 @@ class CabangSeeder extends Seeder
             'nama_pic'    => 'Default PIC',
             'status'      => true,
         ]);
+
+        Cabang::create([
+            'nama_cabang' => 'Cabang Depok',
+            'alamat'      => 'Depok, Indonesia',
+            'telepon'     => '081234567892',
+            'nama_pic'    => 'Default PIC',
+            'status'      => true,
+        ]);
     }
 }
