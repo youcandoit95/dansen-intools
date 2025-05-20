@@ -6,13 +6,6 @@
 
 <h1 class="text-xl font-semibold mb-4">Master Cabang</h1>
 
-<!-- Tombol Tambah -->
-<div class="mb-4">
-    <a href="#" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        + Tambah Cabang
-    </a>
-</div>
-
 <!-- Tabel Cabang -->
 <div class="overflow-auto max-w-full bg-white shadow rounded border">
     <table id="cabangTable" class="w-full text-sm divide-y divide-gray-200">

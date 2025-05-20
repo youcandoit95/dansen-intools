@@ -50,6 +50,15 @@
             </a>
 
             <!-- Product -->
+            <a href="/suppliers"
+            class="flex items-center gap-2 p-2 rounded ml-4
+                    {{ ($activeMenu ?? '') === 'suppliers'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100' }}">
+                <i class="bi bi-building"></i> Suppliers
+            </a>
+
+            <!-- Product -->
             <a href="/products"
             class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'products'

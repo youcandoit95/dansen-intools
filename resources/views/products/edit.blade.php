@@ -8,7 +8,6 @@
 
     <x-alert-error />
 
-
     <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
         @csrf @method('PUT')
 

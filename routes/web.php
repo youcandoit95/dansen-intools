@@ -29,3 +29,8 @@ use Maatwebsite\Excel\Facades\Excel;
 Route::get('products/export', function () {
     return Excel::download(new ProductExport, 'produk.xlsx');
 })->name('products.export');
+
+use App\Http\Controllers\SupplierController;
+
+Route::resource('suppliers', SupplierController::class);
+
