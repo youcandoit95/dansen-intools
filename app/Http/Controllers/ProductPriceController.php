@@ -11,19 +11,15 @@ class ProductPriceController extends Controller
 {
     public function index()
     {
-        $activeMenu = 'product-price';
         $productPrices = ProductPrice::with(['product', 'supplier'])->latest()->get();
-
-        return view('product_prices.index', compact('productPrices', 'activeMenu'));
+        return view('product_prices.index', compact('productPrices'));
     }
 
     public function create()
     {
-        $activeMenu = 'product-price';
         $products = Product::orderBy('nama')->get();
         $suppliers = Supplier::orderBy('name')->get();
-
-        return view('product_prices.create', compact('products', 'suppliers', 'activeMenu'));
+        return view('product_prices.create', compact('products', 'suppliers'));
     }
 
     public function store(Request $request)
@@ -34,7 +30,10 @@ class ProductPriceController extends Controller
             'harga' => 'required|string'
         ]);
 
-        $data['harga'] = (int) str_replace(['Rp', '.', ',', ' '], '', $data['harga']);
+        ProductPrice::abortIfDuplicate($data['product_id'], $data['supplier_id']);
+
+        // Hapus format rupiah seperti "Rp 1.000.000" → "1000000"
+        $data['harga'] = (int) preg_replace('/[^\d]/', '', $data['harga']);
 
         ProductPrice::create($data);
 
@@ -43,11 +42,9 @@ class ProductPriceController extends Controller
 
     public function edit(ProductPrice $productPrice)
     {
-        $activeMenu = 'product-price';
         $products = Product::orderBy('nama')->get();
         $suppliers = Supplier::orderBy('name')->get();
-
-        return view('product_prices.edit', compact('productPrice', 'products', 'suppliers', 'activeMenu'));
+        return view('product_prices.edit', compact('productPrice', 'products', 'suppliers'));
     }
 
     public function update(Request $request, ProductPrice $productPrice)
@@ -58,7 +55,9 @@ class ProductPriceController extends Controller
             'harga' => 'required|string'
         ]);
 
-        $data['harga'] = (int) str_replace(['Rp', '.', ',', ' '], '', $data['harga']);
+        ProductPrice::abortIfDuplicate($data['product_id'], $data['supplier_id'], $productPrice->id);
+
+        $data['harga'] = (int) preg_replace('/[^\d]/', '', $data['harga']);
 
         $productPrice->update($data);
 
@@ -68,7 +67,6 @@ class ProductPriceController extends Controller
     public function destroy(ProductPrice $productPrice)
     {
         $productPrice->delete();
-
         return redirect()->route('product-prices.index')->with('success', 'Harga produk berhasil dihapus.');
     }
 }

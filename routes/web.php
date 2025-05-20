@@ -38,3 +38,6 @@ use App\Http\Controllers\CustomerController;
 
 Route::resource('customers', CustomerController::class);
 
+use App\Http\Controllers\ProductPriceController;
+
+Route::resource('product-prices', ProductPriceController::class);
