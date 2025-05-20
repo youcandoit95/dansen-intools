@@ -7,17 +7,9 @@
 <h1 class="text-xl font-semibold mb-4">Master Sales Agent</h1>
 
 <!-- Notifikasi -->
-@if (session('success'))
-    <div class="mb-4 bg-green-100 border border-green-300 text-green-800 text-sm px-4 py-3 rounded">
-        {{ session('success') }}
-    </div>
-@endif
+<x-alert-success />
 
-@if (session('error'))
-    <div class="mb-4 bg-red-100 border border-red-300 text-red-800 text-sm px-4 py-3 rounded">
-        {{ session('error') }}
-    </div>
-@endif
+<x-alert-error />
 
 <!-- Tombol Tambah -->
 <div class="mb-4">

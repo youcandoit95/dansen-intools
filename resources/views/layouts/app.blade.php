@@ -12,6 +12,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" />
 
+
 </head>
 
 <body class="bg-gray-100">
@@ -49,7 +50,7 @@
                 <i class="bi bi-building"></i> Sales Agent
             </a>
 
-            <!-- Product -->
+            <!-- Supplier -->
             <a href="/suppliers"
             class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'suppliers'
@@ -65,6 +66,15 @@
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
                 <i class="bi bi-building"></i> Product
+            </a>
+
+            <!-- Customer -->
+            <a href="/customers"
+            class="flex items-center gap-2 p-2 rounded ml-4
+                    {{ ($activeMenu ?? '') === 'customers'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100' }}">
+                <i class="bi bi-building"></i> Customer
             </a>
 
 
