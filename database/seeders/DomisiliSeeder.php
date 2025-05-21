@@ -14,7 +14,7 @@ class DomisiliSeeder extends Seeder
     public function run()
     {
         $kotaList = [
-                        'Ambon', 'Balikpapan', 'Banda Aceh', 'Bandar Lampung', 'Bandung', 'Bali',  'Banjarmasin',
+                        'Nasional', 'Ambon', 'Balikpapan', 'Banda Aceh', 'Bandar Lampung', 'Bandung', 'Bali',  'Banjarmasin',
                         'Batam', 'Bekasi', 'Bengkulu', 'Binjai', 'Bogor', 'Bukittinggi', 'Cilegon',
                         'Cimahi', 'Cirebon', 'Denpasar', 'Depok', 'Gorontalo', 'Jakarta Barat',
                         'Jakarta Pusat', 'Jakarta Selatan', 'Jakarta Timur', 'Jakarta Utara', 'Jambi', 'Lombok',

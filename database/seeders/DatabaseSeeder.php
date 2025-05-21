@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             CabangSeeder::class,
             DomisiliSeeder::class,
             SupplierSeeder::class,
+            CustomerSeeder::class,
         ]);
     }
 }
