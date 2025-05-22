@@ -40,8 +40,8 @@ class Product extends Model
     {
         return match ($this->brand) {
             1 => 'Tokusen',
-            2 => 'Sher Wagyu',
-            3 => 'Angus Pure/G',
+            2 => 'Santori',
+            3 => 'Sher Wagyu',
             default => 'Tidak diketahui'
         };
     }

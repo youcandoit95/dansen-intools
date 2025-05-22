@@ -69,4 +69,63 @@ php artisan migrate
 php artisan storage:link
 chmod -R 775 storage bootstrap/cache
 
-php artisan make:model Supplier -mc
+php artisan make:model ProductPrice -mc
+
+buatkan fitur customer price lengkap dengan script php artisan , controller , migration , mini datatable , form.blade
+seperti fitur product price
+
+dengan field
+- 
+
+
+ Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('barcode')->unique();
+            $table->tinyInteger('kategori'); // 1 = loaf/kg, 2 = cut/kg, 3 = pcs/pack
+            $table->tinyInteger('brand');
+            $table->string('nama')->index();
+            $table->text('deskripsi')->nullable();
+            $table->boolean('status')->default(true); // true = aktif
+            $table->timestamps();
+            $table->softDeletes()->index();
+
+            $table->index('created_at');
+            $table->index('updated_at');
+        });
+
+buatkan seed produk untuk tabel ini dengan kategori = 1 dan brand =1
+list nama produk
+Tenderloin
+Striploin
+Rib Eye
+Knuckle
+Rump
+Top Sirloin / Picanha Loaf
+Rump Eye
+Rump Roast
+Topside
+F/H Shin Shank
+Flank Steak
+Chuck
+Chuck Tender
+PE Brisket
+NE Brisket
+Oyster Blade
+Inside Skirt
+Outside Skirt
+Spare Rib Slice
+Bone Marrow u Shape
+Neck bone Slice
+Short rib 7 ribs
+Casazuki Ribs
+Oxtail
+Oxtail Slice
+Bolar Blade
+Tongue
+Silverside
+Chuckroll
+Tritip
+Chuck Flap
+Flap Meat
+Short rib Meat
+Back rib
