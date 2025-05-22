@@ -65,7 +65,7 @@ class Product extends Model
 
     public function productPrices()
     {
-        return $this->hasMany(DefaultSellPrice::class);
+        return $this->hasMany(ProductPrice::class);
     }
 
 }

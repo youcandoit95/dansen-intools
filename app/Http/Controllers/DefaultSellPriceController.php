@@ -46,18 +46,23 @@ class DefaultSellPriceController extends Controller
             'bottom_sell_price' => $this->parseRupiah($validated['bottom_sell_price']),
         ]);
 
-        return redirect()->route('default-sell-prices.index')->with('success', 'Harga default berhasil ditambahkan.');
+        return redirect()->route('default_sell_price.index')->with('success', 'Harga default berhasil ditambahkan.');
     }
 
     public function edit(DefaultSellPrice $defaultSellPrice)
     {
-        $products = Product::with(['latest_price', 'mbs', 'bagianDaging'])->get();
+        $products = Product::with([
+            'productPrices.supplier', // penting untuk tabel harga supplier
+            'mbs',
+            'bagianDaging'
+        ])->get();
 
         return view('default_sell_price.edit', [
             'defaultSellPrice' => $defaultSellPrice,
             'products' => $products,
         ]);
     }
+
 
     public function update(Request $request, DefaultSellPrice $defaultSellPrice)
     {
@@ -79,14 +84,14 @@ class DefaultSellPriceController extends Controller
             'bottom_sell_price' => $this->parseRupiah($validated['bottom_sell_price']),
         ]);
 
-        return redirect()->route('default-sell-prices.index')->with('success', 'Harga default berhasil diperbarui.');
+        return redirect()->route('default-sell-price.index')->with('success', 'Harga default berhasil diperbarui.');
     }
 
     public function destroy(DefaultSellPrice $defaultSellPrice)
     {
         $defaultSellPrice->delete();
 
-        return redirect()->route('default-sell-prices.index')->with('success', 'Harga default berhasil dihapus.');
+        return redirect()->route('default-sell-price.index')->with('success', 'Harga default berhasil dihapus.');
     }
 
     /**
@@ -94,6 +99,8 @@ class DefaultSellPriceController extends Controller
      */
     private function parseRupiah($value)
     {
-        return (int) str_replace(['Rp', '.', ','], '', $value);
+        // Hapus semua karakter selain angka (contoh: "Rp 1.000.000" → "1000000")
+        return (int) preg_replace('/[^\d]/', '', $value);
     }
+
 }

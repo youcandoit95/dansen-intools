@@ -18,7 +18,7 @@
         <option value="">-- Pilih Produk --</option>
         @foreach($products as $p)
         <option value="{{ $p->id }}"
-            data-info="{{ json_encode([
+            data-info='{{ json_encode([
                 "nama" => $p->nama,
                 "barcode" => $p->barcode,
                 "kategori" => $p->kategori_label,
@@ -27,13 +27,14 @@
                 "status" => $p->status ? "Aktif" : "Nonaktif",
                 "mbs" => optional($p->mbs)->bms ? optional($p->mbs)->bms . " (" . optional($p->mbs)->a_grade . ")" : "-",
                 "bagian" => optional($p->bagianDaging)->nama ?? "-"
-            ]) }}"
-            data-prices="{{ json_encode(
-                $p->productPrices->map(fn($pp) => [
-                    "supplier" => ["name" => $pp->supplier->nama ?? "-"],
-                    "harga" => $pp->harga
-                ])
-            ) }}"
+            ]) }}'
+            data-prices='{{ json_encode(
+                    $p->productPrices->map(fn($pp) => [
+                        "supplier" => ["name" => $pp->supplier->name ?? "-"],
+                        "harga" => $pp->harga,
+                        "created_at" => $pp->created_at?->format("Y-m-d H:i") ?? "-"
+                    ])
+                ) }}'
             @selected(old("product_id", $defaultSellPrice->product_id ?? "") == $p->id)>
             {{ $p->nama }}
         </option>
@@ -46,6 +47,9 @@
 
 {{-- Daftar Harga dari Supplier --}}
 <div id="priceTable" class="mt-4 hidden"></div>
+
+{{-- Tabel Detail Product Prices --}}
+<div id="productPriceDetailTable" class="mt-4 hidden"></div>
 
 {{-- Input Harga Default per Channel --}}
 <div class="mt-6 border-t pt-4">
