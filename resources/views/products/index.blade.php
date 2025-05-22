@@ -30,6 +30,8 @@
                 <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Nama</th>
                 <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Brand</th>
                 <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Bagian Daging</th>
+                <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">MBS</th>
                 <th class="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th class="px-4 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
@@ -41,6 +43,14 @@
                 <td class="px-4 py-2">{{ $product->nama }}</td>
                 <td class="px-4 py-2">{{ $product->brand_label }}</td>
                 <td class="px-4 py-2">{{ $product->kategori_label }}</td>
+                <td class="px-4 py-2">{{ $product->bagianDaging->nama ?? '-' }}</td>
+                <td class="px-4 py-2">
+                    @if ($product->mbs)
+                        {{ $product->mbs->bms }}  ({{ $product->mbs->a_grade }})
+                    @else
+                        -
+                    @endif
+                </td>
                 <td class="px-4 py-2 text-center">
                     <form action="{{ route('products.toggle-status', $product->id) }}" method="POST">
                         @csrf

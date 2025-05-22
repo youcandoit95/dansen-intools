@@ -5,20 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Mbs extends Model
+class BagianDaging extends Model
 {
     use HasFactory;
 
-    protected $table = 'mbs';
+    protected $table = 'bagian_daging';
 
     protected $fillable = [
-        'a_grade',
-        'bms',
+        'nama',
     ];
 
     // Relasi ke produk (jika dibutuhkan)
     public function products()
     {
-        return $this->hasMany(Product::class, 'mbs_id');
+        return $this->hasMany(Product::class, 'bagian_daging_id');
     }
 }

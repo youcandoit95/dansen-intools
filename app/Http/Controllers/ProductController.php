@@ -21,8 +21,12 @@ class ProductController extends Controller
 
     public function create()
     {
+        $mbsList = \App\Models\Mbs::orderBy('bms')->get();
+        $bagianDagingList = \App\Models\BagianDaging::orderBy('nama')->get();
+
         $activeMenu = 'products';
-        return view('products.create', compact('activeMenu'));
+        return view('products.create', compact('mbsList', 'bagianDagingList', 'activeMenu'));
+
     }
 
     public function store(Request $request)
@@ -30,6 +34,8 @@ class ProductController extends Controller
         $request->validate([
             'barcode'   => 'required|unique:products,barcode',
             'kategori'  => 'required|in:1,2,3',
+            'mbs_id' => 'nullable|exists:mbs,id',
+            'bagian_daging_id' => 'nullable|exists:bagian_daging,id',
             'brand'     => 'required|in:1,2,3',
             'nama'      => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
@@ -57,6 +63,8 @@ class ProductController extends Controller
         $product = Product::create($request->only([
             'barcode',
             'kategori',
+            'mbs_id',
+            'bagian_daging_id',
             'brand',
             'nama',
             'deskripsi',
@@ -75,12 +83,15 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $mbsList = \App\Models\Mbs::orderBy('bms')->get();
+        $bagianDagingList = \App\Models\BagianDaging::orderBy('nama')->get();
         $activeMenu = 'products';
-        return view('products.edit', compact('product', 'activeMenu'));
+        return view('products.edit', compact('product', 'mbsList', 'bagianDagingList', 'activeMenu'));
     }
 
     public function update(Request $request, Product $product)
     {
+
         $request->validate([
             'barcode' => [
                 'required',
@@ -88,6 +99,8 @@ class ProductController extends Controller
             ],
             'kategori'  => 'required|in:1,2,3',
             'brand'     => 'required|in:1,2,3',
+            'mbs_id' => 'nullable|exists:mbs,id',
+            'bagian_daging_id' => 'nullable|exists:bagian_daging,id',
             'nama'      => 'required|string|max:100',
             'deskripsi' => 'nullable|string',
             'status'    => 'boolean',
@@ -113,6 +126,8 @@ class ProductController extends Controller
         $product->update($request->only([
             'barcode',
             'kategori',
+            'mbs_id',
+            'bagian_daging_id',
             'brand',
             'nama',
             'deskripsi',

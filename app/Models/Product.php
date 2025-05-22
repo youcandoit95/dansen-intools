@@ -13,6 +13,8 @@ class Product extends Model
 
     protected $fillable = [
         'barcode',
+        'mbs_id',
+        'bagian_daging_id',
         'kategori',
         'brand',
         'ras',
@@ -26,11 +28,21 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function mbs()
+    {
+        return $this->belongsTo(Mbs::class, 'mbs_id');
+    }
+
+    public function bagianDaging()
+    {
+        return $this->belongsTo(BagianDaging::class, 'bagian_daging_id');
+    }
+
     public function getKategoriLabelAttribute()
     {
         return match ($this->kategori) {
             1 => 'Loaf/Kg',
-            2 => 'Cut/Kg',
+            2 => 'Pack/Kg',
             3 => 'Pcs/Pack',
             default => 'Tidak diketahui'
         };
@@ -39,7 +51,7 @@ class Product extends Model
     public function getBrandLabelAttribute()
     {
         return match ($this->brand) {
-            1 => 'Tokusen',
+            1 => 'Tokusen Wagyu',
             2 => 'Santori',
             3 => 'Sher Wagyu',
             default => 'Tidak diketahui'

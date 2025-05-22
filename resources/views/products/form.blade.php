@@ -1,3 +1,5 @@
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+
 <x-alert-error />
 
 <div class="mb-4">
@@ -27,27 +29,55 @@
     @endif
 </div>
 
-
-<div class="mb-4">
-    <label class="block text-sm mb-1">Nama Produk</label>
-    <input type="text" name="nama" class="w-full border rounded px-3 py-2"
-           value="{{ old('nama', $product->nama ?? '') }}">
-</div>
 <div class="mb-4">
     <label class="block text-sm mb-1">Kategori</label>
     <select name="kategori" class="w-full border rounded px-3 py-2">
         <option value="1" {{ old('kategori', $product->kategori ?? '') == 1 ? 'selected' : '' }}>Loaf/Kg</option>
-        <option value="2" {{ old('kategori', $product->kategori ?? '') == 2 ? 'selected' : '' }}>Cut/Kg</option>
+        <option value="2" {{ old('kategori', $product->kategori ?? '') == 2 ? 'selected' : '' }}>Pack/Kg</option>
         <option value="3" {{ old('kategori', $product->kategori ?? '') == 3 ? 'selected' : '' }}>Pcs/Pack</option>
     </select>
 </div>
 <div class="mb-4">
     <label class="block text-sm mb-1">Brand</label>
-    <select name="brand" class="w-full border rounded px-3 py-2">
-        <option value="1" {{ old('brand', $product->brand ?? '') == 1 ? 'selected' : '' }}>Tokusen</option>
+    <select id="brand" name="brand" class="w-full border rounded px-3 py-2">
+        <option value="1" {{ old('brand', $product->brand ?? '') == 1 ? 'selected' : '' }}>Tokusen Wagyu</option>
         <option value="2" {{ old('brand', $product->brand ?? '') == 2 ? 'selected' : '' }}>Sher Wagyu</option>
         <option value="3" {{ old('brand', $product->brand ?? '') == 3 ? 'selected' : '' }}>Angus Pure/G</option>
     </select>
+</div>
+<div class="mb-4">
+    <label for="mbs_id" class="block text-sm font-medium text-gray-700">Marbling Score (MBS)</label>
+    <select id="mbs_id" name="mbs_id" class="tom-select w-full border rounded px-3 py-2">
+        <option value="">-- Pilih MBS --</option>
+        @foreach ($mbsList as $mbs)
+            <option value="{{ $mbs->id }}" {{ old('mbs_id', $product->mbs_id ?? '') == $mbs->id ? 'selected' : '' }}>
+                {{ $mbs->bms }}  ({{ $mbs->a_grade }})
+            </option>
+        @endforeach
+    </select>
+</div>
+<div class="mb-4">
+    <label for="bagian_daging_id" class="block text-sm font-medium text-gray-700">Bagian Daging</label>
+    <select id="bagian_daging_id" name="bagian_daging_id" class="tom-select w-full border rounded px-3 py-2">
+        <option value="">-- Pilih Bagian Daging --</option>
+        @foreach ($bagianDagingList as $bagian)
+            <option value="{{ $bagian->id }}" {{ old('bagian_daging_id', $product->bagian_daging_id ?? '') == $bagian->id ? 'selected' : '' }}>
+                {{ $bagian->nama }}
+            </option>
+        @endforeach
+    </select>
+</div>
+<div class="mb-4">
+    <label class="block text-sm mb-1">Nama Produk</label>
+    <div class="flex items-center gap-2">
+        <input type="text" id="nama" name="nama" class="flex-1 border rounded px-3 py-2"
+               value="{{ old('nama', $product->nama ?? '') }}">
+
+        <button type="button" id="generateNama"
+                class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+            Generate
+        </button>
+    </div>
 </div>
 <div class="mb-4">
     <label class="block text-sm mb-1">Deskripsi</label>
@@ -83,6 +113,37 @@
 
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new TomSelect('#mbs_id');
+        new TomSelect('#bagian_daging_id');
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const generateBtn = document.getElementById('generateNama');
+        const namaInput = document.getElementById('nama');
+
+        generateBtn.addEventListener('click', function () {
+            const bagianSelect = document.getElementById('bagian_daging_id');
+            const brandSelect = document.getElementById('brand');
+            const mbsSelect = document.getElementById('mbs_id');
+
+            const bagianText = bagianSelect?.selectedOptions[0]?.text || '';
+            const brandText = brandSelect?.selectedOptions[0]?.text || '';
+            const bmsText = mbsSelect?.selectedOptions[0]?.text || '';
+
+            if (bagianText && brandText && bmsText) {
+                namaInput.value = `${bagianText} ${brandText} MB ≤ ${bmsText}`;
+            } else {
+                alert("Pastikan semua pilihan bagian daging, brand, dan MBS sudah dipilih.");
+            }
+        });
+    });
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
