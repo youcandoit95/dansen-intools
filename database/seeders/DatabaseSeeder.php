@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             SupplierSeeder::class,
             CustomerSeeder::class,
             MbsSeeder::class,
+            BagianDagingSeeder::class,
         ]);
     }
 }
