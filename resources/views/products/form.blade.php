@@ -131,15 +131,12 @@
             const brandSelect = document.getElementById('brand');
             const mbsSelect = document.getElementById('mbs_id');
 
-            const bagianText = bagianSelect?.selectedOptions[0]?.text || '';
-            const brandText = brandSelect?.selectedOptions[0]?.text || '';
-            const bmsText = mbsSelect?.selectedOptions[0]?.text || '';
+            const bagianText = bagianSelect?.value !== '' ? bagianSelect.selectedOptions[0].text : '';
+            const brandText  = brandSelect?.value !== '' ? brandSelect.selectedOptions[0].text : '';
+            const bmsText    = mbsSelect?.value !== '' ? "MB ≤ " +mbsSelect.selectedOptions[0].text : '';
 
-            if (bagianText && brandText && bmsText) {
-                namaInput.value = `${bagianText} ${brandText} MB ≤ ${bmsText}`;
-            } else {
-                alert("Pastikan semua pilihan bagian daging, brand, dan MBS sudah dipilih.");
-            }
+            namaInput.value = `${bagianText} ${brandText} ${bmsText}`;
+
         });
     });
 </script>
