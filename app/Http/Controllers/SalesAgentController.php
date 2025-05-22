@@ -2,73 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductPrice;
-use App\Models\Product;
-use App\Models\Supplier;
+use App\Models\SalesAgent;
+use App\Models\Domisili;
 use Illuminate\Http\Request;
 
-class ProductPriceController extends Controller
+class SalesAgentController extends Controller
 {
     public function index()
     {
-        $activeMenu = 'product-price';
-        $productPrices = ProductPrice::with(['product', 'supplier'])->latest()->get();
+        $activeMenu = 'sales-agent';
+        $salesAgents = SalesAgent::with('domisiliRef')->latest()->get();
 
-        return view('product_prices.index', compact('productPrices', 'activeMenu'));
+        return view('sales_agent.sa-index', compact('salesAgents', 'activeMenu'));
     }
 
     public function create()
     {
-        $activeMenu = 'product-price';
-        $products = Product::orderBy('nama')->get();
-        $suppliers = Supplier::orderBy('name')->get();
+        $activeMenu = 'sales-agent';
+        $domisiliList = Domisili::orderBy('nama')->pluck('nama', 'id');
 
-        return view('product_prices.create', compact('products', 'suppliers', 'activeMenu'));
+        return view('sales_agent.sa-create', compact('domisiliList', 'activeMenu'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'harga' => 'required|string'
+        $request->validate([
+            'nama'     => 'required|string|max:100',
+            'telepon'  => 'required|string|max:20',
+            'email'    => 'nullable|email',
+            'domisili' => 'required|exists:domisili,id',
         ]);
 
-        $data['harga'] = (int) str_replace(['Rp', '.', ',', ' '], '', $data['harga']);
+        SalesAgent::create($request->only(['nama', 'telepon', 'email', 'domisili']));
 
-        ProductPrice::create($data);
-
-        return redirect()->route('product-prices.index')->with('success', 'Harga produk berhasil ditambahkan.');
+        return redirect()->route('sales-agent.index')
+            ->with('success', 'Sales Agent berhasil ditambahkan.');
     }
 
-    public function edit(ProductPrice $productPrice)
+    public function edit(SalesAgent $salesAgent)
     {
-        $activeMenu = 'product-price';
-        $products = Product::orderBy('nama')->get();
-        $suppliers = Supplier::orderBy('name')->get();
+        $activeMenu = 'sales-agent';
+        $domisiliList = Domisili::orderBy('nama')->pluck('nama', 'id');
 
-        return view('product_prices.edit', compact('productPrice', 'products', 'suppliers', 'activeMenu'));
+        return view('sales_agent.sa-edit', compact('salesAgent', 'domisiliList', 'activeMenu'));
     }
 
-    public function update(Request $request, ProductPrice $productPrice)
+    public function update(Request $request, SalesAgent $salesAgent)
     {
-        $data = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'supplier_id' => 'required|exists:suppliers,id',
-            'harga' => 'required|string'
+        $request->validate([
+            'nama'     => 'required|string|max:100',
+            'telepon'  => 'required|string|max:20',
+            'email'    => 'nullable|email|unique:sales_agents,email,' . $salesAgent->id,
+            'domisili' => 'required|exists:domisili,id',
         ]);
 
-        $data['harga'] = (int) str_replace(['Rp', '.', ',', ' '], '', $data['harga']);
+        $salesAgent->update($request->only(['nama', 'telepon', 'email', 'domisili']));
 
-        $productPrice->update($data);
-
-        return redirect()->route('product-prices.index')->with('success', 'Harga produk berhasil diperbarui.');
+        return redirect()->route('sales-agent.edit', $salesAgent->id)
+            ->with('success', 'Sales Agent berhasil diperbarui.');
     }
 
-    public function destroy(ProductPrice $productPrice)
+    public function destroy(SalesAgent $salesAgent)
     {
-        $productPrice->delete();
+        $salesAgent->delete();
 
-        return redirect()->route('product-prices.index')->with('success', 'Harga produk berhasil dihapus.');
+        return redirect()->route('sales-agent.index')
+            ->with('success', 'Sales Agent berhasil dihapus.');
     }
 }

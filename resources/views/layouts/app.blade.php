@@ -77,6 +77,15 @@
                 <i class="bi bi-building"></i> Product Price
             </a>
 
+            <!-- default-sell-price -->
+            <a href="/default-sell-price"
+            class="flex items-center gap-2 p-2 rounded ml-4
+                    {{ ($activeMenu ?? '') === 'product-price'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100' }}">
+                <i class="bi bi-building"></i> Default Sell Price
+            </a>
+
             <!-- Customer -->
             <a href="/customers"
             class="flex items-center gap-2 p-2 rounded ml-4

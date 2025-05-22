@@ -41,3 +41,7 @@ Route::resource('customers', CustomerController::class);
 use App\Http\Controllers\ProductPriceController;
 
 Route::resource('product-prices', ProductPriceController::class);
+
+use App\Http\Controllers\DefaultSellPriceController;
+
+Route::resource('default-sell-price', DefaultSellPriceController::class);

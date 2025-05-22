@@ -62,4 +62,10 @@ class Product extends Model
     {
         return $this->status ? 'Aktif' : 'Tidak Aktif';
     }
+
+    public function productPrices()
+    {
+        return $this->hasMany(DefaultSellPrice::class);
+    }
+
 }

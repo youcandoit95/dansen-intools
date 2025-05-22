@@ -9,14 +9,16 @@
         <option value="">-- Pilih Produk --</option>
         @foreach($products as $p)
         <option value="{{ $p->id }}"
-            data-info="{{ json_encode([
-                    'nama' => $p->nama,
-                    'barcode' => $p->barcode,
-                    'kategori' => $p->kategori_label,
-                    'brand' => $p->brand_label,
-                    'deskripsi' => $p->deskripsi,
-                    'status' => $p->status ? 'Aktif' : 'Nonaktif'
-                ]) }}"
+           data-info="{{ json_encode([
+                'nama' => $p->nama,
+                'barcode' => $p->barcode,
+                'kategori' => $p->kategori_label,
+                'brand' => $p->brand_label,
+                'deskripsi' => $p->deskripsi,
+                'status' => $p->status ? 'Aktif' : 'Nonaktif',
+                'mbs' => optional($p->mbs)->bms ? optional($p->mbs)->bms . ' (' . optional($p->mbs)->a_grade . ')' : '-',
+                'bagian' => optional($p->bagianDaging)->nama ?? '-',
+            ]) }}"
             @selected(old('product_id', $productPrice->product_id ?? '') == $p->id)>
             {{ $p->nama }}
         </option>
@@ -115,6 +117,14 @@
                 <tr class="border-t">
                     <th class="px-3 py-2 bg-gray-50">Brand</th>
                     <td class="px-3 py-2">${info.brand}</td>
+                </tr>
+                <tr class="border-t">
+                    <th class="px-3 py-2 bg-gray-50">Bagian Daging</th>
+                    <td class="px-3 py-2">${info.bagian}</td>
+                </tr>
+                <tr class="border-t">
+                    <th class="px-3 py-2 bg-gray-50">MBS</th>
+                    <td class="px-3 py-2">${info.mbs}</td>
                 </tr>
                 <tr class="border-t">
                     <th class="px-3 py-2 bg-gray-50">Deskripsi</th>
