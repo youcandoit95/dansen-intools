@@ -14,7 +14,11 @@
     <label for="product_id" class="block text-sm font-medium text-gray-700">
         Produk <span class="text-red-500">*</span>
     </label>
-    <select id="product_id" name="product_id" class="tom-select w-full border rounded px-3 py-2" required>
+    <select id="product_id"
+            name="product_id"
+            class="tom-select w-full border rounded px-3 py-2"
+            required
+            {{ $isEdit ? 'disabled' : '' }}>
         <option value="">-- Pilih Produk --</option>
         @foreach($products as $p)
         <option value="{{ $p->id }}"
@@ -40,6 +44,10 @@
         </option>
         @endforeach
     </select>
+
+    @if ($isEdit)
+        <input type="hidden" name="product_id" value="{{ $defaultSellPrice->product_id }}">
+    @endif
 </div>
 
 {{-- Detail Produk --}}
