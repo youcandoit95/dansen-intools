@@ -84,6 +84,10 @@ class DefaultSellPriceController extends Controller
             'bottom_sell_price' => $this->parseRupiah($validated['bottom_sell_price']),
         ]);
 
+        $product = Product::with('productPrices')->findOrFail($request->product_id);
+
+    $this->validateSellPrice($request, $product);
+
         return redirect()->route('default-sell-price.index')->with('success', 'Harga default berhasil diperbarui.');
     }
 
@@ -102,5 +106,33 @@ class DefaultSellPriceController extends Controller
         // Hapus semua karakter selain angka (contoh: "Rp 1.000.000" → "1000000")
         return (int) preg_replace('/[^\d]/', '', $value);
     }
+
+    private function validateSellPrice(Request $request, Product $product)
+{
+    $supplierPrices = $product->productPrices->pluck('harga')->filter()->toArray();
+    $maxHarga = count($supplierPrices) ? max($supplierPrices) : 0;
+    $minHarga = ceil($maxHarga * 1.05);
+
+    $channels = [
+        "online_sell_price" => "Online",
+        "offline_sell_price" => "Offline",
+        "reseller_sell_price" => "Reseller",
+        "resto_sell_price" => "Resto",
+        "bottom_sell_price" => "Harga Terendah",
+    ];
+
+    $errors = [];
+
+    foreach ($channels as $field => $label) {
+        $harga = preg_replace('/\D/', '', $request->input($field)) ?? 0;
+        if ((int) $harga < $minHarga) {
+            $errors[$field] = "Harga $label harus minimal 5% lebih tinggi dari harga supplier tertinggi (≥ " . number_format($minHarga, 0, ',', '.') . ")";
+        }
+    }
+
+    if (!empty($errors)) {
+        throw \Illuminate\Validation\ValidationException::withMessages($errors);
+    }
+}
 
 }

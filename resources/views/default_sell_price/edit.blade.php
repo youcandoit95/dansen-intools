@@ -7,13 +7,7 @@
 
 <x-alert-error />
 
-<div class="mb-4">
-    <a href="{{ route('default-sell-price.index') }}" class="inline-block text-sm text-blue-600 hover:underline">
-        ← Kembali ke daftar
-    </a>
-</div>
-
-<form action="{{ route('default-sell-price.update', $defaultSellPrice) }}" method="POST">
+<form action="{{ route('default-sell-price.update', $defaultSellPrice) }}" class="bg-white p-6 rounded shadow max-w-2xl" method="POST">
     @csrf
     @method('PUT')
     @include('default_sell_price.form')
