@@ -17,11 +17,18 @@ class DefaultSellPriceController extends Controller
 
     public function create()
     {
+        $usedProductIds = DefaultSellPrice::whereNull('deleted_at')
+            ->pluck('product_id')
+            ->toArray();
+
         $products = Product::with([
-            'productPrices.supplier', // untuk harga dan nama supplier
-            'mbs',
-            'bagianDaging'
-        ])->get();
+                'productPrices.supplier', // untuk harga dan nama supplier
+                'mbs',
+                'bagianDaging'
+            ])
+            ->whereNotIn('id', $usedProductIds)
+            ->orderBy('nama')
+            ->get();
 
         return view('default_sell_price.create', compact('products'));
     }
@@ -50,7 +57,7 @@ class DefaultSellPriceController extends Controller
             'bottom_sell_price' => $this->parseRupiah($validated['bottom_sell_price']),
         ]);
 
-        return redirect()->route('default_sell_price.index')->with('success', 'Harga default berhasil ditambahkan.');
+        return redirect()->route('default-sell-price.index')->with('success', 'Harga default berhasil ditambahkan.');
     }
 
     public function edit(DefaultSellPrice $defaultSellPrice)
