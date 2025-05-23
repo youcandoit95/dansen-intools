@@ -5,7 +5,11 @@
 <div class="mb-4">
     <label class="block text-sm mb-1">Barcode</label>
 
-    @php $barcodeLocked = !empty(old('barcode', $product->barcode ?? '')); @endphp
+    @php
+        $barcodeLocked = !empty(old('barcode', $product->barcode ?? ''));
+        $isEdit = isset($product);
+    @endphp
+
 
     <div class="flex items-center gap-2">
         <input type="text"
@@ -31,23 +35,29 @@
 
 <div class="mb-4">
     <label class="block text-sm mb-1">Kategori</label>
-    <select name="kategori" class="w-full border rounded px-3 py-2">
+    <select name="kategori" class="w-full border rounded px-3 py-2" {{ $isEdit ? 'disabled' : '' }}>
         <option value="1" {{ old('kategori', $product->kategori ?? '') == 1 ? 'selected' : '' }}>Loaf/Kg</option>
         <option value="2" {{ old('kategori', $product->kategori ?? '') == 2 ? 'selected' : '' }}>Pack/Kg</option>
         <option value="3" {{ old('kategori', $product->kategori ?? '') == 3 ? 'selected' : '' }}>Pcs/Pack</option>
     </select>
+    @if($isEdit)
+        <input type="hidden" name="kategori" value="{{ $product->kategori }}">
+    @endif
 </div>
 <div class="mb-4">
     <label class="block text-sm mb-1">Brand</label>
-    <select id="brand" name="brand" class="w-full border rounded px-3 py-2">
+    <select id="brand" name="brand" class="w-full border rounded px-3 py-2" {{ $isEdit ? 'disabled' : '' }}>
         <option value="1" {{ old('brand', $product->brand ?? '') == 1 ? 'selected' : '' }}>Tokusen Wagyu</option>
         <option value="2" {{ old('brand', $product->brand ?? '') == 2 ? 'selected' : '' }}>Sher Wagyu</option>
         <option value="3" {{ old('brand', $product->brand ?? '') == 3 ? 'selected' : '' }}>Angus Pure/G</option>
     </select>
+    @if($isEdit)
+        <input type="hidden" name="brand" value="{{ $product->brand }}">
+    @endif
 </div>
 <div class="mb-4">
     <label for="mbs_id" class="block text-sm font-medium text-gray-700">Marbling Score (MBS)</label>
-    <select id="mbs_id" name="mbs_id" class="tom-select w-full border rounded px-3 py-2">
+    <select id="mbs_id" name="mbs_id" class="tom-select w-full border rounded px-3 py-2" {{ $isEdit ? 'disabled' : '' }}>
         <option value="">-- Pilih MBS --</option>
         @foreach ($mbsList as $mbs)
             <option value="{{ $mbs->id }}" {{ old('mbs_id', $product->mbs_id ?? '') == $mbs->id ? 'selected' : '' }}>
@@ -55,10 +65,13 @@
             </option>
         @endforeach
     </select>
+    @if($isEdit)
+        <input type="hidden" name="mbs_id" value="{{ $product->mbs_id }}">
+    @endif
 </div>
 <div class="mb-4">
     <label for="bagian_daging_id" class="block text-sm font-medium text-gray-700">Bagian Daging</label>
-    <select id="bagian_daging_id" name="bagian_daging_id" class="tom-select w-full border rounded px-3 py-2">
+    <select id="bagian_daging_id" name="bagian_daging_id" class="tom-select w-full border rounded px-3 py-2" {{ $isEdit ? 'disabled' : '' }}>
         <option value="">-- Pilih Bagian Daging --</option>
         @foreach ($bagianDagingList as $bagian)
             <option value="{{ $bagian->id }}" {{ old('bagian_daging_id', $product->bagian_daging_id ?? '') == $bagian->id ? 'selected' : '' }}>
@@ -66,15 +79,21 @@
             </option>
         @endforeach
     </select>
+    @if($isEdit)
+        <input type="hidden" name="bagian_daging_id" value="{{ $product->bagian_daging_id }}">
+    @endif
 </div>
 <div class="mb-4">
     <label class="block text-sm mb-1">Nama Produk</label>
     <div class="flex items-center gap-2">
         <input type="text" id="nama" name="nama" class="flex-1 border rounded px-3 py-2"
-               value="{{ old('nama', $product->nama ?? '') }}">
+               value="{{ old('nama', $product->nama ?? '') }}" {{ $isEdit ? 'disabled' : '' }}>
+        @if($isEdit)
+            <input type="hidden" name="nama" value="{{ $product->nama }}">
+        @endif
 
         <button type="button" id="generateNama"
-                class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+                class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700" {{ $isEdit ? 'disabled' : '' }}>
             Generate
         </button>
     </div>

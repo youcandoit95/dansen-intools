@@ -59,6 +59,8 @@ class ProductController extends Controller
             'images.*.max'       => 'Ukuran gambar tidak boleh lebih dari 8MB.',
         ]);
 
+        // ✅ panggil validasi tambahan
+        $this->validateUniqueProduct($request);
 
         $product = Product::create($request->only([
             'barcode',
@@ -123,6 +125,9 @@ class ProductController extends Controller
             'images.*.max'       => 'Ukuran gambar tidak boleh lebih dari 8MB.',
         ]);
 
+        // ✅ panggil validasi tambahan
+        $this->validateUniqueProduct($request, $product->id); // pengecualian saat update
+
         $product->update($request->only([
             'barcode',
             'kategori',
@@ -177,4 +182,36 @@ class ProductController extends Controller
 
         return Excel::download(new ProductExport, 'produk.xlsx');
     }
+
+    private function validateUniqueProduct(Request $request, $productId = null)
+    {
+        // Validasi nama unik (belum soft deleted)
+        $queryNama = Product::where('nama', $request->nama)->whereNull('deleted_at');
+        if ($productId) {
+            $queryNama->where('id', '!=', $productId);
+        }
+
+        if ($queryNama->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'nama' => 'Nama produk sudah digunakan.',
+            ]);
+        }
+
+        // Validasi kombinasi unik brand + mbs_id + bagian_daging_id
+        $queryKombinasi = Product::where('brand', $request->brand)
+            ->where('mbs_id', $request->mbs_id)
+            ->where('bagian_daging_id', $request->bagian_daging_id)
+            ->whereNull('deleted_at');
+
+        if ($productId) {
+            $queryKombinasi->where('id', '!=', $productId);
+        }
+
+        if ($queryKombinasi->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'brand' => 'Kombinasi brand, MBS, dan bagian daging sudah digunakan.',
+            ]);
+        }
+    }
+
 }

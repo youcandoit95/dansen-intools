@@ -86,6 +86,7 @@
         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         {{ $isEdit ? "Update" : "Simpan" }}
     </button>
+    <a href="{{ route('default-sell-price.index') }}" class="px-4 py-2 text-gray-600 hover:underline">Batal/Kembali</a>
 </div>
 
 {{-- TomSelect & Script --}}
