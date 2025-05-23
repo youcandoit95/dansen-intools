@@ -18,10 +18,10 @@ class DefaultSellPriceController extends Controller
     public function create()
     {
         $products = Product::with([
-                        'productPrices.supplier', // untuk harga dan nama supplier
-                        'mbs',
-                        'bagianDaging'
-                    ])->get();
+            'productPrices.supplier', // untuk harga dan nama supplier
+            'mbs',
+            'bagianDaging'
+        ])->get();
 
         return view('default_sell_price.create', compact('products'));
     }
@@ -36,6 +36,10 @@ class DefaultSellPriceController extends Controller
             'resto_sell_price' => 'required|string',
             'bottom_sell_price' => 'required|string',
         ]);
+
+        $product = Product::with('productPrices')->findOrFail($request->product_id);
+
+        $this->validateSellPrice($request, $product);
 
         DefaultSellPrice::create([
             'product_id' => $validated['product_id'],
@@ -86,7 +90,7 @@ class DefaultSellPriceController extends Controller
 
         $product = Product::with('productPrices')->findOrFail($request->product_id);
 
-    $this->validateSellPrice($request, $product);
+        $this->validateSellPrice($request, $product);
 
         return redirect()->route('default-sell-price.index')->with('success', 'Harga default berhasil diperbarui.');
     }
@@ -108,31 +112,33 @@ class DefaultSellPriceController extends Controller
     }
 
     private function validateSellPrice(Request $request, Product $product)
-{
-    $supplierPrices = $product->productPrices->pluck('harga')->filter()->toArray();
-    $maxHarga = count($supplierPrices) ? max($supplierPrices) : 0;
-    $minHarga = ceil($maxHarga * 1.05);
+    {
+        $supplierPrices = $product->productPrices->pluck('harga')->filter()->toArray();
+        $maxHarga = count($supplierPrices) ? max($supplierPrices) : 0;
 
-    $channels = [
-        "online_sell_price" => "Online",
-        "offline_sell_price" => "Offline",
-        "reseller_sell_price" => "Reseller",
-        "resto_sell_price" => "Resto",
-        "bottom_sell_price" => "Harga Terendah",
-    ];
+        $minHarga = ceil($maxHarga * 1.05);
+        $minHarga = max($minHarga, $maxHarga+5000); // minimal harus 5.000 walau hasil 5% < 5000
 
-    $errors = [];
 
-    foreach ($channels as $field => $label) {
-        $harga = preg_replace('/\D/', '', $request->input($field)) ?? 0;
-        if ((int) $harga < $minHarga) {
-            $errors[$field] = "Harga $label harus minimal 5% lebih tinggi dari harga supplier tertinggi (≥ " . number_format($minHarga, 0, ',', '.') . ")";
+        $channels = [
+            "online_sell_price" => "Online",
+            "offline_sell_price" => "Offline",
+            "reseller_sell_price" => "Reseller",
+            "resto_sell_price" => "Resto",
+            "bottom_sell_price" => "Harga Terendah",
+        ];
+
+        $errors = [];
+
+        foreach ($channels as $field => $label) {
+            $harga = preg_replace('/\D/', '', $request->input($field)) ?? 0;
+            if ((int) $harga < $minHarga) {
+                $errors[$field] = "Harga $label harus minimal 5% (".$minHarga.") lebih tinggi dari harga supplier tertinggi (≥ " . number_format($minHarga, 0, ',', '.') . ")";
+            }
+        }
+
+        if (!empty($errors)) {
+            throw \Illuminate\Validation\ValidationException::withMessages($errors);
         }
     }
-
-    if (!empty($errors)) {
-        throw \Illuminate\Validation\ValidationException::withMessages($errors);
-    }
-}
-
 }
