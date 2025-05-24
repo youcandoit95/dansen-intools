@@ -10,7 +10,7 @@ class DefaultSellPriceController extends Controller
 {
     public function index()
     {
-        $defaultPrices = DefaultSellPrice::with('product')->latest()->paginate(20);
+        $defaultPrices = DefaultSellPrice::with('product')->whereHas('product')->latest()->paginate(20);
 
         return view('default_sell_price.index', compact('defaultPrices'));
     }

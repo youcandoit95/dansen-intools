@@ -11,7 +11,13 @@ class ProductPriceController extends Controller
 {
     public function index()
     {
-        $productPrices = ProductPrice::with(['product', 'supplier'])->latest()->get();
+
+        $productPrices = ProductPrice::with(['product', 'supplier'])
+                            ->whereHas('product')
+                            ->whereHas('supplier')
+                            ->latest()
+                            ->get();
+
         return view('product_prices.index', compact('productPrices'));
     }
 
