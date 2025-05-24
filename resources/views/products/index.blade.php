@@ -74,6 +74,39 @@
         </tbody>
     </table>
 </div>
+
+<h2 class="text-lg font-semibold mt-10 mb-4">Produk Terhapus</h2>
+<div class="overflow-x-auto bg-white shadow border rounded">
+    <table class="min-w-full text-sm divide-y divide-gray-200" id="trashedProductTable">
+        <!-- table head dan body -->
+        @foreach ($trashedProducts as $product)
+        <tr>
+            <td>{{ $product->barcode }}</td>
+            <td>{{ $product->nama }}</td>
+            <td>{{ $product->brand_label }}</td>
+            <td>{{ $product->kategori_label }}</td>
+            <td>{{ $product->bagianDaging->nama ?? '-' }}</td>
+            <td>
+                @if ($product->mbs)
+                    {{ $product->mbs->bms }} ({{ $product->mbs->a_grade }})
+                @else
+                    -
+                @endif
+            </td>
+            <td class="text-center">
+                <form action="{{ route('products.restore', $product->id) }}" method="POST"
+                      onsubmit="return confirm('Pulihkan produk ini?')">
+                    @csrf
+                    <button type="submit"
+                        class="bg-blue-600 text-white px-2 py-1 text-xs rounded hover:bg-blue-700">
+                        🔄 Restore
+                    </button>
+                </form>
+            </td>
+        </tr>
+        @endforeach
+    </table>
+</div>
 @endsection
 
 @section('scripts')
@@ -83,6 +116,19 @@
         const table = document.querySelector("#productTable");
         if (typeof simpleDatatables !== 'undefined' && table) {
             new simpleDatatables.DataTable(table, {
+                perPage: 10,
+                labels: {
+                    placeholder: "Cari...",
+                    perPage: "Data per halaman",
+                    noRows: "Tidak ada data",
+                    info: "Menampilkan {start} - {end} dari {rows} data",
+                }
+            });
+        }
+
+        const trashTable = document.querySelector("#trashedProductTable");
+        if (typeof simpleDatatables !== 'undefined' && trashTable) {
+            new simpleDatatables.DataTable(trashTable, {
                 perPage: 10,
                 labels: {
                     placeholder: "Cari...",

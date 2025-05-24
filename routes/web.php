@@ -22,6 +22,7 @@ use App\Http\Controllers\ProductController;
 Route::resource('products', ProductController::class);
 Route::delete('product_image/destroy/{id}', [ProductController::class, 'destroyImage'])->name('product_image.destroy');
 Route::post('products/toggle-status/{id}', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
+Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
 
 use App\Exports\ProductExport;
 use Maatwebsite\Excel\Facades\Excel;

@@ -15,8 +15,17 @@ class ProductController extends Controller
     public function index()
     {
         $activeMenu = 'products';
-        $products = Product::with('images')->latest()->get();
-        return view('products.index', compact('products', 'activeMenu'));
+
+        $products = Product::with(['images', 'mbs', 'bagianDaging'])
+                        ->latest()
+                        ->get();
+
+        $trashedProducts = Product::onlyTrashed()
+                            ->with(['images', 'mbs', 'bagianDaging'])
+                            ->latest()
+                            ->get();
+
+        return view('products.index', compact('products', 'trashedProducts', 'activeMenu'));
     }
 
     public function create()
@@ -213,5 +222,14 @@ class ProductController extends Controller
             ]);
         }
     }
+
+    public function restore($id)
+    {
+        $product = Product::withTrashed()->findOrFail($id);
+        $product->restore();
+
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dipulihkan.');
+    }
+
 
 }
