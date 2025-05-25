@@ -15,6 +15,8 @@ class Customer extends Model
         'no_tlp',
         'domisili',
         'alamat_lengkap',
+        'is_blacklisted',
+        'alasan_blacklist',
     ];
 
     public function salesAgent()

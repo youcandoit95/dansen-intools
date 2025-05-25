@@ -97,16 +97,4 @@ class CustomerPriceController extends Controller
 
         return redirect()->route('customer-prices.index')->with('success', 'Harga customer berhasil diperbarui.');
     }
-
-    public function blacklist(Request $request, $id)
-    {
-        $request->validate(['alasan' => 'required|string']);
-
-        CustomerBlacklist::create([
-            'customer_id' => $id,
-            'alasan' => $request->alasan,
-        ]);
-
-        return redirect()->back()->with('success', 'Customer berhasil di-blacklist.');
-    }
 }

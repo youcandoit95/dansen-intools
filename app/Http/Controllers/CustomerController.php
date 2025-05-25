@@ -67,4 +67,28 @@ class CustomerController extends Controller
 
         return redirect()->route('customers.index')->with('success', 'Customer berhasil dihapus.');
     }
+
+    public function blacklist(Request $request, Customer $customer)
+    {
+        $request->validate([
+            'alasan_blacklist' => 'required|string|max:255',
+        ]);
+
+        $customer->update([
+            'is_blacklisted' => true,
+            'alasan_blacklist' => $request->alasan_blacklist,
+        ]);
+
+        return redirect()->back()->with('success', 'Customer berhasil diblacklist.');
+    }
+
+    public function whitelist(Customer $customer)
+    {
+        $customer->update([
+            'is_blacklisted' => false,
+            'alasan_blacklist' => null,
+        ]);
+
+        return redirect()->route('customers.index')->with('success', 'Customer berhasil di-whitelist.');
+    }
 }

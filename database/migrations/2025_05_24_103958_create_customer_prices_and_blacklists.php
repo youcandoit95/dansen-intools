@@ -31,24 +31,10 @@ return new class extends Migration {
             $table->foreign('sales_agent_id', 'fk_customer_prices_sales_agent')
                   ->references('id')->on('sales_agents')->nullOnDelete();
         });
-
-        Schema::create('customer_blacklists', function (Blueprint $table) {
-            $table->id();
-
-            $table->unsignedBigInteger('customer_id');
-            $table->text('alasan');
-
-            $table->timestamps();
-            $table->softDeletes()->index(); // ✅ soft delete + index
-
-            $table->foreign('customer_id', 'fk_customer_blacklists_customer')
-                  ->references('id')->on('customers')->cascadeOnDelete();
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('customer_blacklists');
         Schema::dropIfExists('customer_prices');
     }
 };

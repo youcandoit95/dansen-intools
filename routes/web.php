@@ -38,6 +38,8 @@ Route::resource('suppliers', SupplierController::class);
 use App\Http\Controllers\CustomerController;
 
 Route::resource('customers', CustomerController::class);
+Route::post('/customers/{customer}/blacklist', [CustomerController::class, 'blacklist'])->name('customers.blacklist');
+Route::post('/customers/{customer}/whitelist', [CustomerController::class, 'whitelist'])->name('customers.whitelist');
 
 use App\Http\Controllers\ProductPriceController;
 
@@ -56,5 +58,3 @@ Route::prefix('customer-prices')->name('customer-prices.')->group(function () {
     Route::get('/{id}/edit', [CustomerPriceController::class, 'edit'])->name('edit');
     Route::put('/{id}', [CustomerPriceController::class, 'update'])->name('update');
 });
-
-Route::post('/customers/{id}/blacklist', [CustomerPriceController::class, 'blacklist'])->name('customers.blacklist');
