@@ -58,3 +58,17 @@ Route::prefix('customer-prices')->name('customer-prices.')->group(function () {
     Route::get('/{id}/edit', [CustomerPriceController::class, 'edit'])->name('edit');
     Route::put('/{id}', [CustomerPriceController::class, 'update'])->name('update');
 });
+
+use App\Http\Controllers\UserController;
+
+Route::prefix('users')->name('users.')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::get('/create', [UserController::class, 'create'])->name('create');
+    Route::post('/', [UserController::class, 'store'])->name('store');
+    Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+    Route::put('/{user}', [UserController::class, 'update'])->name('update');
+    Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+    Route::get('/{user}/toggle/{field}', [UserController::class, 'toggle'])->name('toggle');
+    Route::put('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
+});
+
