@@ -46,3 +46,15 @@ Route::resource('product-prices', ProductPriceController::class);
 use App\Http\Controllers\DefaultSellPriceController;
 
 Route::resource('default-sell-price', DefaultSellPriceController::class);
+
+use App\Http\Controllers\CustomerPriceController;
+
+Route::prefix('customer-prices')->name('customer-prices.')->group(function () {
+    Route::get('/', [CustomerPriceController::class, 'index'])->name('index');
+    Route::get('/create', [CustomerPriceController::class, 'create'])->name('create');
+    Route::post('/', [CustomerPriceController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [CustomerPriceController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [CustomerPriceController::class, 'update'])->name('update');
+});
+
+Route::post('/customers/{id}/blacklist', [CustomerPriceController::class, 'blacklist'])->name('customers.blacklist');

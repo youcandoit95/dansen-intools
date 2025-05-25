@@ -68,4 +68,10 @@ class Product extends Model
         return $this->hasMany(ProductPrice::class);
     }
 
+    public function defaultSellPrice()
+    {
+        return $this->hasOne(DefaultSellPrice::class);
+    }
+
+
 }

@@ -22,7 +22,7 @@
         @foreach($salesAgents as $agent)
             <option value="{{ $agent->id }}"
                 {{ old('sales_agent_id', $customer->sales_agent_id ?? '') == $agent->id ? 'selected' : '' }}>
-                {{ $agent->name }}
+                {{ $agent->nama }} {{-- ✅ Ini benar --}}
             </option>
         @endforeach
     </select>

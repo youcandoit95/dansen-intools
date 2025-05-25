@@ -40,7 +40,7 @@
                 <td class="border px-4 py-2">{{ $i + 1 }}</td>
                 <td class="border px-4 py-2">{{ $c->nama }}</td>
                 <td class="border px-4 py-2">{{ $c->no_tlp }}</td>
-                <td class="border px-4 py-2">{{ $c->salesAgent->name ?? '-' }}</td>
+                <td class="border px-4 py-2">{{ $c->salesAgent->nama ?? '-' }}</td>
                 <td class="border px-4 py-2">{{ $c->domisiliRef->nama ?? '-' }}</td>
                 <td class="border px-4 py-2">{{ $c->alamat_lengkap }}</td>
                 <td class="border px-4 py-2 space-x-2">

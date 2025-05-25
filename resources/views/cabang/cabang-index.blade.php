@@ -40,8 +40,6 @@
 @endsection
 
 @section('scripts')
-<!-- Pastikan CDN Simple-DataTables disertakan -->
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const table = document.querySelector("#cabangTable");
