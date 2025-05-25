@@ -50,21 +50,6 @@
     </table>
 </div>
 
-<!-- Modal Blacklist -->
-<div id="modalBlacklist" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center">
-    <form method="POST" action="{{ route('customers.blacklist', ['id' => '__ID__']) }}"
-          class="bg-white rounded p-6 max-w-md w-full">
-        @csrf
-        <h2 class="text-lg font-semibold mb-4">Blacklist Customer</h2>
-        <p class="mb-2">Masukkan alasan blacklist untuk <strong id="blacklistCustomerName">Customer</strong>:</p>
-        <textarea name="alasan" rows="4" class="w-full border rounded px-3 py-2" required></textarea>
-        <div class="mt-4 text-right">
-            <button type="button" id="cancelBlacklist"
-                class="px-4 py-2 bg-gray-400 text-white rounded mr-2">Batal</button>
-            <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded">Blacklist</button>
-        </div>
-    </form>
-</div>
 @endsection
 
 @section('scripts')
@@ -73,26 +58,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const modal = document.getElementById('modalBlacklist');
-        const cancelBtn = document.getElementById('cancelBlacklist');
-        const form = modal.querySelector('form');
-        const namePlaceholder = document.getElementById('blacklistCustomerName');
-
-        document.querySelectorAll('[data-blacklist]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = btn.dataset.id;
-                const name = btn.dataset.name;
-                form.action = "{{ route('customers.blacklist', ['id' => '__ID__']) }}".replace('__ID__', id);
-                namePlaceholder.textContent = name;
-                modal.classList.remove('hidden');
-            });
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            form.action = "{{ route('customers.blacklist', ['id' => '__ID__']) }}";
-        });
-
         // Inisialisasi MiniDataTable
         const table = document.getElementById('tableCustomerPrice');
         if (typeof simpleDatatables !== 'undefined' && table) {
