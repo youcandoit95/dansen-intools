@@ -9,7 +9,7 @@ class DashboardController extends Controller
     public function index()
     {
         return view('home', [
-            'activeMenu' => 'home'
+            'activeMenu' => 'dashboard'
         ]);
     }
 

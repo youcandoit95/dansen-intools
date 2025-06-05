@@ -22,9 +22,9 @@
         <h2 class="text-lg font-semibold mb-4">Dansen System</h2>
         <nav class="space-y-2">
             <!-- Beranda -->
-            <a href="/home"
+            <a href="/dashboard"
                 class="flex items-center gap-2 p-2 rounded
-                    {{ ($activeMenu ?? '') === 'home'
+                    {{ ($activeMenu ?? '') === 'dashboard'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
                 <i class="bi bi-house-door"></i> Beranda
