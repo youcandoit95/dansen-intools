@@ -11,8 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Gabungkan semua alias di sini
+        $middleware->alias([
+            'check.cabang.status' => \App\Http\Middleware\CheckCabangStatus::class,
+            'check.user.status' => \App\Http\Middleware\CheckUserStatus::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->create();

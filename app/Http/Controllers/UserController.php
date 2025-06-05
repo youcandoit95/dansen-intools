@@ -40,7 +40,13 @@ class UserController extends Controller
             'status' => 'boolean',
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+        $manualSalt = env('APP_PASSWORD_SALT');
+        if (!$manualSalt) {
+            abort(500, 'APP_PASSWORD_SALT belum diatur di file .env');
+        }
+
+        $validated['password'] = Hash::make($validated['password'] . $manualSalt);
+
         User::create($validated);
 
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
@@ -97,14 +103,20 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User berhasil diperbarui.');
     }
 
-
     public function resetPassword(Request $request, User $user)
     {
         $validated = $request->validate([
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user->update(['password' => Hash::make($validated['password'])]);
+        $manualSalt = env('APP_PASSWORD_SALT');
+        if (!$manualSalt) {
+            abort(500, 'APP_PASSWORD_SALT belum diatur di file .env');
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['password'] . $manualSalt),
+        ]);
 
         return redirect()->route('users.index')->with('success', 'Password berhasil direset.');
     }
