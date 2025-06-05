@@ -38,6 +38,9 @@ class AuthController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
+            // Ambil nama cabang jika relasi tersedia
+            $cabangName = optional($user->cabang)->nama_cabang;
+
             // Simpan seluruh data user ke session (tanpa password)
             session([
                 'user_id'     => $user->id,
@@ -46,6 +49,7 @@ class AuthController extends Controller
                 'email'       => $user->email,
                 'no_wa'       => $user->no_wa,
                 'cabang_id'   => $user->cabang_id,
+                'cabang_name' => $cabangName,
                 'superadmin'  => $user->superadmin,
                 'manager'     => $user->manager,
                 'supervisor'  => $user->supervisor,
