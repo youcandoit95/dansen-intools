@@ -99,35 +99,6 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
         <textarea name="catatan" class="w-full border rounded px-3 py-2" rows="2">{{ $catatan }}</textarea>
     </div>
 
-    <hr class="my-6">
-    <h2 class="text-lg font-medium mb-2">Item Purchase Order</h2>
-
-    <div id="item-wrapper">
-        @foreach(old('items', $purchaseOrder->items ?? [ ['product_id' => '', 'qty' => '', 'harga_beli' => ''] ]) as $index => $item)
-        <div class="grid grid-cols-12 gap-4 mb-4 item-row">
-            <div class="col-span-5">
-                <select name="items[{{ $index }}][product_id]" class="tom-select w-full border rounded px-3 py-2" required>
-                    <option value="">-- Pilih Produk --</option>
-                    @foreach($products as $prod)
-                    <option value="{{ $prod->id }}" {{ (isset($item['product_id']) && $item['product_id'] == $prod->id) ? 'selected' : '' }}>{{ $prod->nama }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-span-2">
-                <input type="number" name="items[{{ $index }}][qty]" class="w-full border rounded px-3 py-2" placeholder="Qty" value="{{ $item['qty'] ?? '' }}" required>
-            </div>
-            <div class="col-span-3">
-                <input type="text" name="items[{{ $index }}][harga_beli]" class="rupiah-input w-full border rounded px-3 py-2" placeholder="Harga Beli" value="{{ isset($item['harga_beli']) ? 'Rp ' . number_format((int)preg_replace('/[^0-9]/', '', $item['harga_beli']), 0, ',', '.') : '' }}" required>
-            </div>
-            <div class="col-span-2 flex items-center">
-                <button type="button" class="text-red-600 font-semibold remove-item">Hapus</button>
-            </div>
-        </div>
-        @endforeach
-    </div>
-
-    <button type="button" id="add-item" class="bg-gray-100 border rounded px-3 py-2 mb-6">+ Tambah Item</button>
-
     <div>
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             {{ isset($purchaseOrder) ? 'Update' : 'Simpan' }}
@@ -150,47 +121,6 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
                     minimumFractionDigits: 0
                 }).format(angka || 0);
             });
-        });
-
-        const itemWrapper = document.getElementById('item-wrapper');
-        const addItemButton = document.getElementById('add-item');
-        let itemIndex = {
-            {
-                count(old('items', $purchaseOrder - > items ?? [1]))
-            }
-        };
-
-        addItemButton.addEventListener('click', () => {
-            const newRow = document.createElement('div');
-            newRow.classList.add('grid', 'grid-cols-12', 'gap-4', 'mb-4', 'item-row');
-            newRow.innerHTML = `
-                <div class="col-span-5">
-                    <select name="items[\${itemIndex}][product_id]" class="tom-select w-full border rounded px-3 py-2" required>
-                        <option value="">-- Pilih Produk --</option>
-                        @foreach($products as $prod)
-                        <option value="{{ $prod->id }}">{{ $prod->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-span-2">
-                    <input type="number" name="items[\${itemIndex}][qty]" class="w-full border rounded px-3 py-2" placeholder="Qty" required>
-                </div>
-                <div class="col-span-3">
-                    <input type="text" name="items[\${itemIndex}][harga_beli]" class="rupiah-input w-full border rounded px-3 py-2" placeholder="Harga Beli" required>
-                </div>
-                <div class="col-span-2 flex items-center">
-                    <button type="button" class="text-red-600 font-semibold remove-item">Hapus</button>
-                </div>
-            `;
-            itemWrapper.appendChild(newRow);
-            new TomSelect(newRow.querySelector('.tom-select'));
-            itemIndex++;
-        });
-
-        itemWrapper.addEventListener('click', function(e) {
-            if (e.target.classList.contains('remove-item')) {
-                e.target.closest('.item-row').remove();
-            }
         });
     });
 

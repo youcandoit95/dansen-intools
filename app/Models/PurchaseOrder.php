@@ -10,8 +10,15 @@ class PurchaseOrder extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'no_po', 'supplier_id', 'tanggal', 'tanggal_permintaan_dikirim', 'catatan',
-        'created_by', 'updated_by', 'deleted_by'
+        'no_po',
+        'supplier_id',
+        'tanggal',
+        'tanggal_permintaan_dikirim',
+        'catatan',
+        'cabang_id',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     public function supplier()
@@ -24,3 +31,4 @@ class PurchaseOrder extends Model
         return $this->hasMany(PurchaseOrderItem::class);
     }
 }
+

@@ -34,32 +34,22 @@ class PurchaseOrderController extends Controller
             'tanggal' => 'required|date',
             'tanggal_permintaan_dikirim' => 'nullable|date',
             'catatan' => 'nullable|string',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.qty' => 'required|numeric|min:1',
-            'items.*.harga_beli' => 'required|string',
         ]);
 
-        DB::transaction(function () use ($request) {
-            $po = PurchaseOrder::create([
-                'no_po' => $request->no_po,
-                'supplier_id' => $request->supplier_id,
-                'tanggal' => $request->tanggal,
-                'tanggal_permintaan_dikirim' => $request->tanggal_permintaan_dikirim,
-                'catatan' => $request->catatan,
-                'created_by' => session('user_id'),
-            ]);
+        $po = PurchaseOrder::create([
+            'no_po' => $request->no_po,
+            'supplier_id' => $request->supplier_id,
+            'tanggal' => $request->tanggal,
+            'tanggal_permintaan_dikirim' => $request->tanggal_permintaan_dikirim,
+            'catatan' => $request->catatan,
+            'cabang_id' => session('cabang_id'), // jika digunakan
+            'created_by' => session('user_id'),
+        ]);
 
-            foreach ($request->items as $item) {
-                $po->items()->create([
-                    'product_id' => $item['product_id'],
-                    'qty' => $item['qty'],
-                    'harga_beli' => preg_replace('/[^0-9]/', '', $item['harga_beli']),
-                ]);
-            }
-        });
-
-        return redirect()->route('purchase-order.index')->with('success', 'Purchase Order berhasil disimpan.');
+        return redirect()->route('purchase-order-item.create', $po->id)
+                        ->with('success', 'PO berhasil disimpan. Silakan tambahkan item.');
     }
+
 
     public function show(PurchaseOrder $purchaseOrder)
     {
