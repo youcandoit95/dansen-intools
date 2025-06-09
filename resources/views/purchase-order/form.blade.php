@@ -109,20 +109,6 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.tom-select').forEach(el => new TomSelect(el));
-
-        document.querySelectorAll('.rupiah-input').forEach(input => {
-            input.addEventListener('input', function() {
-                const angka = this.value.replace(/\D/g, '');
-                this.value = new Intl.NumberFormat('id-ID', {
-                    style: 'currency',
-                    currency: 'IDR',
-                    minimumFractionDigits: 0
-                }).format(angka || 0);
-            });
-        });
-    });
 
     document.getElementById('generate-no-po')?.addEventListener('click', function() {
         const cabangInitial = '{{ session("cabang_initial") ?? "XXX" }}';
@@ -146,4 +132,7 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
         document.getElementById('tanggal_permintaan_dikirim').value = tanggalBesok;
     });
 </script>
+
+@include('purchase-order-item.inline-form', ['purchaseOrder' => $purchaseOrder, 'products' => $products])
+
 @endsection
