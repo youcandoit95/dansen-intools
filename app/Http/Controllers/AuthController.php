@@ -40,6 +40,7 @@ class AuthController extends Controller
 
             // Ambil nama cabang jika relasi tersedia
             $cabangName = optional($user->cabang)->nama_cabang;
+            $cabangInitial = optional($user->cabang)->initial;
 
             // Simpan seluruh data user ke session (tanpa password)
             session([
@@ -50,6 +51,7 @@ class AuthController extends Controller
                 'no_wa'       => $user->no_wa,
                 'cabang_id'   => $user->cabang_id,
                 'cabang_name' => $cabangName,
+                'cabang_initial' => $cabangInitial,
                 'superadmin'  => $user->superadmin,
                 'manager'     => $user->manager,
                 'supervisor'  => $user->supervisor,

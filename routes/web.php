@@ -15,6 +15,8 @@ use App\Http\Controllers\UserController;
 use App\Exports\ProductExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Middleware\CheckUserRole;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseOrderItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,9 +37,14 @@ Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth')->na
 */
 Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(function () {
 
-    Route::middleware(['checkrole:supervisor'])->group(function () {
+    Route::middleware(['checkrole:superadmin,manager,supervisor'])->group(function () {
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource('purchase-order', PurchaseOrderController::class);
+        Route::get('purchase-order/{purchase_order}/item/create', [PurchaseOrderItemController::class, 'create'])->name('purchase-order-item.create');
+        Route::post('purchase-order/{purchase_order}/item', [PurchaseOrderItemController::class, 'store'])->name('purchase-order-item.store');
+
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {
