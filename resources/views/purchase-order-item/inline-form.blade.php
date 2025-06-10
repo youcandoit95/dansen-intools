@@ -1,4 +1,4 @@
-<div class="mt-10 p-6 bg-white rounded shadow">
+<div class="mt-5 p-6 bg-white rounded shadow">
     <h2 class="text-lg font-semibold mb-4">Tambah Item Purchase Order</h2>
 
     <form action="{{ route('purchase-order-item.store', $purchaseOrder->id) }}" method="POST" class="grid grid-cols-12 gap-4 items-end">
@@ -50,7 +50,7 @@
     </form>
 
     <!-- Daftar Item -->
-<div class="mt-2">
+<div class="mt-10">
     <h3 class="text-md font-semibold mb-2">Daftar Item</h3>
     <table class="w-full table-auto border border-gray-200">
         <thead class="bg-gray-100">
@@ -72,7 +72,12 @@
                     $subtotal = $item->qty * $hargaBeli;
                 @endphp
                 <tr class="border-t">
-                    <td class="px-3 py-2">{{ $item->product->nama ?? '-' }}</td>
+                    <td class="px-3 py-2">
+                        {{ $item->product->nama ?? '-' }}
+                        @if (!empty($item->catatan))
+                            <br><small class="text-gray-500">{{ $item->catatan }}</small>
+                        @endif
+                    </td>
                     <td class="px-3 py-2">{{ $item->qty }}</td>
                     <td class="px-3 py-2">Rp {{ number_format($hargaBeli, 0, ',', '.') }}</td>
                     <td class="px-3 py-2">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>

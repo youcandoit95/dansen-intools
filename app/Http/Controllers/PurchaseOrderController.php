@@ -64,9 +64,13 @@ class PurchaseOrderController extends Controller
     {
         $suppliers = Supplier::orderBy('name')->get();
 
-        // Ambil daftar produk dari supplier yang sama
+        // Ambil semua product_id yang sudah digunakan dalam PO ini
+        $usedProductIds = $purchaseOrder->items->pluck('product_id')->toArray();
+
+        // Ambil daftar produk dari supplier yang sama DAN belum digunakan di PO
         $products = ProductPrice::with('product')
             ->where('supplier_id', $purchaseOrder->supplier_id)
+            ->whereNotIn('product_id', $usedProductIds)
             ->orderBy('product_id')
             ->get()
             ->map(function ($item) {
@@ -77,14 +81,14 @@ class PurchaseOrderController extends Controller
                 ];
             });
 
-        // Load relasi product dan productPrices yang sesuai supplier
+        // Load relasi product dan productPrices sesuai supplier
         $purchaseOrder->load(['items.product' => function ($q) use ($purchaseOrder) {
             $q->with(['productPrices' => function ($subQuery) use ($purchaseOrder) {
                 $subQuery->where('supplier_id', $purchaseOrder->supplier_id);
             }]);
         }]);
 
-        // Hitung total qty dan total subtotal berdasarkan harga dari productPrices supplier
+        // Hitung total qty dan subtotal berdasarkan harga productPrice dari supplier
         $totalQty = $purchaseOrder->items->sum('qty');
         $totalSubtotal = $purchaseOrder->items->sum(function ($item) use ($purchaseOrder) {
             $hargaBeli = $item->product->productPrices
@@ -105,6 +109,7 @@ class PurchaseOrderController extends Controller
             'totalSubtotal'
         ));
     }
+
 
     public function update(Request $request, PurchaseOrder $purchaseOrder)
     {
