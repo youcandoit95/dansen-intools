@@ -51,8 +51,7 @@ class PurchaseOrderController extends Controller
         ]);
 
         return redirect()->route('purchase-order.edit', $po->id)
-                 ->with('success', 'PO berhasil disimpan. Silakan tambahkan item.');
-
+            ->with('success', 'PO berhasil disimpan. Silakan tambahkan item.');
     }
 
     public function show(PurchaseOrder $purchaseOrder)
@@ -64,20 +63,47 @@ class PurchaseOrderController extends Controller
     public function edit(PurchaseOrder $purchaseOrder)
     {
         $suppliers = Supplier::orderBy('name')->get();
+
+        // Ambil daftar produk dari supplier yang sama
         $products = ProductPrice::with('product')
-        ->where('supplier_id', $purchaseOrder->supplier_id)
-        ->orderBy('product_id')
-        ->get()
-        ->map(function ($item) {
-            return [
-                'id' => $item->product_id,
-                'nama' => $item->product->nama,
-                'harga_beli' => $item->harga, // atau ->harga_beli jika itu nama field-nya
-            ];
+            ->where('supplier_id', $purchaseOrder->supplier_id)
+            ->orderBy('product_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->product_id,
+                    'nama' => $item->product->nama,
+                    'harga_beli' => $item->harga,
+                ];
+            });
+
+        // Load relasi product dan productPrices yang sesuai supplier
+        $purchaseOrder->load(['items.product' => function ($q) use ($purchaseOrder) {
+            $q->with(['productPrices' => function ($subQuery) use ($purchaseOrder) {
+                $subQuery->where('supplier_id', $purchaseOrder->supplier_id);
+            }]);
+        }]);
+
+        // Hitung total qty dan total subtotal berdasarkan harga dari productPrices supplier
+        $totalQty = $purchaseOrder->items->sum('qty');
+        $totalSubtotal = $purchaseOrder->items->sum(function ($item) use ($purchaseOrder) {
+            $hargaBeli = $item->product->productPrices
+                ->where('supplier_id', $purchaseOrder->supplier_id)
+                ->max('harga') ?? 0;
+
+            return $item->qty * $hargaBeli;
         });
+
         $activeMenu = 'purchase-order';
 
-        return view('purchase-order.edit', compact('purchaseOrder', 'suppliers', 'products', 'activeMenu'));
+        return view('purchase-order.edit', compact(
+            'purchaseOrder',
+            'suppliers',
+            'products',
+            'activeMenu',
+            'totalQty',
+            'totalSubtotal'
+        ));
     }
 
     public function update(Request $request, PurchaseOrder $purchaseOrder)
@@ -89,6 +115,10 @@ class PurchaseOrderController extends Controller
             'catatan' => 'nullable|string',
         ]);
 
+        // Cek apakah supplier berubah
+        $supplierChanged = $request->supplier_id != $purchaseOrder->supplier_id;
+
+        // Update PO
         $purchaseOrder->update([
             'supplier_id' => $request->supplier_id,
             'tanggal' => $request->tanggal,
@@ -97,9 +127,15 @@ class PurchaseOrderController extends Controller
             'updated_by' => session('user_id'),
         ]);
 
+        // Hard delete semua item jika supplier berubah
+        if ($supplierChanged) {
+            $purchaseOrder->items()->forceDelete();
+        }
+
         return redirect()->route('purchase-order.edit', $purchaseOrder->id)
-                        ->with('success', 'PO berhasil diperbarui.');
+            ->with('success', 'PO berhasil diperbarui' . ($supplierChanged ? ' dan semua item dihapus karena supplier berubah.' : '.'));
     }
+
 
     public function destroy(PurchaseOrder $purchaseOrder)
     {
