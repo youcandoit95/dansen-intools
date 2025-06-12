@@ -23,6 +23,7 @@ use App\Http\Controllers\PurchaseOrderItemController;
 | Auth Routes
 |--------------------------------------------------------------------------
 */
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -47,8 +48,18 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         Route::post('purchase-order/{purchase_order}/item', [PurchaseOrderItemController::class, 'store'])->name('purchase-order-item.store');
         Route::delete('/purchase-order-item/{id}', [PurchaseOrderItemController::class, 'destroy'])->name('purchase-order-item.destroy');
         Route::get('/purchase-order/{purchaseOrder}/ajukan', [PurchaseOrderController::class, 'ajukan'])->name('purchase-order.ajukan');
+        Route::post('/purchase-order/{purchaseOrder}/kirim-email', [PurchaseOrderController::class, 'kirimEmail'])->name('purchase-order.kirim-email');
+        // Ajukan
+        Route::get('/purchase-order/{purchaseOrder}/ajukan', [PurchaseOrderController::class, 'ajukan'])
+            ->name('purchase-order.ajukan');
 
+        // Kirim Email
+        Route::get('/purchase-order/{purchaseOrder}/kirim-email', [PurchaseOrderController::class, 'kirimEmail'])
+            ->name('purchase-order.kirim-email');
 
+        // Batalkan
+        Route::get('/purchase-order/{purchaseOrder}/batalkan', [PurchaseOrderController::class, 'batalkan'])
+            ->name('purchase-order.batalkan');
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {
@@ -64,7 +75,7 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         Route::delete('product_image/destroy/{id}', [ProductController::class, 'destroyImage'])->name('product_image.destroy');
         Route::post('products/toggle-status/{id}', [ProductController::class, 'toggleStatus'])->name('products.toggle-status');
         Route::post('/products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
-        Route::get('products/export', fn () => Excel::download(new ProductExport, 'produk.xlsx'))->name('products.export');
+        Route::get('products/export', fn() => Excel::download(new ProductExport, 'produk.xlsx'))->name('products.export');
 
         // Suppliers
         Route::resource('suppliers', SupplierController::class);
@@ -100,7 +111,5 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
             Route::get('/{user}/toggle/{field}', [UserController::class, 'toggle'])->name('toggle');
             Route::put('/{user}/reset-password', [UserController::class, 'resetPassword'])->name('reset-password');
         });
-
     });
-
 });

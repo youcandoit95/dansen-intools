@@ -21,7 +21,7 @@
     <aside class="fixed top-0 left-0 h-screen w-64 bg-white border-r p-4 overflow-y-auto">
         <h2 class="text-lg font-semibold mb-1">Dansen System</h2>
         <p class="text-sm text-red-600 mb-4">
-            {{ session('cabang_name') ?? '-' }}
+            {{ session('username') ?? '-' }} | {{ session('cabang_name') ?? '-' }}
         </p>
         <nav class="space-y-2">
             <!-- Beranda -->

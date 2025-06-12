@@ -115,26 +115,66 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
 
     </div>
 
-    @if (!$isReadonly)
+    @if(isset($purchaseOrder) && $purchaseOrder->ajukan_at)
+    <div class="mb-4 px-4 py-2 bg-blue-100 text-blue-700 rounded border border-blue-300">
+        <strong>PO sudah diajukan</strong> pada
+        {{ \Carbon\Carbon::parse($purchaseOrder->ajukan_at)->translatedFormat('l, d F Y, H:i') }}
+        oleh {{ optional($purchaseOrder->ajukanBy)->username ?? 'User tidak ditemukan' }}.
+    </div>
+    @endif
+
+    @if(isset($purchaseOrder) && $purchaseOrder->sendemail_at)
+    <div class="mb-4 px-4 py-2 bg-green-100 text-green-800 rounded border border-green-300">
+        <strong>PO sudah dikirim email</strong> pada
+        {{ \Carbon\Carbon::parse($purchaseOrder->sendemail_at)->translatedFormat('l, d F Y, H:i') }}
+        oleh {{ optional($purchaseOrder->sendEmailBy)->username ?? 'User tidak ditemukan' }}.
+    </div>
+    @endif
+
+    @if (isset($purchaseOrder))
     <div class="mt-4 flex gap-2">
+        @if (!$isReadonly)
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             {{ isset($purchaseOrder) ? 'Update' : 'Simpan' }}
         </button>
-        @if (isset($purchaseOrder))
+        @endif
+
+
+        @if (isset($purchaseOrder) && !$purchaseOrder->ajukan_at)
+        {{-- Ajukan --}}
         <a href="{{ route('purchase-order.ajukan', $purchaseOrder->id) }}"
             class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             onclick="return confirm('Apakah Anda yakin ingin mengajukan Purchase Order ini?')">
             Ajukan
         </a>
         @endif
+
+        {{-- Kirim Email --}}
+        @if (isset($purchaseOrder) && $purchaseOrder->ajukan_at && !$purchaseOrder->sendemail_at)
+        <a href="{{ route('purchase-order.kirim-email', $purchaseOrder->id) }}"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            onclick="return confirm('Apakah Anda yakin ingin mengirim email PO ini?')">
+            Kirim Email
+        </a>
+        @endif
+
+        {{-- Batalkan --}}
+        @if (isset($purchaseOrder) && is_null($purchaseOrder->sendemail_at))
+        <a href="{{ route('purchase-order.batalkan', $purchaseOrder->id) }}"
+            class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            onclick="return confirm('Apakah Anda yakin ingin membatalkan dan menghapus PO ini?')">
+            Batalkan
+        </a>
+        @endif
+
+        @else
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Simpan
+        </button>
+        @endif
     </div>
-    @else
-    <div class="mb-4 px-4 py-2 bg-red-100 text-red-700 rounded border border-red-300">
-        <strong>PO sudah diajukan</strong> pada
-        {{ \Carbon\Carbon::parse($purchaseOrder->ajukan_at)->translatedFormat('l, d F Y, H:i') }}
-        oleh {{ optional($purchaseOrder->ajukanBy)->username ?? 'User tidak ditemukan' }}.
-    </div>
-    @endif
+
+
 
 </form>
 
@@ -165,7 +205,7 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
 </script>
 
 @if(isset($purchaseOrder))
-    @include('purchase-order-item.inline-form', ['purchaseOrder' => $purchaseOrder, 'products' => $products])
+@include('purchase-order-item.inline-form', ['purchaseOrder' => $purchaseOrder, 'products' => $products])
 @endif
 
 @endsection

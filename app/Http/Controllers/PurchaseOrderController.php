@@ -145,14 +145,18 @@ class PurchaseOrderController extends Controller
             ->with('success', 'PO berhasil diperbarui' . ($supplierChanged ? ' dan semua item dihapus karena supplier berubah.' : '.'));
     }
 
-
     public function destroy(PurchaseOrder $purchaseOrder)
     {
+        if ($purchaseOrder->sendemail_at) {
+            return redirect()->back()->with('error', 'PO sudah dikirim email dan tidak bisa dibatalkan.');
+        }
+
         $purchaseOrder->update(['deleted_by' => session('user_id')]);
         $purchaseOrder->delete();
 
-        return back()->with('success', 'Purchase Order berhasil dihapus.');
+        return redirect()->route('purchase-order.index')->with('success', 'Purchase Order berhasil dibatalkan dan dihapus.');
     }
+
 
     public function ajukan(PurchaseOrder $purchaseOrder)
     {
@@ -167,4 +171,27 @@ class PurchaseOrderController extends Controller
         return redirect()->route('purchase-order.edit', $purchaseOrder->id)
             ->with('success', 'Purchase Order berhasil diajukan.');
     }
+
+    public function kirimEmail(PurchaseOrder $purchaseOrder)
+    {
+        if (!$purchaseOrder->ajukan_at) {
+            return redirect()->back()->with('error', 'PO belum diajukan.');
+        }
+
+        if ($purchaseOrder->sendemail_at) {
+            return redirect()->back()->with('error', 'PO sudah pernah dikirim email.');
+        }
+
+        // Simulasi kirim email atau integrasi di sini
+        // Mail::to(...)->send(...);
+
+        // Update waktu dan user pengirim
+        $purchaseOrder->sendemail_at = now();
+        $purchaseOrder->sendemail_by = session('user_id');
+        $purchaseOrder->save();
+
+        return redirect()->route('purchase-order.edit', $purchaseOrder->id)
+            ->with('success', 'Email PO berhasil dikirim.');
+    }
+
 }

@@ -43,7 +43,7 @@
                         {{ $item->sendemail_at ? \Carbon\Carbon::parse($item->sendemail_at)->translatedFormat('l, d F Y H:i') : '-' }}
                     </td>
                     <td class="px-4 py-2 space-x-2">
-                        <a href="{{ route('purchase-order.edit', $item->id) }}" class="text-blue-600 hover:underline">Edit</a>
+                        <a href="{{ route('purchase-order.edit', $item->id) }}" class="text-blue-600 hover:underline">Lihat</a>
                     </td>
                 </tr>
                 @endforeach
