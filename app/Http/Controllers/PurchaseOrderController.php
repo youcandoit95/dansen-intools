@@ -14,7 +14,9 @@ class PurchaseOrderController extends Controller
     public function index()
     {
         $data = PurchaseOrder::with('supplier')
-            ->where('cabang_id', session('cabang_id'))
+            ->when(!session('superadmin'), function ($query) {
+                $query->where('cabang_id', session('cabang_id'));
+            })
             ->latest()
             ->get();
         $activeMenu = 'purchase-order';
@@ -165,5 +167,4 @@ class PurchaseOrderController extends Controller
         return redirect()->route('purchase-order.edit', $purchaseOrder->id)
             ->with('success', 'Purchase Order berhasil diajukan.');
     }
-
 }
