@@ -1,7 +1,12 @@
+@php
+$isReadonly = isset($purchaseOrder) && $purchaseOrder->ajukan_at;
+@endphp
+
 <div class="mt-5 p-6 bg-white rounded shadow">
+    @if (!$isReadonly)
     <h2 class="text-lg font-semibold mb-4">Tambah Item Purchase Order</h2>
 
-    <form action="{{ route('purchase-order-item.store', $purchaseOrder->id) }}" method="POST" class="grid grid-cols-12 gap-4 items-end">
+    <form action="{{ route('purchase-order-item.store', $purchaseOrder->id) }}" method="POST" class="grid grid-cols-12 gap-4 items-end mb-10">
         @csrf
 
         <!-- Produk -->
@@ -49,8 +54,10 @@
         </div>
     </form>
 
+@endif
+
     <!-- Daftar Item -->
-<div class="mt-10">
+<div>
     <h3 class="text-md font-semibold mb-2">Daftar Item</h3>
     <table class="w-full table-auto border border-gray-200">
         <thead class="bg-gray-100">
@@ -59,7 +66,10 @@
                 <th class="px-3 py-2 text-left">Qty</th>
                 <th class="px-3 py-2 text-left">Harga Beli</th>
                 <th class="px-3 py-2 text-left">Subtotal</th>
-                <th class="px-3 py-2 text-left">Action</th>
+                @if (!$isReadonly)
+<th class="px-3 py-2 text-left">Action</th>
+@endif
+
             </tr>
         </thead>
         <tbody>
@@ -81,6 +91,7 @@
                     <td class="px-3 py-2">{{ $item->qty }}</td>
                     <td class="px-3 py-2">Rp {{ number_format($hargaBeli, 0, ',', '.') }}</td>
                     <td class="px-3 py-2">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+                    @if (!$isReadonly)
                     <td class="px-3 py-2">
                         <form action="{{ route('purchase-order-item.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus item ini?')">
                             @csrf
@@ -88,6 +99,7 @@
                             <button type="submit" class="text-red-600 hover:underline text-sm">Hapus</button>
                         </form>
                     </td>
+                    @endif
                 </tr>
             @endforeach
 
@@ -96,7 +108,8 @@
                 <td class="px-3 py-2 text-right" colspan="1">Total</td>
                 <td class="px-3 py-2">{{ $totalQty }}</td>
                 <td class="px-3 py-2 text-gray-500">—</td>
-                <td class="px-3 py-2" colspan="2">Rp {{ number_format($totalSubtotal, 0, ',', '.') }}</td>
+                <td class="px-3 py-2" colspan="{{ $isReadonly ? 1 : 2 }}">Rp {{ number_format($totalSubtotal, 0, ',', '.') }}</td>
+
             </tr>
         </tbody>
     </table>
