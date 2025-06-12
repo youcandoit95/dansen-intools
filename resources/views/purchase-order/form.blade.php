@@ -11,6 +11,7 @@
 <x-alert-error />
 
 @php
+$isReadonly = isset($purchaseOrder) && $purchaseOrder->ajukan_at;
 $noPo = old('no_po', $purchaseOrder->no_po ?? '');
 $tanggal = old('tanggal', $purchaseOrder->tanggal ?? date('Y-m-d'));
 $supplierSelected = old('supplier_id', $purchaseOrder->supplier_id ?? '');
@@ -56,13 +57,21 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
     <!-- Tanggal -->
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal PO <span class="text-red-500">*</span></label>
-        <input type="date" name="tanggal" class="w-full border rounded px-3 py-2" value="{{ $tanggal }}" required>
+        <input type="date"
+            name="tanggal"
+            class="w-full border rounded px-3 py-2 {{ $isReadonly ? 'bg-gray-100 cursor-not-allowed text-gray-500' : '' }}"
+            value="{{ $tanggal }}"
+            {{ $isReadonly ? 'readonly' : '' }}
+            required>
+
     </div>
 
     <!-- Supplier -->
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Supplier <span class="text-red-500">*</span></label>
-        <select name="supplier_id" class="tom-select w-full border rounded px-3 py-2" required>
+        <select name="supplier_id"
+            class="tom-select w-full border rounded px-3 py-2 {{ $isReadonly ? 'bg-gray-100 cursor-not-allowed text-gray-500 pointer-events-none' : '' }}"
+            {{ $isReadonly ? 'disabled' : '' }}>
             <option value="">-- Pilih Supplier --</option>
             @foreach($suppliers as $sup)
             <option value="{{ $sup->id }}" {{ $supplierSelected == $sup->id ? 'selected' : '' }}>{{ $sup->name }}</option>
@@ -80,15 +89,18 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
             <input type="date"
                 id="tanggal_permintaan_dikirim"
                 name="tanggal_permintaan_dikirim"
-                class="flex-1 border rounded px-3 py-2"
+                class="flex-1 border rounded px-3 py-2 {{ $isReadonly ? 'bg-gray-100 cursor-not-allowed text-gray-500' : '' }}"
                 value="{{ $tanggalPermintaan }}"
+                {{ $isReadonly ? 'readonly' : '' }}
                 required>
 
-            <button type="button"
-                id="set-tanggal-besok"
-                class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+
+            @if(!$isReadonly)
+            <button type="button" id="set-tanggal-besok" class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
                 Besok
             </button>
+            @endif
+
         </div>
     </div>
 
@@ -96,20 +108,39 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
     <!-- Catatan -->
     <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
-        <textarea name="catatan" class="w-full border rounded px-3 py-2" rows="2">{{ $catatan }}</textarea>
+        <textarea name="catatan"
+            class="w-full border rounded px-3 py-2 {{ $isReadonly ? 'bg-gray-100 cursor-not-allowed text-gray-500' : '' }}"
+            rows="2"
+            {{ $isReadonly ? 'readonly' : '' }}>{{ $catatan }}</textarea>
+
     </div>
 
-    <div>
+    @if (!$isReadonly)
+    <div class="mt-4 flex gap-2">
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             {{ isset($purchaseOrder) ? 'Update' : 'Simpan' }}
         </button>
+        @if (isset($purchaseOrder))
+        <a href="{{ route('purchase-order.ajukan', $purchaseOrder->id) }}"
+            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            onclick="return confirm('Apakah Anda yakin ingin mengajukan Purchase Order ini?')">
+            Ajukan
+        </a>
+        @endif
     </div>
+    @else
+    <div class="mb-4 px-4 py-2 bg-red-100 text-red-700 rounded border border-red-300">
+        <strong>PO sudah diajukan</strong> pada
+        {{ \Carbon\Carbon::parse($purchaseOrder->ajukan_at)->translatedFormat('l, d F Y, H:i') }}
+        oleh {{ optional($purchaseOrder->ajukanBy)->username ?? 'User tidak ditemukan' }}.
+    </div>
+    @endif
+
 </form>
 
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-
     document.getElementById('generate-no-po')?.addEventListener('click', function() {
         const cabangInitial = '{{ session("cabang_initial") ?? "XXX" }}';
         const now = new Date();

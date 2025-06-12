@@ -81,12 +81,14 @@ class PurchaseOrderController extends Controller
                 ];
             });
 
-        // Load relasi product dan productPrices sesuai supplier
-        $purchaseOrder->load(['items.product' => function ($q) use ($purchaseOrder) {
-            $q->with(['productPrices' => function ($subQuery) use ($purchaseOrder) {
-                $subQuery->where('supplier_id', $purchaseOrder->supplier_id);
-            }]);
-        }]);
+        $purchaseOrder->load([
+            'ajukanBy',
+            'items.product' => function ($q) use ($purchaseOrder) {
+                $q->with(['productPrices' => function ($subQuery) use ($purchaseOrder) {
+                    $subQuery->where('supplier_id', $purchaseOrder->supplier_id);
+                }]);
+            }
+        ]);
 
         // Hitung total qty dan subtotal berdasarkan harga productPrice dari supplier
         $totalQty = $purchaseOrder->items->sum('qty');
@@ -149,4 +151,19 @@ class PurchaseOrderController extends Controller
 
         return back()->with('success', 'Purchase Order berhasil dihapus.');
     }
+
+    public function ajukan(PurchaseOrder $purchaseOrder)
+    {
+        if ($purchaseOrder->ajukan_at) {
+            return redirect()->back()->with('error', 'Purchase Order sudah diajukan sebelumnya.');
+        }
+
+        $purchaseOrder->ajukan_at = now();
+        $purchaseOrder->ajukan_by = session('user_id');
+        $purchaseOrder->save();
+
+        return redirect()->route('purchase-order.edit', $purchaseOrder->id)
+            ->with('success', 'Purchase Order berhasil diajukan.');
+    }
+
 }

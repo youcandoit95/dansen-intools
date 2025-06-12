@@ -41,10 +41,13 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+        // Purchase Order
         Route::resource('purchase-order', PurchaseOrderController::class);
         Route::get('purchase-order/{purchase_order}/item/create', [PurchaseOrderItemController::class, 'create'])->name('purchase-order-item.create');
         Route::post('purchase-order/{purchase_order}/item', [PurchaseOrderItemController::class, 'store'])->name('purchase-order-item.store');
         Route::delete('/purchase-order-item/{id}', [PurchaseOrderItemController::class, 'destroy'])->name('purchase-order-item.destroy');
+        Route::get('/purchase-order/{purchaseOrder}/ajukan', [PurchaseOrderController::class, 'ajukan'])->name('purchase-order.ajukan');
+
 
     });
 
