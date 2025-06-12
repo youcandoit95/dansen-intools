@@ -164,6 +164,8 @@ $catatan = old('catatan', $purchaseOrder->catatan ?? '');
     });
 </script>
 
-@include('purchase-order-item.inline-form', ['purchaseOrder' => $purchaseOrder, 'products' => $products])
+@if(isset($purchaseOrder))
+    @include('purchase-order-item.inline-form', ['purchaseOrder' => $purchaseOrder, 'products' => $products])
+@endif
 
 @endsection

@@ -16,6 +16,7 @@ class PurchaseOrder extends Model
         'tanggal_permintaan_dikirim',
         'catatan',
         'ajukan_at', 'ajukan_by',
+        'sendemail_at', 'sendemail_by',
         'cabang_id',
         'created_by',
         'updated_by',
@@ -35,6 +36,11 @@ class PurchaseOrder extends Model
     public function ajukanBy()
     {
         return $this->belongsTo(User::class, 'ajukan_by');
+    }
+
+    public function sendEmailBy()
+    {
+        return $this->belongsTo(User::class, 'sendemail_by');
     }
 
 }
