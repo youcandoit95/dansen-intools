@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Middleware\CheckUserRole;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
+use App\Http\Controllers\InboundController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +61,25 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         // Batalkan
         Route::get('/purchase-order/{purchaseOrder}/batalkan', [PurchaseOrderController::class, 'batalkan'])
             ->name('purchase-order.batalkan');
+
+        /*
+        |--------------------------------------------------------------------------
+        | inbound
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('inbound')->name('inbound.')->group(function () {
+            Route::get('/', [InboundController::class, 'index'])->name('index');
+            Route::get('/create', [InboundController::class, 'create'])->name('create');
+            Route::post('/store', [InboundController::class, 'store'])->name('store');
+            Route::get('/{inbound}/edit', [InboundController::class, 'edit'])->name('edit');
+            Route::put('/{inbound}/update', [InboundController::class, 'update'])->name('update');
+            Route::get('/inbound/{inbound}/submit', [InboundController::class, 'submitInbound'])->name('inbound.submit');
+            Route::get('/api/po-detail/{id}', [App\Http\Controllers\PurchaseOrderController::class, 'getPoDetail'])->name('api.po-detail');
+
+
+        });
+
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {
