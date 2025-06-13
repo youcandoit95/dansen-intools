@@ -195,26 +195,23 @@ class PurchaseOrderController extends Controller
     }
 
     public function getPoDetail($id)
-{
-    $po = PurchaseOrder::with(['supplier', 'items.product'])->findOrFail($id);
+    {
+        $po = PurchaseOrder::with(['supplier', 'items.product'])->findOrFail($id);
 
-    return response()->json([
-        'no_po' => $po->no_po,
-        'supplier' => $po->supplier->name ?? '-',
-        'supplier_id' => $po->supplier_id,
-        'tanggal' => $po->tanggal,
-        'catatan' => $po->catatan,
-        'items' => $po->items->map(function ($item) use ($po) {
-            return [
-                'produk' => $item->product->nama ?? '-',
-                'qty' => $item->qty,
-                'harga' => optional($item->product->productPrices->where('supplier_id', $po->supplier_id)->first())->harga ?? 0,
-                'berat' => $item->total_berat ?? '',
-            ];
-        }),
-    ]);
-}
-
-
-
+        return response()->json([
+            'no_po' => $po->no_po,
+            'supplier' => $po->supplier->name ?? '-',
+            'supplier_id' => $po->supplier_id,
+            'tanggal' => $po->tanggal,
+            'catatan' => $po->catatan,
+            'items' => $po->items->map(function ($item) use ($po) {
+                return [
+                    'produk' => $item->product->nama ?? '-',
+                    'qty' => $item->qty,
+                    'harga' => optional($item->product->productPrices->where('supplier_id', $po->supplier_id)->first())->harga ?? 0,
+                    'berat' => $item->total_berat ?? '',
+                ];
+            }),
+        ]);
+    }
 }

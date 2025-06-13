@@ -74,12 +74,22 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
             Route::post('/store', [InboundController::class, 'store'])->name('store');
             Route::get('/{inbound}/edit', [InboundController::class, 'edit'])->name('edit');
             Route::put('/{inbound}/update', [InboundController::class, 'update'])->name('update');
-            Route::get('/inbound/{inbound}/submit', [InboundController::class, 'submitInbound'])->name('inbound.submit');
             Route::get('/api/po-detail/{id}', [App\Http\Controllers\PurchaseOrderController::class, 'getPoDetail'])->name('api.po-detail');
+            Route::get('/{inbound}/submit', [InboundController::class, 'submit'])->name('submit');
 
+            Route::get('/{inbound}/surat-jalan/file/{filename}', function ($inbound, $filename) {
+                $path = storage_path("app/private/inbound/{$inbound}/surat-jalan/{$filename}");
+
+                if (!\Illuminate\Support\Facades\File::exists($path)) {
+                    abort(404, 'File tidak ditemukan');
+                }
+
+                return response()->file($path);
+            })->name('surat-jalan.file');
+
+            Route::get('/{inbound}/hapus-foto/{field}', [InboundController::class, 'hapusFoto'])->name('hapus-foto');
 
         });
-
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {

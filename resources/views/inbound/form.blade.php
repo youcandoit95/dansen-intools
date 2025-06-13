@@ -21,7 +21,7 @@ $create = !isset($inbound);
         @if(isset($inbound) && !$inbound->submitted_at)
         <a href="{{ route('inbound.submit', $inbound->id) }}"
             onclick="return confirm('Apakah Anda yakin ingin mensubmit inbound ini?')"
-            class="text-green-600 hover:underline">
+            class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
             Submit
         </a>
         @endif

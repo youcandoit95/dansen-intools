@@ -31,20 +31,31 @@ class InboundController extends Controller
         $validated = $request->validate([
             'no_surat_jalan' => 'required|unique:inbounds,no_surat_jalan',
             'supplier_id' => 'required|exists:suppliers,id',
-            'foto_surat_jalan_1' => 'required|image|max:2048',
-            'foto_surat_jalan_2' => 'nullable|image|max:2048',
-            'foto_surat_jalan_3' => 'nullable|image|max:2048',
+            'foto_surat_jalan_1' => 'required|image|max:3048',
+            'foto_surat_jalan_2' => 'nullable|image|max:3048',
+            'foto_surat_jalan_3' => 'nullable|image|max:3048',
         ]);
 
-        $data = $request->only(['no_surat_jalan', 'purchase_order_id', 'supplier_id']);
-        $data['foto_surat_jalan_1'] = $request->file('foto_surat_jalan_1')->store('surat-jalan');
-        $data['foto_surat_jalan_2'] = $request->file('foto_surat_jalan_2')?->store('surat-jalan');
-        $data['foto_surat_jalan_3'] = $request->file('foto_surat_jalan_3')?->store('surat-jalan');
-        $data['created_by'] = session('user_id');;
+        // Simpan dulu tanpa foto
+        $inbound = Inbound::create([
+            'no_surat_jalan' => $request->no_surat_jalan,
+            'supplier_id' => $request->supplier_id,
+            'purchase_order_id' => $request->purchase_order_id,
+            'created_by' => session('user_id'),
+        ]);
 
-        Inbound::create($data);
+        // Lalu update file
+        foreach ([1, 2, 3] as $i) {
+            $field = "foto_surat_jalan_$i";
+            if ($request->hasFile($field)) {
+                $inbound->$field = $request->file($field)->store("inbound/{$inbound->id}/surat-jalan");
+            }
+        }
 
-        return redirect()->route('inbound.index')->with('success', 'Inbound berhasil ditambahkan.');
+        // ⬅️ SIMPAN perubahan path foto ke DB
+        $inbound->save();
+
+        return redirect()->route('inbound.edit', $inbound->id)->with('success', 'Inbound berhasil ditambahkan.');
     }
 
     public function edit(Inbound $inbound)
@@ -76,13 +87,13 @@ class InboundController extends Controller
             $field = "foto_surat_jalan_$i";
             if ($request->hasFile($field)) {
                 if ($inbound->$field) Storage::delete($inbound->$field);
-                $inbound->$field = $request->file($field)->store('surat-jalan');
+                $inbound->$field = $request->file($field)->store("inbound/{$inbound->id}/surat-jalan");
             }
         }
 
         $inbound->save();
 
-        return redirect()->route('inbound.index')->with('success', 'Inbound berhasil diperbarui.');
+        return redirect()->route('inbound.edit', $inbound->id)->with('success', 'Inbound berhasil ditambahkan.');
     }
 
     public function submitInbound(Inbound $inbound)
@@ -97,5 +108,22 @@ class InboundController extends Controller
 
         return redirect()->route('inbound.index')->with('success', 'Inbound berhasil disubmit.');
     }
+
+    public function hapusFoto(Inbound $inbound, $field)
+{
+    if (!in_array($field, ['foto_surat_jalan_1', 'foto_surat_jalan_2', 'foto_surat_jalan_3'])) {
+        abort(403, 'Field tidak valid.');
+    }
+
+    if ($inbound->$field && Storage::exists($inbound->$field)) {
+        Storage::delete($inbound->$field);
+    }
+
+    $inbound->$field = null;
+    $inbound->updated_by = session('user_id');
+    $inbound->save();
+
+    return back()->with('success', 'Foto berhasil dihapus.');
+}
 
 }

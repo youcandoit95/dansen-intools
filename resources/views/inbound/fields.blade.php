@@ -5,7 +5,7 @@
 </div>
 
 <div class="mb-4">
-    <label class="block text-sm mb-1 font-medium">No PO (Opsional)</label>
+    <label class="block text-sm mb-1 font-medium">No PO</label>
     <select name="purchase_order_id" class="w-full border rounded px-3 py-2">
         <option value="">-- Tidak Ada --</option>
         @foreach($purchaseOrders as $po)
@@ -53,14 +53,42 @@
 
 <!-- Upload Foto -->
 @for($i = 1; $i <= 3; $i++)
-    <div class="mb-4">
-    <label class="block text-sm mb-1 font-medium">Foto Surat Jalan {{ $i }} {{ $i == 1 ? '*' : '' }}</label>
-    <input type="file" name="foto_surat_jalan_{{ $i }}" class="w-full" {{ $i == 1 ? 'required' : '' }}>
-    @if (!empty($inbound->{'foto_surat_jalan_' . $i}))
-    <p class="text-sm mt-1">File lama: {{ basename($inbound->{'foto_surat_jalan_' . $i}) }}</p>
-    @endif
+    @php
+        $fotoField = 'foto_surat_jalan_' . $i;
+        $filename = $inbound->$fotoField ?? null;
+    @endphp
+
+    <div class="mb-6 border p-4 rounded bg-gray-50">
+        <label class="block text-sm font-semibold mb-2">
+            Foto Surat Jalan {{ $i }} {!! $i == 1 ? '<span class="text-red-500">*</span>' : '' !!}
+        </label>
+
+        {{-- Upload Baru --}}
+        <div class="mb-2">
+            <label class="block text-xs text-gray-600 mb-1">Upload File Baru</label>
+            <input type="file" name="foto_surat_jalan_{{ $i }}" class="w-full" {{ $i == 1 ? 'required' : '' }}>
+        </div>
+
+        {{-- File Lama --}}
+        @if (!empty($filename))
+            <div class="mt-3 border border-red-400 bg-red-50 p-3 rounded text-red-700 relative">
+                <label class="block text-xs font-medium mb-1 text-red-700">File Lama:</label>
+                <img src="{{ route('inbound.surat-jalan.file', ['inbound' => $inbound->id, 'filename' => basename($filename)]) }}"
+                     alt="Foto Surat Jalan {{ $i }}"
+                     class="rounded border cursor-pointer max-h-[200px] object-contain"
+                     onclick="openImageModal(this.src)">
+
+                <a href="{{ route('inbound.hapus-foto', ['inbound' => $inbound->id, 'field' => $fotoField]) }}"
+                   onclick="return confirm('Hapus gambar lama ini?')"
+                   class="absolute top-2 right-2 text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
+                    Hapus
+                </a>
+            </div>
+        @endif
     </div>
-    @endfor
+@endfor
+
+
 
     @section('scripts')
     <script>
@@ -77,6 +105,13 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Trigger API jika purchase_order_id sudah terisi (saat edit)
+            const purchaseOrderSelect = document.querySelector('select[name="purchase_order_id"]');
+            if (purchaseOrderSelect.value) {
+                purchaseOrderSelect.dispatchEvent(new Event('change'));
+            }
+
+
             for (let i = 1; i <= 3; i++) {
                 const input = document.querySelector(`input[name="foto_surat_jalan_${i}"]`);
                 const preview = document.createElement('img');

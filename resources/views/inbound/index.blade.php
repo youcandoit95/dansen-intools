@@ -33,7 +33,7 @@
                 <td class="px-4 py-2">{{ $inbound->supplier->name ?? '-' }}</td>
                 <td class="px-4 py-2">{{ $inbound->submitted_at ? \Carbon\Carbon::parse($inbound->submitted_at)->translatedFormat('d M Y H:i') : '-' }}</td>
                 <td class="px-4 py-2">
-                    <a href="{{ route('inbound.edit', $inbound->id) }}" class="text-blue-600 hover:underline">Edit</a>
+                    <a href="{{ route('inbound.edit', $inbound->id) }}" class="text-blue-600 hover:underline">Lihat</a>
                 </td>
             </tr>
             @endforeach
