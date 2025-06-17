@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Inbound;
 use App\Models\Supplier;
 use App\Models\PurchaseOrder;
@@ -61,11 +62,25 @@ class InboundController extends Controller
     public function edit(Inbound $inbound)
     {
         $suppliers = Supplier::orderBy('name')->get();
-        $activeMenu = 'inbound';
         $purchaseOrders = PurchaseOrder::orderBy('no_po')->get();
+        $products = Product::orderBy('nama')->get();
+        $activeMenu = 'inbound';
 
-        return view('inbound.edit', compact('inbound', 'suppliers', 'activeMenu', 'purchaseOrders'));
+        // Load stok dan relasi product
+        $inbound->load(['stok.product']);
+
+        // Sort: 1) product name ASC, 2) berat_kg DESC
+    $inbound->setRelation('stok', $inbound->stok
+        ->sortByDesc('berat_kg') // sort berat_kg dulu (terbesar ke terkecil)
+        ->sortBy(function ($stok) {
+            return $stok->product->nama ?? '';
+        })
+        ->values()
+    );
+
+        return view('inbound.edit', compact('inbound', 'suppliers', 'products', 'activeMenu', 'purchaseOrders'));
     }
+
 
     public function update(Request $request, Inbound $inbound)
     {
@@ -110,20 +125,19 @@ class InboundController extends Controller
     }
 
     public function hapusFoto(Inbound $inbound, $field)
-{
-    if (!in_array($field, ['foto_surat_jalan_1', 'foto_surat_jalan_2', 'foto_surat_jalan_3'])) {
-        abort(403, 'Field tidak valid.');
+    {
+        if (!in_array($field, ['foto_surat_jalan_1', 'foto_surat_jalan_2', 'foto_surat_jalan_3'])) {
+            abort(403, 'Field tidak valid.');
+        }
+
+        if ($inbound->$field && Storage::exists($inbound->$field)) {
+            Storage::delete($inbound->$field);
+        }
+
+        $inbound->$field = null;
+        $inbound->updated_by = session('user_id');
+        $inbound->save();
+
+        return back()->with('success', 'Foto berhasil dihapus.');
     }
-
-    if ($inbound->$field && Storage::exists($inbound->$field)) {
-        Storage::delete($inbound->$field);
-    }
-
-    $inbound->$field = null;
-    $inbound->updated_by = session('user_id');
-    $inbound->save();
-
-    return back()->with('success', 'Foto berhasil dihapus.');
-}
-
 }

@@ -74,6 +74,9 @@ php artisan make:model ProductPrice -mc
 buatkan fitur customer price lengkap dengan script php artisan , controller , migration , mini datatable , form.blade
 seperti fitur product price
 
+todo
+tambahin cabang id di table stok
+
 dengan field
 - 
 

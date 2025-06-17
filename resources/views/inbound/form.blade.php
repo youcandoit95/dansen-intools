@@ -66,42 +66,5 @@ $create = !isset($inbound);
     </div>
 
 </div>
+@include('inbound._stok_form', ['inbound' => $inbound, 'products' => $products])
 
-<!-- Modal Tambah Stok Masuk -->
-<div id="modalStokMasuk" class="fixed inset-0 z-50 bg-black bg-opacity-30 hidden items-center justify-center">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-    <h3 class="text-lg font-semibold mb-4">Tambah Stok Masuk</h3>
-
-    <form id="formStokMasuk" onsubmit="submitStokMasuk(event)">
-      <div class="mb-3">
-        <label class="block text-sm mb-1">Produk</label>
-        <select id="inputProdukId" class="w-full border px-3 py-2 rounded" required></select>
-      </div>
-      <div class="mb-3">
-        <label class="block text-sm mb-1">Kategori</label>
-        <select id="inputKategori" class="w-full border px-3 py-2 rounded" required>
-          <option value="">-- Pilih --</option>
-          <option value="1">Loaf/kg</option>
-          <option value="2">Cut/kg</option>
-          <option value="3">Pcs/pack</option>
-          <option value="99">Waste</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label class="block text-sm mb-1">Berat (kg)</label>
-        <input type="number" step="0.001" min="0" id="inputBerat" class="w-full border px-3 py-2 rounded" required>
-      </div>
-
-      <div class="mt-5 flex justify-end gap-2">
-        <button type="button" onclick="closeModalStokMasuk()" class="px-4 py-2 bg-gray-300 rounded">Batal</button>
-        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">Simpan</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const datatable = new simpleDatatables.DataTable("#stokMasukTable");
-  });
-</script>

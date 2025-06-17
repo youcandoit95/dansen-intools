@@ -98,6 +98,7 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         |--------------------------------------------------------------------------
         */
         Route::post('/stok/store', [StokController::class, 'store'])->name('stok.store');
+        Route::delete('/stok/{id}', [StokController::class, 'delete'])->name('stok.delete');
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {

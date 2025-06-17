@@ -10,18 +10,31 @@ class Stok extends Model
 
     protected $fillable = [
         'product_id',
-        'kategori',             // 1=loaf/kg, 2=cut/kg, 3=pcs/pack, 99=waste
+        'inbound_id',
+        'kategori',
         'berat_kg',
         'barcode_stok',
+        'temp',
+        'created_by',
         'destroy_at',
-        'destroy_type',         // 1=hilang, 2=rusak
+        'destroy_type',
         'destroy_by',
         'destroy_reason',
         'destroy_foto',
         'destroy_approved_at',
         'destroy_approved_by',
-        'created_by',
     ];
+
+    protected $casts = [
+        'berat_kg' => 'decimal:3',
+        'temp' => 'boolean',
+        'destroy_at' => 'datetime',
+        'destroy_approved_at' => 'datetime',
+    ];
+
+    protected $appends = ['kategori_label', 'destroy_type_label'];
+
+    public $timestamps = true;
 
     // === RELASI ===
     public function product()
@@ -49,7 +62,7 @@ class Stok extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    // === ACCESSOR TAMBAHAN (opsional) ===
+    // === ACCESSOR ===
     public function getKategoriLabelAttribute()
     {
         return match ($this->kategori) {
