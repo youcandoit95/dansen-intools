@@ -14,11 +14,11 @@ use App\Http\Controllers\CustomerPriceController;
 use App\Http\Controllers\UserController;
 use App\Exports\ProductExport;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Middleware\CheckUserRole;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\InboundController;
 use App\Http\Controllers\StokController;
+use App\Http\Controllers\CetakLabelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +99,13 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         */
         Route::post('/stok/store', [StokController::class, 'store'])->name('stok.store');
         Route::delete('/stok/{id}', [StokController::class, 'delete'])->name('stok.delete');
+
+        /*
+        |--------------------------------------------------------------------------
+        | cetak
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/cetak-label', [CetakLabelController::class, 'show'])->name('cetak.label');
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {

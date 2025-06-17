@@ -12,7 +12,7 @@
                 <select name="product_id" id="productSelect" class="w-full border px-3 py-2 rounded text-sm" required>
                     <option value="">-- Pilih Produk --</option>
                     @foreach ($products as $prod)
-                        <option value="{{ $prod->id }}">{{ $prod->nama }}</option>
+                    <option value="{{ $prod->id }}">{{ $prod->nama }}</option>
                     @endforeach
                 </select>
             </div>
@@ -30,7 +30,7 @@
             <div>
                 <label class="text-sm font-medium">Berat (kg)</label>
                 <input type="number" step="0.001" min="0" name="berat_kg"
-                       class="w-full border px-3 py-2 rounded text-sm" required>
+                    class="w-full border px-3 py-2 rounded text-sm" required>
             </div>
 
             <div>
@@ -56,30 +56,31 @@
                 </thead>
                 <tbody>
                     @foreach($inbound->stok ?? [] as $stok)
-                        <tr>
-                            <td class="px-3 py-2">{{ $stok->id ?? '-' }}</td>
-                            <td class="px-3 py-2">{{ $stok->product->nama ?? '-' }}</td>
-                            <td class="px-3 py-2">{{ $stok->kategori_label }}</td>
-                            <td class="px-3 py-2">{{ number_format($stok->berat_kg, 3) }}</td>
-                            <td class="px-3 py-2 font-mono">{{ $stok->barcode_stok }}</td>
-                            <td class="px-3 py-2 space-x-1">
-                                <a href="{{ url('/cetak-label?nama=' . urlencode($stok->product->nama) . '&barcode=' . urlencode($stok->barcode_stok)) }}"
-                                   target="_blank"
-                                   class="inline-block px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
-                                    🖨️ QR
-                                </a>
+                    <tr>
+                        <td class="px-3 py-2">{{ $stok->id ?? '-' }}</td>
+                        <td class="px-3 py-2">{{ $stok->product->nama ?? '-' }}</td>
+                        <td class="px-3 py-2">{{ $stok->kategori_label }}</td>
+                        <td class="px-3 py-2">{{ number_format($stok->berat_kg, 3) }}</td>
+                        <td class="px-3 py-2 font-mono">{{ $stok->barcode_stok }}</td>
+                        <td class="px-3 py-2 space-x-1">
+                            <a href="{{ route('cetak.label', ['nama' => $stok->product->nama, 'barcode' => $stok->barcode_stok]) }}"
+                                target="_blank"
+                                class="inline-block px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                Cetak QR
+                            </a>
 
-                                <form action="{{ route('stok.delete', $stok->id) }}" method="POST" class="inline-block"
-                                      onsubmit="return confirm('Hapus stok ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
-                                        Hapus
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+
+                            <form action="{{ route('stok.delete', $stok->id) }}" method="POST" class="inline-block"
+                                onsubmit="return confirm('Hapus stok ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
+                                    Hapus
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -108,7 +109,7 @@
 
         const table = document.querySelector("#tableStokMasuk");
 
-         if (table) {
+        if (table) {
             new simpleDatatables.DataTable(table, {
                 perPage: 15, // default jumlah baris awal
                 perPageSelect: [15, 25, 50, 100], // opsi pilihan per halaman
@@ -119,5 +120,3 @@
         }
     });
 </script>
-
-
