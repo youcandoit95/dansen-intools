@@ -27,9 +27,10 @@ public function store(Request $request)
 
     $stok = Stok::create($validated);
 
-    return redirect()
-        ->route('inbound.edit', $validated['inbound_id'])
-        ->with('success', 'Stok berhasil ditambahkan.');
+   return redirect()
+    ->to(route('inbound.edit', $validated['inbound_id']) . '#tableStokMasuk')
+    ->with('success', 'Stok berhasil ditambahkan.');
+
 }
 
 

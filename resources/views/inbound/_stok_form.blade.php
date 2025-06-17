@@ -46,6 +46,7 @@
             <table id="tableStokMasuk" class="min-w-full text-sm border border-gray-200">
                 <thead class="bg-gray-100">
                     <tr>
+                        <th class="px-3 py-2 text-left">ID</th>
                         <th class="px-3 py-2 text-left">Produk</th>
                         <th class="px-3 py-2 text-left">Kategori</th>
                         <th class="px-3 py-2 text-left">Berat (kg)</th>
@@ -56,6 +57,7 @@
                 <tbody>
                     @foreach($inbound->stok ?? [] as $stok)
                         <tr>
+                            <td class="px-3 py-2">{{ $stok->id ?? '-' }}</td>
                             <td class="px-3 py-2">{{ $stok->product->nama ?? '-' }}</td>
                             <td class="px-3 py-2">{{ $stok->kategori_label }}</td>
                             <td class="px-3 py-2">{{ number_format($stok->berat_kg, 3) }}</td>
@@ -104,7 +106,17 @@
             }
         });
 
-        new simpleDatatables.DataTable("#tableStokMasuk");
+        const table = document.querySelector("#tableStokMasuk");
+
+         if (table) {
+            new simpleDatatables.DataTable(table, {
+                perPage: 15, // default jumlah baris awal
+                perPageSelect: [15, 25, 50, 100], // opsi pilihan per halaman
+                searchable: true,
+                sortable: true,
+                fixedHeight: false
+            });
+        }
     });
 </script>
 
