@@ -18,6 +18,7 @@ use App\Http\Middleware\CheckUserRole;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\InboundController;
+use App\Http\Controllers\StokController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,6 +91,13 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
             Route::get('/{inbound}/hapus-foto/{field}', [InboundController::class, 'hapusFoto'])->name('hapus-foto');
 
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | stok
+        |--------------------------------------------------------------------------
+        */
+        Route::post('/stok/store', [StokController::class, 'store'])->name('stok.store');
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {
