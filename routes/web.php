@@ -106,6 +106,7 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         |--------------------------------------------------------------------------
         */
         Route::get('/cetak-label', [CetakLabelController::class, 'show'])->name('cetak.label');
+        Route::post('/cetak-label/update', [CetakLabelController::class, 'markAsPrinted'])->name('cetak.label.mark');
     });
 
     Route::middleware(['checkrole:superadmin'])->group(function () {

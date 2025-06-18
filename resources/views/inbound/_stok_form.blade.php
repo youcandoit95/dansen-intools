@@ -56,7 +56,7 @@
                 </thead>
                 <tbody>
                     @foreach($inbound->stok ?? [] as $stok)
-                    <tr>
+                    <tr class="{{ $stok->barcode_printed ? 'bg-green-100' : '' }}">
                         <td class="px-3 py-2">{{ $stok->id ?? '-' }}</td>
                         <td class="px-3 py-2">{{ $stok->product->nama ?? '-' }}</td>
                         <td class="px-3 py-2">{{ $stok->kategori_label }}</td>
@@ -65,6 +65,7 @@
                         <td class="px-3 py-2 space-x-1">
                             <a href="{{ route('cetak.label', ['nama' => $stok->product->nama, 'barcode' => $stok->barcode_stok]) }}"
                                 target="_blank"
+                                onclick="refreshAfterOpen(this.href)"
                                 class="inline-block px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
                                 Cetak QR
                             </a>
@@ -119,4 +120,16 @@
             });
         }
     });
+</script>
+
+
+<script>
+    function refreshAfterOpen(url) {
+        window.open(url, '_blank');
+
+        // Tunggu sedikit agar tab sempat terbuka, lalu refresh
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }
 </script>
