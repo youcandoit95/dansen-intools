@@ -102,30 +102,34 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        new TomSelect("#productSelect", {
-            create: false,
-            allowEmptyOption: true,
-            placeholder: 'Cari produk...',
-            sortField: {
-                field: "text",
-                direction: "asc"
-            }
-        });
-
-        const table = document.querySelector("#tableStokMasuk");
-
-        if (table) {
-            new simpleDatatables.DataTable(table, {
-                perPage: 15, // default jumlah baris awal
-                perPageSelect: [15, 25, 50, 100], // opsi pilihan per halaman
-                searchable: true,
-                sortable: true,
-                fixedHeight: false
-            });
+document.addEventListener("DOMContentLoaded", () => {
+    // Jika inbound belum disubmit, aktifkan TomSelect
+    @if(!isset($inbound) || !$inbound->submitted_at)
+    new TomSelect("#productSelect", {
+        create: false,
+        allowEmptyOption: true,
+        placeholder: 'Cari produk...',
+        sortField: {
+            field: "text",
+            direction: "asc"
         }
     });
+    @endif
+
+    // Inisialisasi Simple-DataTables selalu
+    const table = document.querySelector("#tableStokMasuk");
+    if (table) {
+        new simpleDatatables.DataTable(table, {
+            perPage: 15, // default baris
+            perPageSelect: [15, 25, 50, 100],
+            searchable: true,
+            sortable: true,
+            fixedHeight: false
+        });
+    }
+});
 </script>
+
 
 
 <script>

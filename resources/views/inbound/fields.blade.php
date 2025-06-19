@@ -123,37 +123,40 @@
 
 
             for (let i = 1; i <= 3; i++) {
-                const input = document.querySelector(`input[name="foto_surat_jalan_${i}"]`);
-                const preview = document.createElement('img');
-                const container = document.createElement('div');
+    const input = document.querySelector(`input[name="foto_surat_jalan_${i}"]`);
+    if (!input) continue; // <--- cegah error jika input tidak ada
 
-                preview.classList.add('rounded', 'border', 'block', 'cursor-pointer', 'mt-2');
-                preview.style.display = 'none';
-                preview.style.maxHeight = '250px';
-                preview.style.objectFit = 'contain';
+    const preview = document.createElement('img');
+    const container = document.createElement('div');
 
-                preview.addEventListener('click', function() {
-                    openImageModal(preview.src);
-                });
+    preview.classList.add('rounded', 'border', 'block', 'cursor-pointer', 'mt-2');
+    preview.style.display = 'none';
+    preview.style.maxHeight = '250px';
+    preview.style.objectFit = 'contain';
 
-                container.appendChild(preview);
-                input.parentNode.appendChild(container);
+    preview.addEventListener('click', function() {
+        openImageModal(preview.src);
+    });
 
-                input.addEventListener('change', function() {
-                    const file = this.files[0];
-                    if (file && file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            preview.src = e.target.result;
-                            preview.style.display = 'block';
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        preview.src = '';
-                        preview.style.display = 'none';
-                    }
-                });
-            }
+    container.appendChild(preview);
+    input.parentNode.appendChild(container);
+
+    input.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '';
+            preview.style.display = 'none';
+        }
+    });
+}
+
         });
     </script>
 
