@@ -8,13 +8,13 @@
     <label class="block text-sm mb-1 font-medium">No PO</label>
     <select name="purchase_order_id"
         class="w-full border rounded px-3 py-2"
-        {{ isset($inbound->id) ? 'readonly disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
+        {{ (!isset($inbound) || !$inbound->submitted_at) ? 'disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
         <option value="">-- Tidak Ada --</option>
         @foreach($purchaseOrders as $po)
-        <option value="{{ $po->id }}"
-            {{ old('purchase_order_id', $inbound->purchase_order_id ?? '') == $po->id ? 'selected' : '' }}>
-            {{ $po->no_po }}
-        </option>
+            <option value="{{ $po->id }}"
+                {{ old('purchase_order_id', $inbound->purchase_order_id ?? '') == $po->id ? 'selected' : '' }}>
+                {{ $po->no_po }}
+            </option>
         @endforeach
     </select>
 </div>
@@ -38,14 +38,14 @@
     <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full mx-4 p-4 relative">
         <div class="flex justify-between items-center mb-3">
             <h2 class="text-lg font-semibold text-gray-700">Preview Gambar</h2>
-            <button onclick="closeImageModal()"
+            <button type="button" onclick="closeImageModal()"
                 class="text-gray-600 hover:text-red-500 text-xl font-bold">&times;</button>
         </div>
         <div class="border rounded p-2 bg-gray-50">
             <img id="modalPreviewImage" src="" alt="Preview" class="w-full max-h-[70vh] object-contain rounded" />
         </div>
         <div class="mt-4 text-right">
-            <button onclick="closeImageModal()"
+            <button type="button" onclick="closeImageModal()"
                 class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 Tutup
             </button>
@@ -54,11 +54,11 @@
 </div>
 
 
-<!-- Upload Foto -->
 @for($i = 1; $i <= 3; $i++)
     @php
         $fotoField = 'foto_surat_jalan_' . $i;
         $filename = $inbound->$fotoField ?? null;
+        $isEditable = !isset($inbound) || !$inbound->submitted_at;
     @endphp
 
     <div class="mb-6 border p-4 rounded bg-gray-50">
@@ -67,11 +67,13 @@
         </label>
 
         {{-- Upload Baru --}}
+        @if($isEditable)
         <div class="mb-2">
             <label class="block text-xs text-gray-600 mb-1">Upload File Baru</label>
             <input type="file" name="foto_surat_jalan_{{ $i }}" class="w-full"
-    {{ $i == 1 && !isset($inbound) ? 'required' : '' }}>
+                {{ $i == 1 && !isset($inbound) ? 'required' : '' }}>
         </div>
+        @endif
 
         {{-- File Lama --}}
         @if (!empty($filename))
@@ -82,15 +84,18 @@
                      class="rounded border cursor-pointer max-h-[200px] object-contain"
                      onclick="openImageModal(this.src)">
 
+                @if($isEditable)
                 <a href="{{ route('inbound.hapus-foto', ['inbound' => $inbound->id, 'field' => $fotoField]) }}"
                    onclick="return confirm('Hapus gambar lama ini?')"
                    class="absolute top-2 right-2 text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
                     Hapus
                 </a>
+                @endif
             </div>
         @endif
     </div>
 @endfor
+
 
 
 

@@ -14,17 +14,20 @@ $create = !isset($inbound);
         <!-- Fields seperti sebelumnya -->
         @include('inbound.fields', ['inbound' => $inbound ?? null, 'suppliers' => $suppliers, 'purchaseOrders' => $purchaseOrders])
 
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            {{ $create ? 'Simpan' : 'Update' }}
-        </button>
+        @if (!isset($inbound) || !$inbound->submitted_at)
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        {{ $create ? 'Simpan' : 'Update' }}
+    </button>
+@endif
 
-        @if(isset($inbound) && !$inbound->submitted_at)
-        <a href="{{ route('inbound.submit', $inbound->id) }}"
-            onclick="return confirm('Apakah Anda yakin ingin mensubmit inbound ini?')"
-            class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-            Submit
-        </a>
-        @endif
+@if(isset($inbound) && !$inbound->submitted_at)
+    <a href="{{ route('inbound.submit', $inbound->id) }}"
+       onclick="return confirm('Apakah Anda yakin ingin mensubmit inbound ini?')"
+       class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+        Submit
+    </a>
+@endif
+
 
     </form>
 
