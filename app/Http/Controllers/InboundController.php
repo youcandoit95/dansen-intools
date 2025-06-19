@@ -19,13 +19,16 @@ class InboundController extends Controller
     }
 
     public function create()
-    {
-        $suppliers = Supplier::orderBy('name')->get();
-        $activeMenu = 'inbound';
-        $purchaseOrders = PurchaseOrder::orderBy('no_po')->get();
+{
+    $suppliers = Supplier::orderBy('name')->get();
+    $purchaseOrders = PurchaseOrder::orderBy('no_po')->get();
+    $products = Product::orderBy('nama')->get(); // ← wajib jika _stok_form butuh products
+    $activeMenu = 'inbound';
+    $inbound = null; // ← fix error
 
-        return view('inbound.create', compact('suppliers', 'activeMenu', 'purchaseOrders'));
-    }
+    return view('inbound.create', compact('suppliers', 'purchaseOrders', 'products', 'activeMenu', 'inbound'));
+}
+
 
     public function store(Request $request)
     {
@@ -77,8 +80,10 @@ class InboundController extends Controller
         })
         ->values()
     );
+    $isEdit = true;
+    return view('inbound.edit', compact('inbound', 'suppliers', 'products', 'purchaseOrders', 'activeMenu', 'isEdit'));
 
-        return view('inbound.edit', compact('inbound', 'suppliers', 'products', 'activeMenu', 'purchaseOrders'));
+
     }
 
 
@@ -86,7 +91,7 @@ class InboundController extends Controller
     {
         $validated = $request->validate([
             'no_surat_jalan' => 'required|unique:inbounds,no_surat_jalan,' . $inbound->id,
-            'supplier_id' => 'required|exists:suppliers,id',
+            'supplier_id' => 'exists:suppliers,id',
             'foto_surat_jalan_1' => 'nullable|image|max:2048',
             'foto_surat_jalan_2' => 'nullable|image|max:2048',
             'foto_surat_jalan_3' => 'nullable|image|max:2048',
@@ -94,7 +99,7 @@ class InboundController extends Controller
 
         $inbound->no_surat_jalan = $request->no_surat_jalan;
         $inbound->purchase_order_id = $request->purchase_order_id;
-        $inbound->supplier_id = $request->supplier_id;
+        $inbound->supplier_id = $inbound->supplier_id;
         $inbound->updated_by = session('user_id');
 
         // Update file jika diupload ulang

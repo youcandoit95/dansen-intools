@@ -5,7 +5,7 @@
         <!-- FORM KIRI -->
         <form action="{{ route('stok.store') }}" method="POST" class="bg-white p-6 rounded shadow w-full md:w-1/3 space-y-4">
             @csrf
-            <input type="hidden" name="inbound_id" value="{{ $inbound->id }}">
+            <input type="hidden" name="inbound_id" value="{{ $inbound->id ?? '' }}">
 
             <div>
                 <label class="text-sm font-medium">Produk</label>

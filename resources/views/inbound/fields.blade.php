@@ -6,7 +6,9 @@
 
 <div class="mb-4">
     <label class="block text-sm mb-1 font-medium">No PO</label>
-    <select name="purchase_order_id" class="w-full border rounded px-3 py-2">
+    <select name="purchase_order_id"
+        class="w-full border rounded px-3 py-2"
+        {{ isset($inbound->id) ? 'readonly disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
         <option value="">-- Tidak Ada --</option>
         @foreach($purchaseOrders as $po)
         <option value="{{ $po->id }}"
@@ -19,7 +21,8 @@
 
 <div class="mb-4">
     <label class="block text-sm mb-1 font-medium">Supplier <span class="text-red-500">*</span></label>
-    <select id="supplier_id" name="supplier_id" class="w-full border rounded px-3 py-2" required>
+    <select id="supplier_id" name="supplier_id" class="w-full border rounded px-3 py-2"
+    {{ isset($inbound->id) ? 'readonly disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
         <option value="">-- Pilih Supplier --</option>
         @foreach($suppliers as $sup)
         <option value="{{ $sup->id }}"
@@ -66,7 +69,8 @@
         {{-- Upload Baru --}}
         <div class="mb-2">
             <label class="block text-xs text-gray-600 mb-1">Upload File Baru</label>
-            <input type="file" name="foto_surat_jalan_{{ $i }}" class="w-full" {{ $i == 1 ? 'required' : '' }}>
+            <input type="file" name="foto_surat_jalan_{{ $i }}" class="w-full"
+    {{ $i == 1 && !isset($inbound) ? 'required' : '' }}>
         </div>
 
         {{-- File Lama --}}
