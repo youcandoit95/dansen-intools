@@ -66,6 +66,6 @@ $create = !isset($inbound);
     </div>
 
 </div>
-@if(isset($inbound) && !$inbound->submitted_at)
+@if(isset($inbound) && $inbound->submitted_at)
 @include('inbound._stok_form', ['inbound' => $inbound, 'products' => $products])
 @endif

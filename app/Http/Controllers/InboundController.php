@@ -8,6 +8,8 @@ use App\Models\Supplier;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Models\Stok;
 
 class InboundController extends Controller
 {
@@ -117,17 +119,38 @@ class InboundController extends Controller
     }
 
     public function submitInbound(Inbound $inbound)
-    {
-        if ($inbound->submitted_at) {
-            return redirect()->back()->with('error', 'Inbound sudah disubmit sebelumnya.');
-        }
+{
+    if ($inbound->submitted_at) {
+        return redirect()->back()->with('error', 'Inbound sudah disubmit sebelumnya.');
+    }
 
+    try {
+        DB::beginTransaction();
+
+        // Update inbound
         $inbound->submitted_at = now();
         $inbound->submitted_by = session('user_id');
         $inbound->save();
 
-        return redirect()->route('inbound.index')->with('success', 'Inbound berhasil disubmit.');
+        // Update semua stok terkait → set temp = true
+        $updated = Stok::where('inbound_id', $inbound->id)->update(['temp' => true]);
+
+        if ($updated === 0) {
+            // Tidak ada stok ditemukan → throw agar rollback
+            throw new \Exception('Tidak ada stok yang dapat diupdate.');
+        }
+
+        DB::commit();
+
+        return redirect()->route('inbound.edit', $inbound->id)
+                         ->with('success', 'Inbound berhasil disubmit.');
+    } catch (\Throwable $e) {
+        DB::rollBack();
+
+        return redirect()->back()
+                         ->with('error', 'Gagal submit inbound: ' . $e->getMessage());
     }
+}
 
     public function hapusFoto(Inbound $inbound, $field)
     {

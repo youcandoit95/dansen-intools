@@ -76,7 +76,7 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
             Route::get('/{inbound}/edit', [InboundController::class, 'edit'])->name('edit');
             Route::put('/{inbound}/update', [InboundController::class, 'update'])->name('update');
             Route::get('/api/po-detail/{id}', [App\Http\Controllers\PurchaseOrderController::class, 'getPoDetail'])->name('api.po-detail');
-            Route::get('/{inbound}/submit', [InboundController::class, 'submit'])->name('submit');
+            Route::get('/{inbound}/submit', [InboundController::class, 'submitInbound'])->name('submit');
 
             Route::get('/{inbound}/surat-jalan/file/{filename}', function ($inbound, $filename) {
                 $path = storage_path("app/private/inbound/{$inbound}/surat-jalan/{$filename}");
