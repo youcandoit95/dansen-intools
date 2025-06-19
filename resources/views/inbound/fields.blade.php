@@ -1,14 +1,15 @@
 <div class="mb-4">
     <label class="block text-sm mb-1 font-medium">No Surat Jalan <span class="text-red-500">*</span></label>
     <input type="text" name="no_surat_jalan" class="w-full border rounded px-3 py-2"
-        value="{{ old('no_surat_jalan', $inbound->no_surat_jalan ?? '') }}" required>
+        value="{{ old('no_surat_jalan', $inbound->no_surat_jalan ?? '') }}" required
+        {{ (!isset($inbound) || $inbound->submitted_at) ? 'disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
 </div>
 
 <div class="mb-4">
     <label class="block text-sm mb-1 font-medium">No PO</label>
     <select name="purchase_order_id"
         class="w-full border rounded px-3 py-2"
-        {{ (!isset($inbound) || !$inbound->submitted_at) ? 'disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
+        {{ (!isset($inbound) || $inbound->submitted_at) ? 'disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
         <option value="">-- Tidak Ada --</option>
         @foreach($purchaseOrders as $po)
             <option value="{{ $po->id }}"
