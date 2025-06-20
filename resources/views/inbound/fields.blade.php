@@ -7,7 +7,7 @@
 
 <div class="mb-4">
     <label class="block text-sm mb-1 font-medium">No PO</label>
-    <select name="purchase_order_id"
+    <select name="purchase_order_id" id="purchase_order_id"
         class="w-full border rounded px-3 py-2"
         {{ isset($inbound->id) ? 'readonly disabled style=background-color:#f3f4f6;pointer-events:none;' : '' }}>
         <option value="">-- Tidak Ada --</option>
@@ -234,7 +234,18 @@
                 });
         });
     </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+new TomSelect("#purchase_order_id", {
+        create: false,
+        allowEmptyOption: true,
+        placeholder: 'Cari nomor po...',
+        sortField: {
+            field: "text",
+            direction: "asc"
+        }
+    });
 
-
-
+});
+</script>
     @endsection
