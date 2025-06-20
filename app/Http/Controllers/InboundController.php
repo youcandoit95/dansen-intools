@@ -132,8 +132,8 @@ class InboundController extends Controller
         $inbound->submitted_by = session('user_id');
         $inbound->save();
 
-        // Update semua stok terkait → set temp = true
-        $updated = Stok::where('inbound_id', $inbound->id)->update(['temp' => true]);
+        // Update semua stok terkait → set temp = false = sudah masuk stok
+        $updated = Stok::where('inbound_id', $inbound->id)->update(['temp' => false]);
 
         if ($updated === 0) {
             // Tidak ada stok ditemukan → throw agar rollback

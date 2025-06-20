@@ -10,28 +10,27 @@ use Illuminate\Support\Str;
 class StokController extends Controller
 {
     // Simpan stok baru
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'product_id'    => 'required|exists:products,id',
-        'inbound_id'    => 'required|exists:inbounds,id',
-        'kategori'      => 'required|in:1,2,3,99',
-        'berat_kg'      => 'required|numeric|min:0',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id'    => 'required|exists:products,id',
+            'inbound_id'    => 'required|exists:inbounds,id',
+            'kategori'      => 'required|in:1,2,3,99',
+            'berat_kg'      => 'required|numeric|min:0',
+        ]);
 
-    $validated['created_by'] = session('user_id');
-    $validated['temp'] = $request->boolean('temp', false);
+        $validated['created_by'] = session('user_id');
+        $validated['temp'] = $request->boolean('temp', false);
 
-    // Generate barcode stok
-    $validated['barcode_stok'] = 'STK' . strtoupper(session('cabang_initial')) . now()->format('YmdHis') . rand(1, 9) . ':' . $validated['product_id'];
+        // Generate barcode stok
+        $validated['barcode_stok'] = 'STK' . strtoupper(session('cabang_initial')) . now()->format('YmdHis') . rand(1, 9) . ':' . $validated['product_id'];
 
-    $stok = Stok::create($validated);
+        $stok = Stok::create($validated);
 
-   return redirect()
-    ->to(route('inbound.edit', $validated['inbound_id']) . '#tableStokMasuk')
-    ->with('success', 'Stok berhasil ditambahkan.');
-
-}
+        return redirect()
+            ->to(route('inbound.edit', $validated['inbound_id']) . '#tableStokMasuk')
+            ->with('success', 'Stok berhasil ditambahkan.');
+    }
 
 
     // Soft destroy stok
@@ -70,29 +69,28 @@ public function store(Request $request)
         ]);
     }
 
-public function delete($id)
-{
-    $stok = Stok::with('inbound')->findOrFail($id);
+    public function delete($id)
+    {
+        $stok = Stok::with('inbound')->findOrFail($id);
 
-    // Cek apakah inbound sudah final
-    if ($stok->inbound && $stok->inbound->submitted_at !== null) {
+        // Cek apakah inbound sudah final
+        if ($stok->inbound && $stok->inbound->submitted_at !== null) {
+            return redirect()
+                ->route('inbound.edit', $stok->inbound_id)
+                ->with('error', 'Stok tidak bisa dihapus karena sudah masuk inbound final.');
+        }
+
+        // Hapus foto jika ada
+        if ($stok->destroy_foto) {
+            $fotoPath = str_replace('storage/', 'public/', $stok->destroy_foto);
+            Storage::delete($fotoPath);
+        }
+
+        $inboundId = $stok->inbound_id; // simpan sebelum hapus
+        $stok->delete();
+
         return redirect()
-            ->route('inbound.edit', $stok->inbound_id)
-            ->with('error', 'Stok tidak bisa dihapus karena sudah masuk inbound final.');
+            ->route('inbound.edit', $inboundId)
+            ->with('success', 'Stok berhasil dihapus.');
     }
-
-    // Hapus foto jika ada
-    if ($stok->destroy_foto) {
-        $fotoPath = str_replace('storage/', 'public/', $stok->destroy_foto);
-        Storage::delete($fotoPath);
-    }
-
-    $inboundId = $stok->inbound_id; // simpan sebelum hapus
-    $stok->delete();
-
-    return redirect()
-        ->route('inbound.edit', $inboundId)
-        ->with('success', 'Stok berhasil dihapus.');
-}
-
 }
