@@ -89,6 +89,8 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
             })->name('surat-jalan.file');
 
             Route::get('/{inbound}/hapus-foto/{field}', [InboundController::class, 'hapusFoto'])->name('hapus-foto');
+            Route::get('/{id}/cancel', [InboundController::class, 'cancel'])->name('cancel');
+
 
         });
 

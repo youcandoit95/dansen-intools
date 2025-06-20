@@ -168,4 +168,15 @@ class InboundController extends Controller
 
         return back()->with('success', 'Foto berhasil dihapus.');
     }
+
+    public function cancel($id)
+{
+    $inbound = \App\Models\Inbound::findOrFail($id);
+
+    // Hard delete: langsung hapus dari database
+    $inbound->delete();
+
+    return redirect()->route('inbound.index')->with('success', 'Data inbound berhasil dibatalkan dan dihapus permanen.');
+}
+
 }
