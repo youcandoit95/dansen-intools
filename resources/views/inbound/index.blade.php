@@ -21,6 +21,7 @@
                 <th class="px-4 py-2 text-left">No</th>
                 <th class="px-4 py-2 text-left">No Surat Jalan</th>
                 <th class="px-4 py-2 text-left">Supplier</th>
+                <th class="px-4 py-2 text-left">Tanggal Datang</th>
                 <th class="px-4 py-2 text-left">Tanggal Submit</th>
                 <th class="px-4 py-2 text-left">Aksi</th>
             </tr>
@@ -31,7 +32,8 @@
                 <td class="px-4 py-2">{{ $loop->iteration }}</td>
                 <td class="px-4 py-2">{{ $inbound->no_surat_jalan }}</td>
                 <td class="px-4 py-2">{{ $inbound->supplier->name ?? '-' }}</td>
-                <td class="px-4 py-2">{{ $inbound->submitted_at ? \Carbon\Carbon::parse($inbound->submitted_at)->translatedFormat('d M Y H:i') : '-' }}</td>
+                <td class="px-4 py-2">{{ $inbound->created_at ? \Carbon\Carbon::parse($inbound->created_at)->translatedFormat('l, d-F-Y H:i') : '-' }}</td>
+                <td class="px-4 py-2">{{ $inbound->submitted_at ? \Carbon\Carbon::parse($inbound->submitted_at)->translatedFormat('l, d-F-Y H:i') : '-' }}</td>
                 <td class="px-4 py-2">
                     <a href="{{ route('inbound.edit', $inbound->id) }}" class="text-blue-600 hover:underline">Lihat</a>
                 </td>
