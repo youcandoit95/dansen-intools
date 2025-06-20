@@ -11,26 +11,36 @@ class StokController extends Controller
 {
     // Simpan stok baru
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'product_id'    => 'required|exists:products,id',
-            'inbound_id'    => 'required|exists:inbounds,id',
-            'kategori'      => 'required|in:1,2,3,99',
-            'berat_kg'      => 'required|numeric|min:0',
-        ]);
+{
+    $validated = $request->validate([
+        'product_id'    => 'required|exists:products,id',
+        'inbound_id'    => 'required|exists:inbounds,id',
+        'kategori'      => 'required|in:1,2,3,99',
+        'berat_kg'      => 'required|numeric|min:0',
+    ]);
 
-        $validated['created_by'] = session('user_id');
-        $validated['temp'] = $request->boolean('temp', false);
+    $validated['created_by'] = session('user_id');
+    $validated['cabang_id'] = session('cabang_id');
+    $validated['temp'] = $request->boolean('temp', true);
 
-        // Generate barcode stok
-        $validated['barcode_stok'] = 'STK' . strtoupper(session('cabang_initial')) . now()->format('YmdHis') . rand(1, 9) . ':' . $validated['product_id'];
+    // Ambil harga dari product_prices (opsional: bisa filter supplier_id jika perlu)
+    $hargaBeli = \App\Models\ProductPrice::where('product_id', $validated['product_id'])
+        ->orderByDesc('id') // gunakan harga terakhir jika banyak
+        ->value('harga');   // ambil nilainya langsung
 
-        $stok = Stok::create($validated);
+    $validated['ss_harga_beli'] = $hargaBeli ?? 0;
+    $validated['total_harga_beli'] = round($validated['berat_kg'] * $validated['ss_harga_beli']);
 
-        return redirect()
-            ->to(route('inbound.edit', $validated['inbound_id']) . '#tableStokMasuk')
-            ->with('success', 'Stok berhasil ditambahkan.');
-    }
+    // Generate barcode stok
+    $validated['barcode_stok'] = 'STK' . strtoupper(session('cabang_initial')) . now()->format('YmdHis') . rand(1, 9) . ':' . $validated['product_id'];
+
+    $stok = Stok::create($validated);
+
+    return redirect()
+        ->to(route('inbound.edit', $validated['inbound_id']) . '#tableStokMasuk')
+        ->with('success', 'Stok berhasil ditambahkan.');
+}
+
 
 
     // Soft destroy stok

@@ -10,9 +10,12 @@ class Stok extends Model
 
     protected $fillable = [
         'product_id',
+        'cabang_id',
         'inbound_id',
         'kategori',
         'berat_kg',
+        'ss_harga_beli',
+        'total_harga_beli',
         'barcode_stok',
         'temp',
         'created_by',
@@ -60,6 +63,11 @@ class Stok extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class, 'cabang_id');
     }
 
     // === ACCESSOR ===
