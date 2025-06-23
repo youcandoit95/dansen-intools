@@ -90,4 +90,10 @@ class Stok extends Model
             default => null,
         };
     }
+
+    public function destroyer()
+{
+    return $this->belongsTo(User::class, 'destroy_by');
+}
+
 }
