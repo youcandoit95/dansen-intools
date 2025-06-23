@@ -12,7 +12,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css" rel="stylesheet">
 
 
 </head>
@@ -39,7 +39,7 @@
             <div class="text-sm text-gray-500 mb-1">Master Data</div>
             <!-- Cabang -->
             <a href="/cabang"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'cabang'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -48,7 +48,7 @@
 
             <!-- Sales Agent -->
             <a href="/sales-agent"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'sales-agent'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -57,7 +57,7 @@
 
             <!-- Supplier -->
             <a href="/suppliers"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'suppliers'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -66,7 +66,7 @@
 
             <!-- Product -->
             <a href="/products"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'products'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -75,7 +75,7 @@
 
             <!-- Product Price -->
             <a href="/product-prices"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'product-price'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -84,7 +84,7 @@
 
             <!-- default-sell-price -->
             <a href="/default-sell-price"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'product-price'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -93,7 +93,7 @@
 
             <!-- Customer -->
             <a href="/customers"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'customers'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -102,7 +102,7 @@
 
             <!-- Customer Price -->
             <a href="/customer-prices"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'customer-prices'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -111,7 +111,7 @@
 
             <!-- User -->
             <a href="/users"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'users'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -121,7 +121,7 @@
             <div class="text-sm text-gray-500 mb-1">Transaksi</div>
             <!-- Purchase Order -->
             <a href="{{ route('purchase-order.index') }}"
-            class="flex items-center gap-2 p-2 rounded ml-4
+                class="flex items-center gap-2 p-2 rounded ml-4
                     {{ ($activeMenu ?? '') === 'purchase-order'
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-700 hover:bg-gray-100' }}">
@@ -129,13 +129,13 @@
             </a>
 
             <!-- Inbound -->
-<a href="{{ route('inbound.index') }}"
-   class="flex items-center gap-2 p-2 rounded ml-4
+            <a href="{{ route('inbound.index') }}"
+                class="flex items-center gap-2 p-2 rounded ml-4
           {{ ($activeMenu ?? '') === 'inbound'
               ? 'bg-blue-600 text-white'
               : 'text-gray-700 hover:bg-gray-100' }}">
-    <i class="bi bi-truck"></i> Inbound / Surat Jalan
-</a>
+                <i class="bi bi-truck"></i> Inbound / Stok Masuk
+            </a>
 
 
             <a href="/logout" class="flex items-center gap-2 text-red-600 hover:bg-red-100 p-2 rounded mt-6">
