@@ -14,7 +14,7 @@
         @endforeach
     </select>
 
-    <select name="product_id" class="border px-2 py-1 rounded">
+    <select id="productSelect" name="product_id" class="border px-2 py-1 rounded">
         <option value="">-- Produk --</option>
         @foreach($products as $prod)
             <option value="{{ $prod->id }}" {{ request('product_id') == $prod->id ? 'selected' : '' }}>
@@ -107,6 +107,15 @@
                 fixedHeight: false
             });
         }
+        new TomSelect("#productSelect", {
+            create: false,
+            allowEmptyOption: true,
+            placeholder: 'Cari produk...',
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
     });
 </script>
 @endsection
