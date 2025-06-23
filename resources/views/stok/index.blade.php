@@ -26,14 +26,25 @@
     <input type="number" name="berat_min" step="0.001" class="border px-2 py-1 rounded" placeholder="Berat Min" value="{{ request('berat_min') }}">
     <input type="number" name="berat_max" step="0.001" class="border px-2 py-1 rounded" placeholder="Berat Max" value="{{ request('berat_max') }}">
 
-    <input type="date" name="tanggal_dari" class="border px-2 py-1 rounded" value="{{ request('tanggal_dari') }}">
-    <input type="date" name="tanggal_sampai" class="border px-2 py-1 rounded" value="{{ request('tanggal_sampai') }}">
+    <div class="flex flex-col text-sm">
+        <label for="tanggal_dari" class="mb-1">Tanggal Masuk Dari</label>
+        <input type="date" name="tanggal_dari" id="tanggal_dari" class="border px-2 py-1 rounded" value="{{ request('tanggal_dari') }}">
+    </div>
 
-    <select name="destroy_status" class="border px-2 py-1 rounded">
+    <div class="flex flex-col text-sm">
+        <label for="tanggal_sampai" class="mb-1">Tanggal Masuk Sampai</label>
+        <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="border px-2 py-1 rounded" value="{{ request('tanggal_sampai') }}">
+    </div>
+
+    <div class="flex flex-col text-sm">
+        <label for="destroy_status" class="mb-1">Status</label>
+        <select name="destroy_status" class="border px-2 py-1 rounded">
         <option value="">-- Status --</option>
-        <option value="active" {{ request('destroy_status') == 'active' ? 'selected' : '' }}>Aktif</option>
-        <option value="destroyed" {{ request('destroy_status') == 'destroyed' ? 'selected' : '' }}>Destroyed</option>
+        <option value="0" {{ request('destroy_status') == '0' ? 'selected' : '' }}>Aman</option>
+        <option value="1" {{ request('destroy_status') == '1' ? 'selected' : '' }}>Hilang</option>
+        <option value="2" {{ request('destroy_status') == '2' ? 'selected' : '' }}>Rusak</option>
     </select>
+    </div>
 
     <button type="submit" class="bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700">
         Filter

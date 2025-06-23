@@ -21,7 +21,7 @@ return new class extends Migration {
 
             // Info pemusnahan
             $table->timestamp('destroy_at')->nullable()->index();
-            $table->tinyInteger('destroy_type')->nullable()->comment('1=hilang, 2=rusak');
+            $table->tinyInteger('destroy_type')->nullable()->comment('0=aman, 1=hilang, 2=rusak');
             $table->unsignedBigInteger('destroy_by')->nullable();
             $table->text('destroy_reason')->nullable();
             $table->string('destroy_foto')->nullable();
