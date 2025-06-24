@@ -144,4 +144,21 @@ class StokController extends Controller
             ->route('inbound.edit', $inboundId)
             ->with('success', 'Stok berhasil dihapus.');
     }
+
+public function show($id)
+{
+    $stok = \App\Models\Stok::with([
+        'product',
+        'cabang',
+        'destroyer',
+        'inbound.supplier',
+        'inbound.purchaseOrder',
+        'inbound.createdBy',
+        'inbound.submittedBy'
+    ])->findOrFail($id);
+
+    return view('stok.show', compact('stok'));
+}
+
+
 }

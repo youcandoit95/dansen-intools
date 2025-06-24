@@ -85,7 +85,10 @@
                     </td>
                     <td class="px-3 py-2">{{ \Carbon\Carbon::parse($stok->created_at)->translatedFormat('l, d F Y H:i') }}</td>
                     <td class="px-3 py-2">
-                        <a href="#" class="btn btn-sm bg-blue-500 text-white px-2 py-1 rounded">Detail</a>
+                        <a href="{{ route('stok.show', $stok->id) }}"
+   class="btn btn-sm bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
+   Detail
+</a>
                     </td>
                 </tr>
             @endforeach
