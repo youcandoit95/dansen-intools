@@ -98,6 +98,47 @@
             @else
             <p class="text-gray-500 italic">Tidak memiliki Purchase Order.</p>
             @endif
+
+            @if($stok->inbound && $stok->inbound->purchaseOrder)
+
+
+            @if($stok->inbound->purchaseOrder->items && $stok->inbound->purchaseOrder->items->count())
+            <h4 class="font-semibold mt-3 mb-1">Rincian Item PO:</h4>
+            <table class="w-full text-sm border">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border px-2 py-1 text-left">Produk</th>
+                        <th class="border px-2 py-1 text-right">Qty</th>
+                        <th class="border px-2 py-1 text-right">Harga</th>
+                        <th class="border px-2 py-1 text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $total = 0; @endphp
+                    @foreach($stok->inbound->purchaseOrder->items as $item)
+                    @php
+                    $subtotal = ($item->qty ?? 0) * ($item->harga ?? 0);
+                    $total += $subtotal;
+                    @endphp
+                    <tr>
+                        <td class="border px-2 py-1">{{ $item->product->nama ?? '-' }}</td>
+                        <td class="border px-2 py-1 text-right">{{ $item->qty }}</td>
+                        <td class="border px-2 py-1 text-right">Rp {{ number_format($item->harga) }}</td>
+                        <td class="border px-2 py-1 text-right">Rp {{ number_format($subtotal) }}</td>
+                    </tr>
+                    @endforeach
+                    <tr class="font-semibold bg-gray-100">
+                        <td colspan="3" class="border px-2 py-1 text-right">Total</td>
+                        <td class="border px-2 py-1 text-right">Rp {{ number_format($total) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            @endif
+
+            @else
+            <p class="text-sm text-gray-500">Stok ini tidak memiliki Purchase Order.</p>
+            @endif
+
         </div>
     </div>
 </div>
