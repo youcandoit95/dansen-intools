@@ -103,46 +103,47 @@
 
 
             @php
-                $canSeeHarga = in_array(session('user_role'), ['manager', 'superadmin']);
+            $canSeeHarga = session('superadmin') || session('manager');
             @endphp
 
+
             @if($stok->inbound->purchaseOrder->items && $stok->inbound->purchaseOrder->items->count())
-                <h4 class="font-semibold mt-3 mb-1">Rincian Item PO:</h4>
-                <table class="w-full text-sm border">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border px-2 py-1 text-left">Produk</th>
-                            <th class="border px-2 py-1 text-right">Qty</th>
-                            @if($canSeeHarga)
-                                <th class="border px-2 py-1 text-right">Harga</th>
-                                <th class="border px-2 py-1 text-right">Subtotal</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $total = 0; @endphp
-                        @foreach($stok->inbound?->stok ?? [] as $item)
-                            @php
-                                $subtotal = $item->total_harga_beli ?? 0;
-                                $total += $subtotal;
-                            @endphp
-                            <tr>
-                                <td class="border px-2 py-1">{{ $item->product->nama ?? '-' }}</td>
-                                <td class="border px-2 py-1 text-right">{{ $item->berat_kg ?? $item->qty }}</td>
-                                @if($canSeeHarga)
-                                    <td class="border px-2 py-1 text-right">Rp {{ number_format($item->ss_harga_beli) }}</td>
-                                    <td class="border px-2 py-1 text-right">Rp {{ number_format($subtotal) }}</td>
-                                @endif
-                            </tr>
-                        @endforeach
+            <h4 class="font-semibold mt-3 mb-1">Rincian Item PO:</h4>
+            <table class="w-full text-sm border">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border px-2 py-1 text-left">Produk</th>
+                        <th class="border px-2 py-1 text-right">Qty</th>
                         @if($canSeeHarga)
-                            <tr class="font-semibold bg-gray-100">
-                                <td colspan="3" class="border px-2 py-1 text-right">Total</td>
-                                <td class="border px-2 py-1 text-right">Rp {{ number_format($total) }}</td>
-                            </tr>
+                        <th class="border px-2 py-1 text-right">Harga</th>
+                        <th class="border px-2 py-1 text-right">Subtotal</th>
                         @endif
-                    </tbody>
-                </table>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $total = 0; @endphp
+                    @foreach($stok->inbound?->stok ?? [] as $item)
+                    @php
+                    $subtotal = $item->total_harga_beli ?? 0;
+                    $total += $subtotal;
+                    @endphp
+                    <tr>
+                        <td class="border px-2 py-1">{{ $item->product->nama ?? '-' }}</td>
+                        <td class="border px-2 py-1 text-right">{{ $item->berat_kg ?? $item->qty }}</td>
+                        @if($canSeeHarga)
+                        <td class="border px-2 py-1 text-right">Rp {{ number_format($item->ss_harga_beli) }}</td>
+                        <td class="border px-2 py-1 text-right">Rp {{ number_format($subtotal) }}</td>
+                        @endif
+                    </tr>
+                    @endforeach
+                    @if($canSeeHarga)
+                    <tr class="font-semibold bg-gray-100">
+                        <td colspan="3" class="border px-2 py-1 text-right">Total</td>
+                        <td class="border px-2 py-1 text-right">Rp {{ number_format($total) }}</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
             @endif
 
 

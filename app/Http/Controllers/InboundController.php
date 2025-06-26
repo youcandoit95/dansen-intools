@@ -21,15 +21,15 @@ class InboundController extends Controller
     }
 
     public function create()
-{
-    $suppliers = Supplier::orderBy('name')->get();
-    $purchaseOrders = PurchaseOrder::orderBy('no_po')->get();
-    $products = Product::orderBy('nama')->get(); // ← wajib jika _stok_form butuh products
-    $activeMenu = 'inbound';
-    $inbound = null; // ← fix error
+    {
+        $suppliers = Supplier::orderBy('name')->get();
+        $purchaseOrders = PurchaseOrder::orderBy('no_po')->get();
+        $products = Product::orderBy('nama')->get(); // ← wajib jika _stok_form butuh products
+        $activeMenu = 'inbound';
+        $inbound = null; // ← fix error
 
-    return view('inbound.create', compact('suppliers', 'purchaseOrders', 'products', 'activeMenu', 'inbound'));
-}
+        return view('inbound.create', compact('suppliers', 'purchaseOrders', 'products', 'activeMenu', 'inbound'));
+    }
 
 
     public function store(Request $request)
@@ -75,17 +75,17 @@ class InboundController extends Controller
         $inbound->load(['stok.product']);
 
         // Sort: 1) product name ASC, 2) berat_kg DESC
-    $inbound->setRelation('stok', $inbound->stok
-        ->sortByDesc('berat_kg') // sort berat_kg dulu (terbesar ke terkecil)
-        ->sortBy(function ($stok) {
-            return $stok->product->nama ?? '';
-        })
-        ->values()
-    );
-    $isEdit = true;
-    return view('inbound.edit', compact('inbound', 'suppliers', 'products', 'purchaseOrders', 'activeMenu', 'isEdit'));
-
-
+        $inbound->setRelation(
+            'stok',
+            $inbound->stok
+                ->sortByDesc('berat_kg') // sort berat_kg dulu (terbesar ke terkecil)
+                ->sortBy(function ($stok) {
+                    return $stok->product->nama ?? '';
+                })
+                ->values()
+        );
+        $isEdit = true;
+        return view('inbound.edit', compact('inbound', 'suppliers', 'products', 'purchaseOrders', 'activeMenu', 'isEdit'));
     }
 
 
@@ -119,38 +119,38 @@ class InboundController extends Controller
     }
 
     public function submitInbound(Inbound $inbound)
-{
-    if ($inbound->submitted_at) {
-        return redirect()->back()->with('error', 'Inbound sudah disubmit sebelumnya.');
-    }
-
-    try {
-        DB::beginTransaction();
-
-        // Update inbound
-        $inbound->submitted_at = now();
-        $inbound->submitted_by = session('user_id');
-        $inbound->save();
-
-        // Update semua stok terkait → set temp = false = sudah masuk stok
-        $updated = Stok::where('inbound_id', $inbound->id)->update(['temp' => false]);
-
-        if ($updated === 0) {
-            // Tidak ada stok ditemukan → throw agar rollback
-            throw new \Exception('Tidak ada stok yang dapat diupdate.');
+    {
+        if ($inbound->submitted_at) {
+            return redirect()->back()->with('error', 'Inbound sudah disubmit sebelumnya.');
         }
 
-        DB::commit();
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('inbound.edit', $inbound->id)
-                         ->with('success', 'Inbound berhasil disubmit.');
-    } catch (\Throwable $e) {
-        DB::rollBack();
+            // Update inbound
+            $inbound->submitted_at = now();
+            $inbound->submitted_by = session('user_id');
+            $inbound->save();
 
-        return redirect()->back()
-                         ->with('error', 'Gagal submit inbound: ' . $e->getMessage());
+            // Update semua stok terkait → set temp = false = sudah masuk stok
+            $updated = Stok::where('inbound_id', $inbound->id)->update(['temp' => false]);
+
+            if ($updated === 0) {
+                // Tidak ada stok ditemukan → throw agar rollback
+                throw new \Exception('Tidak ada stok yang dapat diupdate.');
+            }
+
+            DB::commit();
+
+            return redirect()->route('inbound.edit', $inbound->id)
+                ->with('success', 'Inbound berhasil disubmit.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return redirect()->back()
+                ->with('error', 'Gagal submit inbound: ' . $e->getMessage());
+        }
     }
-}
 
     public function hapusFoto(Inbound $inbound, $field)
     {
@@ -170,13 +170,12 @@ class InboundController extends Controller
     }
 
     public function cancel($id)
-{
-    $inbound = \App\Models\Inbound::findOrFail($id);
+    {
+        $inbound = \App\Models\Inbound::findOrFail($id);
 
-    // Hard delete: langsung hapus dari database
-    $inbound->delete();
+        // Hard delete: langsung hapus dari database
+        $inbound->delete();
 
-    return redirect()->route('inbound.index')->with('success', 'Data inbound berhasil dibatalkan dan dihapus permanen.');
-}
-
+        return redirect()->route('inbound.index')->with('success', 'Data inbound berhasil dibatalkan dan dihapus permanen.');
+    }
 }
