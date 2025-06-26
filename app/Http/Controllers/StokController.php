@@ -147,13 +147,14 @@ class StokController extends Controller
 
 public function show($id)
 {
-    $stok = \App\Models\Stok::with([
+    $stok = Stok::with([
         'product',
         'cabang',
         'destroyer',
         'inbound.supplier',
         'inbound.purchaseOrder',
         'inbound.createdBy',
+        'inbound.stok',
         'inbound.submittedBy'
     ])->findOrFail($id);
 

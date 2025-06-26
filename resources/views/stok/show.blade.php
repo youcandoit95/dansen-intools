@@ -115,15 +115,15 @@
                 </thead>
                 <tbody>
                     @php $total = 0; @endphp
-                    @foreach($stok->inbound->purchaseOrder->items as $item)
+                    @foreach($stok->inbound?->stok ?? [] as $item)
                     @php
-                    $subtotal = ($item->qty ?? 0) * ($item->harga ?? 0);
+                    $subtotal = $item->total_harga_beli ?? 0;
                     $total += $subtotal;
                     @endphp
                     <tr>
                         <td class="border px-2 py-1">{{ $item->product->nama ?? '-' }}</td>
-                        <td class="border px-2 py-1 text-right">{{ $item->qty }}</td>
-                        <td class="border px-2 py-1 text-right">Rp {{ number_format($item->harga) }}</td>
+                        <td class="border px-2 py-1 text-right">{{ $item->berat_kg ?? $item->qty }}</td>
+                        <td class="border px-2 py-1 text-right">Rp {{ number_format($item->ss_harga_beli) }}</td>
                         <td class="border px-2 py-1 text-right">Rp {{ number_format($subtotal) }}</td>
                     </tr>
                     @endforeach
@@ -131,6 +131,7 @@
                         <td colspan="3" class="border px-2 py-1 text-right">Total</td>
                         <td class="border px-2 py-1 text-right">Rp {{ number_format($total) }}</td>
                     </tr>
+
                 </tbody>
             </table>
             @endif
