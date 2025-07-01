@@ -45,6 +45,50 @@
             </table>
         </div>
 
+        @if($stok->trfstok_status)
+    <div>
+
+        <h2 class="text-md font-semibold mb-2">Informasi Transfer Stok</h2>
+        <table class="w-full border text-sm">
+            <tr>
+                <td class="font-medium py-1 pr-3">Cabang Asal</td>
+                <td>: {{ $stok->trfCabangAsal->nama_cabang ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="font-medium py-1 pr-3">Cabang Tujuan</td>
+                <td>: {{ $stok->cabang->nama_cabang ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="font-medium py-1 pr-3">Kurir</td>
+                <td>: {{ $stok->trfstokKurirLabel ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="font-medium py-1 pr-3">Nama Kurir</td>
+                <td>: {{ $stok->trfstok_nama_kurir ?? '-' }}</td>
+            </tr>
+            @if($stok->trfstok_kurir != 1)
+            <tr>
+                <td class="font-medium py-1 pr-3">No Resi</td>
+                <td>: {{ $stok->trfstok_no_resi ?? '-' }}</td>
+            </tr>
+            @endif
+            <tr>
+                <td class="font-medium py-1 pr-3">Status Transfer</td>
+                <td>: {{ $stok->trfstokStatusLabel ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="font-medium py-1 pr-3">Tanggal Status</td>
+                <td>: {{ optional($stok->trfstok_status_tanggal)->translatedFormat('l, d F Y H:i') ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="font-medium py-1 pr-3">Keterangan</td>
+                <td>: {{ $stok->trfstok_keterangan ?? '-' }}</td>
+            </tr>
+        </table>
+    </div>
+@endif
+
+
         {{-- Informasi Inbound --}}
         <div>
             <h2 class="text-md font-semibold mb-2">Informasi Inbound</h2>
@@ -153,6 +197,7 @@
 
         </div>
 
+        @if($stok->cabang_id == session('cabang_id'))
         {{-- Bagian Transfer Stok --}}
         <div class="md:col-span-2 mt-6">
             <h2 class="text-lg font-semibold mb-2">Transfer Stok</h2>
@@ -222,7 +267,11 @@
                 </button>
             </form>
         </div>
-
+@else
+    <div class="md:col-span-2 mt-6 text-sm text-gray-500 italic">
+        Stok ini bukan milik cabang kamu, tidak bisa ditransfer.
+    </div>
+@endif
     </div>
 </div>
 @endsection
