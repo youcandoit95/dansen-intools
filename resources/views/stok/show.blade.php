@@ -15,14 +15,14 @@
                     <td>: {{ $stok->id }}</td>
                 </tr>
                 <tr>
-                    <td class="font-medium py-1 pr-3">Produk</td>
-                    <td>: {{ $stok->product->nama ?? '-' }}</td>
-                </tr>
-                <tr>
                     <td class="font-medium py-1 pr-3">Barcode</td>
                     <td>: <span class="font-mono">{{ $stok->barcode_stok }}</span>
                         <button onclick="navigator.clipboard.writeText('{{ $stok->barcode_stok }}')" class="text-xs bg-gray-200 rounded px-2 py-1 ml-2">Salin</button>
                     </td>
+                </tr>
+                <tr class="bg-blue-200">
+                    <td class="font-semibold py-1 pr-3 text-blue-800">Produk</td>
+                    <td>: <span class="text-blue-900">{{ $stok->product->nama ?? '-' }}</span></td>
                 </tr>
                 <tr>
                     <td class="font-medium py-1 pr-3">Berat Stok Masuk</td>
@@ -45,48 +45,51 @@
             </table>
         </div>
 
-        @if($stok->trfstok_status)
-    <div>
+        <div>
+            <h2 class="text-md font-semibold mb-2">Informasi Transfer Stok</h2>
 
-        <h2 class="text-md font-semibold mb-2">Informasi Transfer Stok</h2>
-        <table class="w-full border text-sm">
-            <tr>
-                <td class="font-medium py-1 pr-3">Cabang Asal</td>
-                <td>: {{ $stok->trfCabangAsal->nama_cabang ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="font-medium py-1 pr-3">Cabang Tujuan</td>
-                <td>: {{ $stok->cabang->nama_cabang ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="font-medium py-1 pr-3">Kurir</td>
-                <td>: {{ $stok->trfstokKurirLabel ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="font-medium py-1 pr-3">Nama Kurir</td>
-                <td>: {{ $stok->trfstok_nama_kurir ?? '-' }}</td>
-            </tr>
-            @if($stok->trfstok_kurir != 1)
-            <tr>
-                <td class="font-medium py-1 pr-3">No Resi</td>
-                <td>: {{ $stok->trfstok_no_resi ?? '-' }}</td>
-            </tr>
+            @if($stok->trfstok_status)
+            <table class="w-full border text-sm">
+                <tr>
+                    <td class="font-medium py-1 pr-3">Cabang Asal</td>
+                    <td>: {{ $stok->trfCabangAsal->nama_cabang ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="font-medium py-1 pr-3">Cabang Tujuan</td>
+                    <td>: {{ $stok->cabang->nama_cabang ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="font-medium py-1 pr-3">Kurir</td>
+                    <td>: {{ $stok->trfstokKurirLabel ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="font-medium py-1 pr-3">Nama Kurir</td>
+                    <td>: {{ $stok->trfstok_nama_kurir ?? '-' }}</td>
+                </tr>
+                @if($stok->trfstok_kurir != 1)
+                <tr>
+                    <td class="font-medium py-1 pr-3">No Resi</td>
+                    <td>: {{ $stok->trfstok_no_resi ?? '-' }}</td>
+                </tr>
+                @endif
+                <tr>
+                    <td class="font-medium py-1 pr-3">Status Transfer</td>
+                    <td>: {{ $stok->trfstokStatusLabel ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="font-medium py-1 pr-3">Tanggal Status</td>
+                    <td>: {{ optional($stok->trfstok_status_tanggal)->translatedFormat('l, d F Y H:i') ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td class="font-medium py-1 pr-3">Keterangan</td>
+                    <td>: {{ $stok->trfstok_keterangan ?? '-' }}</td>
+                </tr>
+            </table>
+            @else
+            <p class="text-sm text-gray-500 italic">Belum pernah ditransfer ke cabang lain.</p>
             @endif
-            <tr>
-                <td class="font-medium py-1 pr-3">Status Transfer</td>
-                <td>: {{ $stok->trfstokStatusLabel ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="font-medium py-1 pr-3">Tanggal Status</td>
-                <td>: {{ optional($stok->trfstok_status_tanggal)->translatedFormat('l, d F Y H:i') ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td class="font-medium py-1 pr-3">Keterangan</td>
-                <td>: {{ $stok->trfstok_keterangan ?? '-' }}</td>
-            </tr>
-        </table>
-    </div>
-@endif
+        </div>
+
 
 
         {{-- Informasi Inbound --}}
@@ -267,11 +270,11 @@
                 </button>
             </form>
         </div>
-@else
-    <div class="md:col-span-2 mt-6 text-sm text-gray-500 italic">
-        Stok ini bukan milik cabang kamu, tidak bisa ditransfer.
-    </div>
-@endif
+        @else
+        <div class="md:col-span-2 mt-6 text-sm text-gray-500 italic">
+            Stok ini bukan milik cabang kamu, tidak bisa ditransfer.
+        </div>
+        @endif
     </div>
 </div>
 @endsection
