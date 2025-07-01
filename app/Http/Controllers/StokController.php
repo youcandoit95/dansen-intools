@@ -37,7 +37,6 @@ class StokController extends Controller
         ]);
     }
 
-
     // Simpan stok baru
     public function store(Request $request)
     {
