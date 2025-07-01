@@ -12,30 +12,30 @@ use Illuminate\Support\Str;
 class StokController extends Controller
 {
     public function index(Request $request)
-{
-    $products = Product::orderBy('nama')->get();
-    $cabangs = Cabang::orderBy('nama_cabang')->get();
+    {
+        $products = Product::orderBy('nama')->get();
+        $cabangs = Cabang::orderBy('nama_cabang')->get();
 
-    $stokQuery = Stok::with(['product', 'cabang', 'destroyer'])
-        ->when($request->product_id, fn($q) => $q->where('product_id', $request->product_id))
-        ->when($request->cabang_id, fn($q) => $q->where('cabang_id', $request->cabang_id))
-        ->when($request->min_berat, fn($q) => $q->where('berat_kg', '>=', $request->min_berat))
-        ->when($request->max_berat, fn($q) => $q->where('berat_kg', '<=', $request->max_berat))
-        ->when($request->destroyed, fn($q) => $q->whereNotNull('destroy_type'))
-        ->when($request->tanggal_dari, fn($q) => $q->whereDate('created_at', '>=', $request->tanggal_dari))
-        ->when($request->tanggal_sampai, fn($q) => $q->whereDate('created_at', '<=', $request->tanggal_sampai))
-        ->orderByDesc('id');
+        $stokQuery = Stok::with(['product', 'cabang', 'destroyer'])
+            ->when($request->product_id, fn($q) => $q->where('product_id', $request->product_id))
+            ->when($request->cabang_id, fn($q) => $q->where('cabang_id', $request->cabang_id))
+            ->when($request->min_berat, fn($q) => $q->where('berat_kg', '>=', $request->min_berat))
+            ->when($request->max_berat, fn($q) => $q->where('berat_kg', '<=', $request->max_berat))
+            ->when($request->destroyed, fn($q) => $q->whereNotNull('destroy_type'))
+            ->when($request->tanggal_dari, fn($q) => $q->whereDate('created_at', '>=', $request->tanggal_dari))
+            ->when($request->tanggal_sampai, fn($q) => $q->whereDate('created_at', '<=', $request->tanggal_sampai))
+            ->orderByDesc('id');
 
-    $stok = $stokQuery->where('temp', false)->get();
+        $stok = $stokQuery->where('temp', false)->get();
 
 
-    return view('stok.index', [
-        'stoks' => $stok,
-        'products' => $products,
-        'cabangs' => $cabangs,
-        'activeMenu' => 'stok',
-    ]);
-}
+        return view('stok.index', [
+            'stoks' => $stok,
+            'products' => $products,
+            'cabangs' => $cabangs,
+            'activeMenu' => 'stok',
+        ]);
+    }
 
 
     // Simpan stok baru
@@ -145,21 +145,19 @@ class StokController extends Controller
             ->with('success', 'Stok berhasil dihapus.');
     }
 
-public function show($id)
-{
-    $stok = Stok::with([
-        'product',
-        'cabang',
-        'destroyer',
-        'inbound.supplier',
-        'inbound.purchaseOrder',
-        'inbound.createdBy',
-        'inbound.stok',
-        'inbound.submittedBy'
-    ])->findOrFail($id);
+    public function show($id)
+    {
+        $stok = Stok::with([
+            'product',
+            'cabang',
+            'destroyer',
+            'inbound.supplier',
+            'inbound.purchaseOrder',
+            'inbound.createdBy',
+            'inbound.stok',
+            'inbound.submittedBy'
+        ])->findOrFail($id);
 
-    return view('stok.show', compact('stok'));
-}
-
-
+        return view('stok.show', compact('stok'));
+    }
 }
