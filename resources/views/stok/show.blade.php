@@ -152,6 +152,88 @@
             @endif
 
         </div>
+
+        {{-- Bagian Transfer Stok --}}
+<div class="md:col-span-2 mt-6">
+    <h2 class="text-md font-semibold mb-2">Transfer Stok</h2>
+
+    <form action="{{ route('stok.transfer', $stok->id) }}" method="POST" class="space-y-4">
+        @csrf
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {{-- Pilih Cabang Tujuan --}}
+            <div>
+                <label class="block text-sm font-medium mb-1">Transfer ke Cabang</label>
+                <select name="cabang_tujuan_id" class="w-full border rounded px-3 py-2">
+                    @foreach($listCabang as $cabang)
+                        <option value="{{ $cabang->id }}">{{ $cabang->nama_cabang }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Pilih Kurir --}}
+            <div>
+                <label class="block text-sm font-medium mb-1">Kurir</label>
+                <select name="kurir" class="w-full border rounded px-3 py-2" onchange="toggleNoResiField(this.value)">
+                    <option value="1">Kurir Toko</option>
+                    <option value="2">Gojek</option>
+                    <option value="3">Grab</option>
+                    <option value="4">Lalamove</option>
+                    <option value="5">Paxel</option>
+                    <option value="6">Maxim</option>
+                </select>
+            </div>
+
+            {{-- No Resi (optional) --}}
+            <div id="noResiField" class="md:col-span-1">
+                <label class="block text-sm font-medium mb-1">No Resi (Opsional)</label>
+                <input type="text" name="no_resi" class="w-full border rounded px-3 py-2" placeholder="Masukkan nomor resi">
+            </div>
+
+            {{-- Nama Kurir --}}
+            <div>
+                <label class="block text-sm font-medium mb-1">Nama Kurir</label>
+                <input type="text" name="nama_kurir" class="w-full border rounded px-3 py-2" placeholder="Nama kurir pengantar">
+            </div>
+
+            {{-- Keterangan --}}
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-1">Keterangan</label>
+                <textarea name="keterangan" rows="3" class="w-full border rounded px-3 py-2" placeholder="Keterangan tambahan (opsional)"></textarea>
+            </div>
+
+            {{-- Status Transfer --}}
+            <div>
+                <label class="block text-sm font-medium mb-1">Status Transfer</label>
+                <select name="status_transfer" class="w-full border rounded px-3 py-2">
+                    <option value="1">Dikirim</option>
+                    <option value="2">Sampai</option>
+                    <option value="3">Batal</option>
+                </select>
+            </div>
+
+            {{-- Tanggal Status --}}
+            <div>
+                <label class="block text-sm font-medium mb-1">Tanggal Status</label>
+                <input type="datetime-local" name="status_tanggal" class="w-full border rounded px-3 py-2">
+            </div>
+        </div>
+
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+            Simpan Transfer Stok
+        </button>
+    </form>
+
+    <script>
+        function toggleNoResiField(value) {
+            const noResiField = document.getElementById('noResiField');
+            noResiField.style.display = (value == '1') ? 'none' : 'block';
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleNoResiField(document.querySelector('select[name="kurir"]').value);
+        });
+    </script>
+</div>
+
     </div>
 </div>
 @endsection
