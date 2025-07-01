@@ -26,6 +26,15 @@ class Stok extends Model
         'destroy_foto',
         'destroy_approved_at',
         'destroy_approved_by',
+
+        // Transfer stok
+        'trfstok_cabang_asal_id',
+        'trfstok_kurir',
+        'trfstok_no_resi',
+        'trfstok_nama_kurir',
+        'trfstok_keterangan',
+        'trfstok_status',
+        'trfstok_status_tanggal',
     ];
 
     protected $casts = [
@@ -33,6 +42,7 @@ class Stok extends Model
         'temp' => 'boolean',
         'destroy_at' => 'datetime',
         'destroy_approved_at' => 'datetime',
+        'trfstok_status_tanggal' => 'datetime',
     ];
 
     protected $appends = ['kategori_label', 'destroy_type_label'];
@@ -67,7 +77,17 @@ class Stok extends Model
 
     public function cabang()
     {
-        return $this->belongsTo(Cabang::class, 'cabang_id');
+        return $this->belongsTo(Cabang::class, 'cabang_id'); // tujuan
+    }
+
+    public function trfCabangAsal()
+    {
+        return $this->belongsTo(Cabang::class, 'trfstok_cabang_asal_id');
+    }
+
+    public function destroyer()
+    {
+        return $this->belongsTo(User::class, 'destroy_by');
     }
 
     // === ACCESSOR ===
@@ -91,9 +111,27 @@ class Stok extends Model
         };
     }
 
-    public function destroyer()
-{
-    return $this->belongsTo(User::class, 'destroy_by');
-}
+    // OPTIONAL: Label kurir dan status transfer
+    public function getTrfstokKurirLabelAttribute()
+    {
+        return match ($this->trfstok_kurir) {
+            1 => 'Kurir Toko',
+            2 => 'Gojek',
+            3 => 'Grab',
+            4 => 'Lalamove',
+            5 => 'Paxel',
+            6 => 'Maxim',
+            default => null,
+        };
+    }
 
+    public function getTrfstokStatusLabelAttribute()
+    {
+        return match ($this->trfstok_status) {
+            1 => 'Dikirim',
+            2 => 'Sampai',
+            3 => 'Batal',
+            default => null,
+        };
+    }
 }

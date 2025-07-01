@@ -146,6 +146,11 @@ class StokController extends Controller
 
     public function show($id)
     {
+        $listCabang = Cabang::where('id', '!=', session('cabang_id'))
+    ->orderBy('nama_cabang')
+    ->get();
+
+
         $stok = Stok::with([
             'product',
             'cabang',
@@ -157,6 +162,31 @@ class StokController extends Controller
             'inbound.submittedBy'
         ])->findOrFail($id);
 
-        return view('stok.show', compact('stok'));
+        return view('stok.show', compact('stok','listCabang'));
+    }
+
+    public function transfer(Request $request, Stok $stok)
+    {
+        $validated = $request->validate([
+            'cabang_tujuan_id' => 'required|exists:cabang,id',
+            'kurir' => 'required|in:1,2,3,4,5,6',
+            'no_resi' => 'nullable|string|max:100',
+            'nama_kurir' => 'required|string|max:100',
+            'keterangan' => 'nullable|string|max:255',
+            'status_transfer' => 'required|in:1,2,3',
+        ]);
+
+        $stok->update([
+            'trfstok_cabang_asal_id'     => $stok->cabang_id,
+            'cabang_id'                  => $validated['cabang_tujuan_id'],
+            'trfstok_kurir'              => $validated['kurir'],
+            'trfstok_no_resi'            => $validated['no_resi'],
+            'trfstok_nama_kurir'         => $validated['nama_kurir'],
+            'trfstok_keterangan'         => $validated['keterangan'],
+            'trfstok_status'             => $validated['status_transfer'],
+            'trfstok_status_tanggal'     => now(), // ⬅️ otomatis isi tanggal saat ini
+        ]);
+
+        return back()->with('success', 'Transfer stok berhasil disimpan.');
     }
 }
