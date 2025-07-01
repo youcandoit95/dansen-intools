@@ -210,9 +210,9 @@
                     <div>
                         <label class="block text-sm font-medium mb-1">Status Transfer</label>
                         <select name="status_transfer" class="w-full border rounded px-3 py-2">
-                            <option value="1">Dikirim</option>
+                            <!-- <option value="1">Dikirim</option> -->
                             <option value="2">Sampai</option>
-                            <option value="3">Batal</option>
+                            <!-- <option value="3">Batal</option> -->
                         </select>
                     </div>
                 </div>
