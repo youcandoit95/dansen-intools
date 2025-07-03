@@ -19,6 +19,7 @@ use App\Http\Controllers\PurchaseOrderItemController;
 use App\Http\Controllers\InboundController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\CetakLabelController;
+use App\Http\Controllers\CompanyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,23 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         // Batalkan
         Route::get('/purchase-order/{purchaseOrder}/batalkan', [PurchaseOrderController::class, 'batalkan'])
             ->name('purchase-order.batalkan');
+
+        /*
+        |--------------------------------------------------------------------------
+        | company
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('company')->name('company.')->group(function () {
+            Route::get('/', [CompanyController::class, 'index'])->name('index');
+            Route::get('/create', [CompanyController::class, 'create'])->name('create');
+            Route::post('/store', [CompanyController::class, 'store'])->name('store');
+            Route::get('/{company}/edit', [CompanyController::class, 'edit'])->name('edit');
+            Route::put('/{company}', [CompanyController::class, 'update'])->name('update');
+            Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
+            Route::post('/restore/{id}', [CompanyController::class, 'restore'])->name('restore');
+            Route::post('/blacklist/{id}', [CompanyController::class, 'blacklist'])->name('blacklist');
+            Route::post('/unblacklist/{id}', [CompanyController::class, 'unblacklist'])->name('unblacklist');
+        });
 
         /*
         |--------------------------------------------------------------------------

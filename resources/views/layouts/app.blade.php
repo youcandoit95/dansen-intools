@@ -91,6 +91,16 @@
                 <i class="bi bi-building"></i> Default Sell Price
             </a>
 
+            <!-- company -->
+            <a href="/company"
+                class="flex items-center gap-2 p-2 rounded ml-4
+                    {{ ($activeMenu ?? '') === 'company'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:bg-gray-100' }}">
+                <i class="bi bi-building"></i> Company
+            </a>
+
+
             <!-- Customer -->
             <a href="/customers"
                 class="flex items-center gap-2 p-2 rounded ml-4
@@ -138,12 +148,12 @@
             </a>
 
             <a href="{{ route('stok.index') }}"
-    class="flex items-center gap-2 p-2 rounded ml-4
-    {{ ($activeMenu ?? '') === 'stok'
-        ? 'bg-blue-600 text-white'
-        : 'text-gray-700 hover:bg-gray-100' }}">
-    <i class="bi bi-box"></i> Stok
-</a>
+                class="flex items-center gap-2 p-2 rounded ml-4
+            {{ ($activeMenu ?? '') === 'stok'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-700 hover:bg-gray-100' }}">
+                        <i class="bi bi-box"></i> Stok
+            </a>
 
 
 
