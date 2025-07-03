@@ -78,6 +78,7 @@
                 <th class="px-4 py-3">Nama</th>
                 <th class="px-4 py-3">Telepon</th>
                 <th class="px-4 py-3">Email</th>
+                <th class="px-4 py-3 text-center">Blacklist</th>
                 <th class="px-4 py-3 text-center">Restore</th>
             </tr>
         </thead>
@@ -87,6 +88,14 @@
                 <td class="px-4 py-2">{{ $company->nama }}</td>
                 <td class="px-4 py-2">{{ $company->telepon }}</td>
                 <td class="px-4 py-2">{{ $company->email }}</td>
+                <td class="px-4 py-2 text-center">
+                    @if ($company->blacklist)
+                        <span class="bg-red-600 text-white text-xs px-2 py-1 rounded">Ya</span><br>
+                        <small class="text-red-600 italic">{{ $company->alasan_blacklist }}</small>
+                    @else
+                        <span class="bg-gray-300 text-gray-700 text-xs px-2 py-1 rounded">Tidak</span>
+                    @endif
+                </td>
                 <td class="px-4 py-2 text-center">
                     <form action="{{ route('company.restore', $company->id) }}" method="POST"
                           onsubmit="return confirm('Pulihkan perusahaan ini?')">
@@ -101,6 +110,7 @@
         </tbody>
     </table>
 </div>
+
 @endsection
 
 @section('scripts')
