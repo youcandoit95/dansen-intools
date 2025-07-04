@@ -2,7 +2,12 @@
 @section('title', 'Daftar Invoice')
 
 @section('content')
-<h1 class="text-lg font-semibold mb-3">Daftar Invoice</h1>
+<div class="flex items-center justify-between mb-3">
+    <h1 class="text-lg font-semibold">Daftar Invoice</h1>
+    <a href="{{ route('invoice.create') }}" class="bg-green-600 text-white px-4 py-1.5 text-sm rounded hover:bg-green-700">
+        + Buat Invoice
+    </a>
+</div>
 
 <form method="GET" class="bg-white p-3 rounded shadow mb-4 grid grid-cols-1 md:grid-cols-4 gap-3 text-sm">
     <input type="text" name="inv_no" value="{{ request('inv_no') }}" class="w-full border rounded px-2 py-1.5" placeholder="No Invoice">
@@ -60,7 +65,8 @@
     <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full border rounded px-2 py-1.5">
     <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full border rounded px-2 py-1.5">
 
-    <div class="col-span-full text-right">
+    <div class="col-span-full flex justify-end gap-2">
+        <a href="{{ route('invoice.index') }}" class="px-4 py-1.5 text-sm border rounded hover:bg-gray-100">Reset</a>
         <button class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm">Filter</button>
     </div>
 </form>

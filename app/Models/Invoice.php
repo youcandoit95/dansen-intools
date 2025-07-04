@@ -7,9 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     protected $fillable = [
-        'inv_no', 'sales_agents_id', 'company_id', 'customer_id', 'invoice_transaction_date',
-        'g_total_invoice_amount', 'platform_id', 'lunas_at', 'checked_finance_at', 'cancel'
+        'inv_no',
+        'sales_agents_id',
+        'company_id',
+        'customer_id',
+        'invoice_transaction_date',
+        'g_total_invoice_amount',
+        'platform_id',
+        'lunas_at',
+        'checked_finance_at',
+        'cancel',
     ];
+
+    protected $casts = [
+        'invoice_transaction_date' => 'date',
+        'g_total_invoice_amount' => 'integer',
+        'lunas_at' => 'datetime',
+        'checked_finance_at' => 'datetime',
+        'cancel' => 'boolean',
+    ];
+
+    // ===== RELATIONSHIPS =====
 
     public function salesAgent()
     {
@@ -26,6 +44,13 @@ class Invoice extends Model
         return $this->belongsTo(Customer::class);
     }
 
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class, 'inv_id');
+    }
+
+    // ===== ACCESSORS =====
+
     public function getPlatformTextAttribute()
     {
         return match ($this->platform_id) {
@@ -36,5 +61,13 @@ class Invoice extends Model
             5 => 'Toco',
             default => 'Offline',
         };
+    }
+
+    public function getStatusTextAttribute()
+    {
+        if ($this->cancel) return 'Batal';
+        if ($this->lunas_at) return 'Lunas';
+        if ($this->checked_finance_at) return 'Checked';
+        return 'Belum Diproses';
     }
 }

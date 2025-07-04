@@ -75,4 +75,64 @@ class InvoiceController extends Controller
 
         return view('invoice.index', compact('invoices', 'salesAgents', 'companies', 'customers'));
     }
+
+    public function create()
+    {
+        return view('invoice.create', [
+            'invoice' => new Invoice(),
+            'companies' => Company::orderBy('nama')->get(),
+            'customers' => Customer::orderBy('nama')->get(),
+            'salesAgents' => SalesAgent::orderBy('nama')->get(),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'inv_no'        => 'required|unique:invoices',
+            'company_id'    => 'required|exists:companies,id',
+            'customer_id'   => 'required|exists:customers,id',
+            'sales_agents_id' => 'nullable|exists:sales_agents,id',
+            'platform_id'   => 'nullable|integer',
+            'invoice_transaction_date' => 'required|date',
+            'g_total_invoice_amount'   => 'required|numeric|min:0',
+        ]);
+
+        $invoice = Invoice::create($validated);
+
+        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil dibuat.');
+    }
+
+    public function edit(Invoice $invoice)
+    {
+        return view('invoice.edit', [
+            'invoice' => $invoice,
+            'companies' => Company::orderBy('nama')->get(),
+            'customers' => Customer::orderBy('nama')->get(),
+            'salesAgents' => SalesAgent::orderBy('nama')->get(),
+        ]);
+    }
+
+    public function update(Request $request, Invoice $invoice)
+    {
+        $validated = $request->validate([
+            'inv_no'        => 'required|unique:invoices,inv_no,' . $invoice->id,
+            'company_id'    => 'required|exists:companies,id',
+            'customer_id'   => 'required|exists:customers,id',
+            'sales_agents_id' => 'nullable|exists:sales_agents,id',
+            'platform_id'   => 'nullable|integer',
+            'invoice_transaction_date' => 'required|date',
+            'g_total_invoice_amount'   => 'required|numeric|min:0',
+        ]);
+
+        $invoice->update($validated);
+
+        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil diperbarui.');
+    }
+
+    public function show(Invoice $invoice)
+    {
+        $invoice->load(['company', 'customer', 'salesAgent', 'items.product']);
+        return view('invoice.show', compact('invoice'));
+    }
 }

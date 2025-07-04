@@ -131,6 +131,8 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         */
         Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
         Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+        Route::resource('invoice', App\Http\Controllers\InvoiceController::class);
+
 
         /*
         |--------------------------------------------------------------------------
