@@ -76,6 +76,9 @@ class InvoiceController extends Controller
         return view('invoice.index', compact('invoices', 'salesAgents', 'companies', 'customers'));
     }
 
+
+
+
     public function create()
     {
         return view('invoice.create', [
@@ -89,7 +92,6 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'inv_no'        => 'required|unique:invoices',
             'company_id'    => 'required|exists:companies,id',
             'customer_id'   => 'required|exists:customers,id',
             'sales_agents_id' => 'nullable|exists:sales_agents,id',
@@ -98,6 +100,7 @@ class InvoiceController extends Controller
         ]);
 
         // Default total 0, dihitung dari item nanti
+         $validated['inv_no'] = Invoice::generateInvoiceNumber();
         $validated['g_total_invoice_amount'] = 0;
         $validated['created_by'] = session('user_id');
 

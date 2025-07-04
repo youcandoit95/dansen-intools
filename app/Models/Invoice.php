@@ -71,4 +71,12 @@ class Invoice extends Model
         if ($this->checked_finance_at) return 'Checked';
         return 'Belum Diproses';
     }
+
+    public static function generateInvoiceNumber(): string
+    {
+        $initial = strtoupper(session('cabang_initial', 'XXX')); // fallback jika tidak ada
+        $timestamp = now()->format('YmdHis');
+
+        return 'INV' . $initial . $timestamp;
+    }
 }

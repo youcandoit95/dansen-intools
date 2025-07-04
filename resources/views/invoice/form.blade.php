@@ -1,10 +1,4 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-    <div>
-        <label class="block mb-1">Nomor Invoice</label>
-        <input type="text" name="inv_no" value="{{ old('inv_no', $invoice->inv_no) }}"
-            class="w-full border rounded px-3 py-2 @error('inv_no') border-red-500 @enderror">
-        @error('inv_no') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-    </div>
 
     <div>
         <label class="block mb-1">Tanggal Transaksi</label>
