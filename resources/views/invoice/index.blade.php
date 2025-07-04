@@ -5,33 +5,33 @@
 <h1 class="text-xl font-semibold mb-4">Daftar Invoice</h1>
 
 <form method="GET" class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-    <input type="text" name="inv_no" value="{{ request('inv_no') }}" class="form-input" placeholder="Nomor Invoice">
+    <input type="text" name="inv_no" value="{{ request('inv_no') }}" class="w-full border rounded px-3 py-2" placeholder="Nomor Invoice">
 
-    <select name="sales_agents_id" class="form-select tomselect">
+    <select name="sales_agents_id" class="tomselect w-full border rounded px-3 py-2">
         <option value="">Pilih Sales Agent</option>
         @foreach ($salesAgents as $agent)
             <option value="{{ $agent->id }}" @selected(request('sales_agents_id') == $agent->id)>{{ $agent->name }}</option>
         @endforeach
     </select>
 
-    <select name="company_id" class="form-select tomselect">
+    <select name="company_id" class="tomselect w-full border rounded px-3 py-2">
         <option value="">Pilih Perusahaan</option>
         @foreach ($companies as $company)
             <option value="{{ $company->id }}" @selected(request('company_id') == $company->id)>{{ $company->name }}</option>
         @endforeach
     </select>
 
-    <select name="customer_id" class="form-select tomselect">
+    <select name="customer_id" class="tomselect w-full border rounded px-3 py-2">
         <option value="">Pilih Customer</option>
         @foreach ($customers as $customer)
             <option value="{{ $customer->id }}" @selected(request('customer_id') == $customer->id)>{{ $customer->name }}</option>
         @endforeach
     </select>
 
-    <input type="number" name="min_amount" placeholder="Min Total Invoice" value="{{ request('min_amount') }}" class="form-input">
-    <input type="number" name="max_amount" placeholder="Max Total Invoice" value="{{ request('max_amount') }}" class="form-input">
+    <input type="number" name="min_amount" placeholder="Min Total Invoice" value="{{ request('min_amount') }}" class="w-full border rounded px-3 py-2">
+    <input type="number" name="max_amount" placeholder="Max Total Invoice" value="{{ request('max_amount') }}" class="w-full border rounded px-3 py-2">
 
-    <select name="platform_id" class="form-select tomselect">
+    <select name="platform_id" class="tomselect w-full border rounded px-3 py-2">
         <option value="">Pilih Platform</option>
         <option value="1" @selected(request('platform_id') == '1')>Tokopedia</option>
         <option value="2" @selected(request('platform_id') == '2')>TiktokShop</option>
@@ -41,28 +41,26 @@
         <option value="0" @selected(request('platform_id') === '0')>Offline</option>
     </select>
 
-    <select name="lunas" class="form-select">
+    <select name="lunas" class="w-full border rounded px-3 py-2">
         <option value="">Status Lunas</option>
         <option value="1" @selected(request('lunas') == '1')>Lunas</option>
         <option value="0" @selected(request('lunas') === '0')>Belum</option>
     </select>
 
-    <select name="checked" class="form-select">
+    <select name="checked" class="w-full border rounded px-3 py-2">
         <option value="">Checked Finance</option>
         <option value="1" @selected(request('checked') == '1')>Sudah</option>
         <option value="0" @selected(request('checked') === '0')>Belum</option>
     </select>
 
-    <select name="cancel" class="form-select">
+    <select name="cancel" class="w-full border rounded px-3 py-2">
         <option value="">Status Batal</option>
         <option value="1" @selected(request('cancel') == '1')>Batal</option>
         <option value="0" @selected(request('cancel') === '0')>Aktif</option>
     </select>
 
-    <div class="flex gap-2">
-        <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-input w-full">
-        <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-input w-full">
-    </div>
+    <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full border rounded px-3 py-2">
+    <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full border rounded px-3 py-2">
 
     <div class="col-span-full text-right">
         <button class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
@@ -70,7 +68,7 @@
 </form>
 
 <div class="bg-white shadow rounded overflow-x-auto">
-    <table class="min-w-full text-sm divide-y divide-gray-200">
+    <table id="invoiceTable" class="min-w-full text-sm divide-y divide-gray-200">
         <thead class="bg-gray-100 text-left">
             <tr>
                 <th class="px-4 py-2">ID</th>
@@ -87,7 +85,7 @@
                 <tr class="border-t">
                     <td class="px-4 py-2">{{ $inv->id }}</td>
                     <td class="px-4 py-2">{{ $inv->inv_no }}</td>
-                    <td class="px-4 py-2">{{ $inv->platform_text }}</td>
+                    <td class="px-4 py-2">{{ $inv->platform_text ?? 'Offline' }}</td>
                     <td class="px-4 py-2">
                         <div class="font-semibold">{{ $inv->company?->name ?? '-' }}</div>
                         <div>{{ $inv->customer->name ?? '-' }}</div>
@@ -120,7 +118,35 @@
 @endsection
 
 @section('scripts')
+<!-- CDN TomSelect & SimpleDatatables -->
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
+
 <script>
-    new TomSelect(".tomselect");
+    document.addEventListener("DOMContentLoaded", function () {
+        // Inisialisasi semua .tomselect
+        document.querySelectorAll('.tomselect').forEach(el => {
+            new TomSelect(el, {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
+            });
+        });
+
+        // Inisialisasi MiniDataTable
+        if (window.simpleDatatables) {
+            new simpleDatatables.DataTable("#invoiceTable", {
+                perPage: 10,
+                labels: {
+                    placeholder: "Cari...",
+                    perPage: "Data per halaman",
+                    noRows: "Tidak ada data",
+                    info: "Menampilkan {start} - {end} dari {rows} data",
+                }
+            });
+        }
+    });
 </script>
 @endsection

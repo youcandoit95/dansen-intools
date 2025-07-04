@@ -69,9 +69,9 @@ class InvoiceController extends Controller
         }
 
         $invoices = $query->latest()->paginate(50);
-        $salesAgents = SalesAgent::orderBy('name')->get();
-        $companies = Company::orderBy('name')->get();
-        $customers = Customer::orderBy('name')->get();
+        $salesAgents = SalesAgent::orderBy('nama')->get();
+        $companies = Company::orderBy('nama')->get();
+        $customers = Customer::orderBy('nama')->get();
 
         return view('invoice.index', compact('invoices', 'salesAgents', 'companies', 'customers'));
     }
