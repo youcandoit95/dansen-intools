@@ -20,6 +20,7 @@ use App\Http\Controllers\InboundController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\CetakLabelController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -122,6 +123,14 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         Route::get('/stok', [StokController::class, 'index'])->name('stok.index');
         Route::get('/stok/{id}', [StokController::class, 'show'])->name('stok.show');
         Route::post('/stok/{stok}/transfer', [StokController::class, 'transfer'])->name('stok.transfer');
+
+        /*
+        |--------------------------------------------------------------------------
+        | invoice
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+        Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
 
         /*
         |--------------------------------------------------------------------------
