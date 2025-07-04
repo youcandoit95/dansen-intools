@@ -16,6 +16,7 @@ class Invoice extends Model
         'platform_id',
         'lunas_at',
         'checked_finance_at',
+        'created_by',
         'cancel',
     ];
 
