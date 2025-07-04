@@ -87,21 +87,25 @@ class InvoiceController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'inv_no'        => 'required|unique:invoices',
-            'company_id'    => 'required|exists:companies,id',
-            'customer_id'   => 'required|exists:customers,id',
-            'sales_agents_id' => 'nullable|exists:sales_agents,id',
-            'platform_id'   => 'nullable|integer',
-            'invoice_transaction_date' => 'required|date',
-            'g_total_invoice_amount'   => 'required|numeric|min:0',
-        ]);
+{
+    $validated = $request->validate([
+        'inv_no'        => 'required|unique:invoices',
+        'company_id'    => 'required|exists:companies,id',
+        'customer_id'   => 'required|exists:customers,id',
+        'sales_agents_id' => 'nullable|exists:sales_agents,id',
+        'platform_id'   => 'nullable|integer',
+        'invoice_transaction_date' => 'required|date',
+    ]);
 
-        $invoice = Invoice::create($validated);
+    // Default total 0, dihitung dari item nanti
+    $validated['g_total_invoice_amount'] = 0;
 
-        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil dibuat.');
-    }
+    $invoice = Invoice::create($validated);
+
+    return redirect()->route('invoice.produk', $invoice->id)
+                     ->with('success', 'Invoice berhasil dibuat. Silakan tambahkan produk.');
+}
+
 
     public function edit(Invoice $invoice)
     {

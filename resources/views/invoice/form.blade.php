@@ -52,9 +52,23 @@
     </div>
 
     <div>
-        <label class="block mb-1">Total Invoice (Rp)</label>
-        <input type="number" name="g_total_invoice_amount" value="{{ old('g_total_invoice_amount', $invoice->g_total_invoice_amount) }}"
-            class="w-full border rounded px-3 py-2 @error('g_total_invoice_amount') border-red-500 @enderror">
-        @error('g_total_invoice_amount') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+        <label class="block mb-1">Platform</label>
+        <select name="platform_id" class="tomselect w-full border rounded px-3 py-2">
+            <option value="">Offline</option>
+            <option value="1" @selected(old('platform_id', $invoice->platform_id) == '1')>Tokopedia</option>
+            <option value="2" @selected(old('platform_id', $invoice->platform_id) == '2')>TiktokShop</option>
+            <option value="3" @selected(old('platform_id', $invoice->platform_id) == '3')>Shopee</option>
+            <option value="4" @selected(old('platform_id', $invoice->platform_id) == '4')>Blibli</option>
+            <option value="5" @selected(old('platform_id', $invoice->platform_id) == '5')>Toco</option>
+        </select>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".tomselect").forEach(el => {
+            new TomSelect(el, { create: false });
+        });
+    });
+</script>

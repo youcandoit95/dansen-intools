@@ -129,9 +129,17 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         | invoice
         |--------------------------------------------------------------------------
         */
-        Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
-        Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
-        Route::resource('invoice', App\Http\Controllers\InvoiceController::class);
+        Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+Route::get('invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
+Route::post('invoice', [InvoiceController::class, 'store'])->name('invoice.store');
+
+Route::get('invoice/{invoice}', [InvoiceController::class, 'show'])->name('invoice.show');
+Route::get('invoice/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoice.edit');
+Route::put('invoice/{invoice}', [InvoiceController::class, 'update'])->name('invoice.update');
+
+// Tambah produk satuan setelah invoice dibuat
+Route::get('invoice/{invoice}/produk', [InvoiceController::class, 'produk'])->name('invoice.produk');
+Route::post('invoice/{invoice}/produk', [InvoiceController::class, 'tambahProduk'])->name('invoice.produk.store');
 
 
         /*

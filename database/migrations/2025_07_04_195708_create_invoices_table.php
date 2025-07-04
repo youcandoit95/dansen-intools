@@ -18,24 +18,24 @@ return new class extends Migration
             $table->foreignId('company_id')->nullable()->constrained('companies');
             $table->foreignId('customer_id')->constrained('customers');
 
-            $table->bigInteger('g_total_purchase_price');
-            $table->integer('g_total_qty')->index();
-            $table->bigInteger('g_total_sell_price')->index();
-            $table->bigInteger('g_total_komisi_sales')->index();
+            $table->bigInteger('g_total_purchase_price')->nullable();
+            $table->integer('g_total_qty')->nullable()->index();
+            $table->bigInteger('g_total_sell_price')->nullable()->index();
+            $table->bigInteger('g_total_komisi_sales')->nullable()->index();
 
-            $table->integer('discount_pcnt')->default(0);
-            $table->bigInteger('discount_amount')->default(0)->index();
+            $table->integer('discount_pcnt')->nullable();
+            $table->bigInteger('discount_amount')->nullable()->index();
 
-            $table->bigInteger('g_total_profit_gross');
-            $table->bigInteger('packaging_fee')->default(0);
-            $table->bigInteger('additional_fee')->default(0);
+            $table->bigInteger('g_total_profit_gross')->nullable();
+            $table->bigInteger('packaging_fee')->nullable();
+            $table->bigInteger('additional_fee')->nullable();
             $table->text('additional_fee_note')->nullable();
 
-            $table->bigInteger('g_total_invoice_amount')->index();
+            $table->bigInteger('g_total_invoice_amount')->nullable()->index();
             $table->text('note')->nullable();
 
             $table->tinyInteger('platform_id')->nullable()->index()->comment('1=Tokopedia, 2=TiktokShop, 3=Shopee, 4=Blibli, 5=Toco');
-            $table->bigInteger('platform_paid_amount')->default(0);
+            $table->bigInteger('platform_paid_amount')->nullable();
 
             $table->timestamp('lunas_at')->nullable()->index();
             $table->foreignId('lunas_by')->nullable()->constrained('users');
