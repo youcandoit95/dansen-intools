@@ -90,7 +90,8 @@ additional_fee
 additional_fee_note
 g_total_invoice_amount index
 note
-platform_id // 1=tokopedia 2=shopee 3=blibli 4=toco 
+platform_id nullable index // 1=tokopedia 2=tiktokshop 3=shopee 4=blibli 5=toco
+platform_paid_amount
 lunas_at nullable index
 lunas_by fk user_id
 checked_finance_at nullable index
@@ -131,3 +132,26 @@ created_at
 created_by fk user id
 
 indexnya terpisah
+
+--
+
+buatkan controller model dan view blade nya
+
+index blade dulu 
+ada fitur filter berdasarkan 
+
+inv no 
+sales agent gunakan tomselect
+company gunakan tomselect
+customer gunakan tomselect
+invoice amount range
+platform gunakan tomselect
+lunas true false
+checked finance true false
+cancel true false
+periode tanggal (dari invoice_transaction_date)
+
+
+
+dan yang di tampilkan di minidatatable 
+id, inv no, platform jika null maka teks offline, customer (tampilkan company name , customer name , customer address), total invoice (g_total_invoice_amount), status (lunas , checked , cancel), action (lihat)
