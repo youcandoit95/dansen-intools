@@ -71,64 +71,63 @@ chmod -R 775 storage bootstrap/cache
 
 php artisan make:model ProductPrice -mc
 
-buatkan fitur customer price lengkap dengan script php artisan , controller , migration , mini datatable , form.blade
-seperti fitur product price
+buatkan migration table invoice
 
-todo
-tambahin cabang id di table stok
+id
+inv_no unique
+sales_agents_id fk
+company id nullable fk
+customer id fk
+g_total_purchase_price
+g_total_qty index
+g_total_sell_price index
+g_total_komisi_sales index
+discount_pcnt
+discount_amount index
+g_total_profit_gross
+packaging_fee
+additional_fee
+additional_fee_note
+g_total_invoice_amount index
+note
+platform_id // 1=tokopedia 2=shopee 3=blibli 4=toco 
+lunas_at nullable index
+lunas_by fk user_id
+checked_finance_at nullable index
+checked_finance_by fk user_id
+cancel true false index
+cancel_reason
+komisi_paid_at nullable index
+komisi_paid_by fk user
+komisi_paid_proof_doc
+timestamp index
+created_by fk user id
+updated_by fk user id
+cancel_by fk user id
 
-dengan field
-- 
+dan buatkan juga migration table invoice_item
+id
+inv_id fk
+default_sell_price id fk
+ss_online_sell_price
+ss_offline_sell_price
+ss_reseller_sell_price
+ss_resto_sell_price
+ss_bottom_sell_price
+product_id fk
+stok_id nullable fk
+purchase_price
+customer_price_id fk
+sell_price
+ss_komisi_sales
+profit_gross
+qty
+total_purchase_price
+total_sell_price
+total_komisi_sales
+total_profit_gross
+note
+created_at 
+created_by fk user id
 
-
- Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('barcode')->unique();
-            $table->tinyInteger('kategori'); // 1 = loaf/kg, 2 = cut/kg, 3 = pcs/pack
-            $table->tinyInteger('brand');
-            $table->string('nama')->index();
-            $table->text('deskripsi')->nullable();
-            $table->boolean('status')->default(true); // true = aktif
-            $table->timestamps();
-            $table->softDeletes()->index();
-
-            $table->index('created_at');
-            $table->index('updated_at');
-        });
-
-buatkan seed produk untuk tabel ini dengan kategori = 1 dan brand =1
-list nama produk
-Tenderloin
-Striploin
-Rib Eye
-Knuckle
-Rump
-Top Sirloin / Picanha Loaf
-Rump Eye
-Rump Roast
-Topside
-F/H Shin Shank
-Flank Steak
-Chuck
-Chuck Tender
-PE Brisket
-NE Brisket
-Oyster Blade
-Inside Skirt
-Outside Skirt
-Spare Rib Slice
-Bone Marrow u Shape
-Neck bone Slice
-Short rib 7 ribs
-Casazuki Ribs
-Oxtail
-Oxtail Slice
-Bolar Blade
-Tongue
-Silverside
-Chuckroll
-Tritip
-Chuck Flap
-Flap Meat
-Short rib Meat
-Back rib
+indexnya terpisah
