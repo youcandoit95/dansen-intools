@@ -98,7 +98,7 @@ class InvoiceController extends Controller
         ]);
 
         // Default total 0, dihitung dari item nanti
-         $validated['inv_no'] = Invoice::generateInvoiceNumber();
+        $validated['inv_no'] = Invoice::generateInvoiceNumber();
         $validated['g_total_invoice_amount'] = 0;
         $validated['created_by'] = session('user_id');
 
@@ -109,15 +109,20 @@ class InvoiceController extends Controller
     }
 
     public function edit(Invoice $invoice)
-{
-    return view('invoice.edit', [
-        'invoice'     => $invoice,
-        'companies'   => Company::orderBy('nama')->get(),
-        'customers'   => Customer::orderBy('nama')->get(),
-        'salesAgents' => SalesAgent::orderBy('nama')->get(),
-        'products'    => Product::where('status', 1)->orderBy('nama')->get(), // hanya status aktif dan tidak terhapus
-    ]);
-}
+    {
+        return view('invoice.edit', [
+            'invoice'     => $invoice,
+            'companies'   => Company::orderBy('nama')->get(),
+            'customers' => Customer::with('salesAgent:id,nama')
+    ->select('id', 'nama', 'sales_agent_id')
+    ->where('is_blacklisted', false)
+    ->orderBy('nama')
+    ->get(),
+
+            'salesAgents' => SalesAgent::orderBy('nama')->get(),
+            'products'    => Product::where('status', 1)->orderBy('nama')->get(), // hanya status aktif dan tidak terhapus
+        ]);
+    }
 
 
     public function update(Request $request, Invoice $invoice)

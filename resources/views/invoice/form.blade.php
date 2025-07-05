@@ -22,10 +22,13 @@
 
     <div>
         <label class="block mb-1">Customer</label>
-        <select name="customer_id" class="tomselect w-full border rounded px-3 py-2 @error('customer_id') border-red-500 @enderror">
+        <select name="customer_id" id="customerSelect"
+            class="tomselect w-full border rounded px-3 py-2 @error('customer_id') border-red-500 @enderror">
             <option value="">Pilih Customer</option>
             @foreach($customers as $customer)
-                <option value="{{ $customer->id }}" @selected(old('customer_id', $invoice->customer_id) == $customer->id)>
+                <option value="{{ $customer->id }}"
+                    data-agent-name="{{ $customer->salesAgent->nama ?? '' }}"
+                    @selected(old('customer_id', $invoice->customer_id) == $customer->id)>
                     {{ $customer->nama }}
                 </option>
             @endforeach
@@ -35,15 +38,11 @@
 
     <div>
         <label class="block mb-1">Sales Agent</label>
-        <select name="sales_agents_id" class="tomselect w-full border rounded px-3 py-2">
-            <option value="">Pilih Sales Agent</option>
-            @foreach($salesAgents as $agent)
-                <option value="{{ $agent->id }}" @selected(old('sales_agents_id', $invoice->sales_agents_id) == $agent->id)>
-                    {{ $agent->nama }}
-                </option>
-            @endforeach
-        </select>
+        <input type="text" name="sales_agents_name" id="salesAgentName"
+            value="{{ old('sales_agents_name', optional($invoice->customer->salesAgent)->nama) }}"
+            class="w-full border rounded px-3 py-2 bg-gray-100" readonly>
     </div>
+
 
     <div>
         <label class="block mb-1">Platform</label>
@@ -66,3 +65,20 @@
         });
     });
 </script>
+
+@section('scripts')
+@parent
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const customerSelect = document.getElementById('customerSelect');
+        const salesAgentInput = document.getElementById('salesAgentName');
+
+        customerSelect.addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const agentName = selectedOption.getAttribute('data-agent-name') || '';
+            salesAgentInput.value = agentName;
+        });
+    });
+</script>
+@endsection
