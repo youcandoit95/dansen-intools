@@ -2,7 +2,12 @@
 @section('title', 'Detail Invoice')
 
 @section('content')
-<h1 class="text-lg font-semibold mb-4">Detail Invoice #{{ $invoice->inv_no }}</h1>
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-lg font-semibold">Detail Invoice #{{ $invoice->inv_no }}</h1>
+    <a href="{{ route('invoice.edit', $invoice->id) }}" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">
+        Edit Invoice
+    </a>
+</div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
     <div class="bg-white p-4 rounded shadow">
@@ -18,17 +23,26 @@
     <div class="bg-white p-4 rounded shadow">
         <h2 class="font-semibold mb-2">Ringkasan</h2>
         <p><strong>Total Invoice:</strong> Rp {{ number_format($invoice->g_total_invoice_amount, 0, ',', '.') }}</p>
-        <p><strong>Status:</strong>
-            @if ($invoice->cancel)
-                <span class="text-red-600 font-semibold">Batal</span>
-            @elseif ($invoice->lunas_at)
-                <span class="text-green-600 font-semibold">Lunas</span>
-            @elseif ($invoice->checked_finance_at)
-                <span class="text-yellow-600 font-semibold">Checked</span>
-            @else
-                <span class="text-gray-600">Belum Diproses</span>
-            @endif
-        </p>
+
+        <p><strong>Status:</strong></p>
+        <ul class="ml-4 list-disc mt-1">
+            <li>
+                @if($invoice->cancel)
+                    <span class="text-red-600 font-semibold">Batal</span>
+                @elseif($invoice->lunas_at)
+                    <span class="text-green-600 font-semibold">Lunas</span>
+                @else
+                    <span class="text-gray-600">Belum Lunas</span>
+                @endif
+            </li>
+            <li>
+                @if($invoice->checked_finance_at)
+                    <span class="text-yellow-600 font-semibold">Checked</span>
+                @else
+                    <span class="text-gray-600">Belum Dicek</span>
+                @endif
+            </li>
+        </ul>
     </div>
 </div>
 

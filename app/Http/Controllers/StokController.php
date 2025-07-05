@@ -147,8 +147,8 @@ class StokController extends Controller
     public function show($id)
     {
         $listCabang = Cabang::where('id', '!=', session('cabang_id'))
-    ->orderBy('nama_cabang')
-    ->get();
+            ->orderBy('nama_cabang')
+            ->get();
 
 
         $stok = Stok::with([
@@ -162,7 +162,7 @@ class StokController extends Controller
             'inbound.submittedBy'
         ])->findOrFail($id);
 
-        return view('stok.show', compact('stok','listCabang'));
+        return view('stok.show', compact('stok', 'listCabang'));
     }
 
     public function transfer(Request $request, Stok $stok)

@@ -6,6 +6,7 @@ use App\Models\Invoice;
 use App\Models\SalesAgent;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -108,14 +109,16 @@ class InvoiceController extends Controller
     }
 
     public function edit(Invoice $invoice)
-    {
-        return view('invoice.edit', [
-            'invoice' => $invoice,
-            'companies' => Company::orderBy('nama')->get(),
-            'customers' => Customer::orderBy('nama')->get(),
-            'salesAgents' => SalesAgent::orderBy('nama')->get(),
-        ]);
-    }
+{
+    return view('invoice.edit', [
+        'invoice'     => $invoice,
+        'companies'   => Company::orderBy('nama')->get(),
+        'customers'   => Customer::orderBy('nama')->get(),
+        'salesAgents' => SalesAgent::orderBy('nama')->get(),
+        'products'    => Product::where('status', 1)->orderBy('nama')->get(), // hanya status aktif dan tidak terhapus
+    ]);
+}
+
 
     public function update(Request $request, Invoice $invoice)
     {

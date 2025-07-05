@@ -21,6 +21,7 @@ use App\Http\Controllers\StokController;
 use App\Http\Controllers\CetakLabelController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -130,17 +131,33 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         |--------------------------------------------------------------------------
         */
         Route::get('invoice', [InvoiceController::class, 'index'])->name('invoice.index');
-Route::get('invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
-Route::post('invoice', [InvoiceController::class, 'store'])->name('invoice.store');
+        Route::get('invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
+        Route::post('invoice', [InvoiceController::class, 'store'])->name('invoice.store');
 
-Route::get('invoice/{invoice}', [InvoiceController::class, 'show'])->name('invoice.show');
-Route::get('invoice/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoice.edit');
-Route::put('invoice/{invoice}', [InvoiceController::class, 'update'])->name('invoice.update');
+        Route::get('invoice/{invoice}', [InvoiceController::class, 'show'])->name('invoice.show');
+        Route::get('invoice/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoice.edit');
+        Route::put('invoice/{invoice}', [InvoiceController::class, 'update'])->name('invoice.update');
 
-// Tambah produk satuan setelah invoice dibuat
-Route::get('invoice/{invoice}/produk', [InvoiceController::class, 'produk'])->name('invoice.produk');
-Route::post('invoice/{invoice}/produk', [InvoiceController::class, 'tambahProduk'])->name('invoice.produk.store');
+        // Tambah produk satuan setelah invoice dibuat
+        Route::get('invoice/{invoice}/produk', [InvoiceController::class, 'produk'])->name('invoice.produk');
+        Route::post('invoice/{invoice}/produk', [InvoiceController::class, 'tambahProduk'])->name('invoice.produk.store');
 
+        /*
+        |--------------------------------------------------------------------------
+        | invoice item
+        |--------------------------------------------------------------------------
+        */
+        Route::post('/invoice-item/store', [InvoiceItemController::class, 'store'])->name('invoice-item.store');
+
+        /*
+        |--------------------------------------------------------------------------
+        | API
+        |--------------------------------------------------------------------------
+        */
+        // API Stok berdasarkan produk
+        Route::get('/api/stok-by-product/{product_id}', [\App\Http\Controllers\Api\InvoiceSupportController::class, 'stokByProduct']);
+        // API Customer Price berdasarkan product dan customer
+        Route::get('/api/customer-price-by-product/{customer_id}/{product_id}', [\App\Http\Controllers\Api\InvoiceSupportController::class, 'customerPrice']);
 
         /*
         |--------------------------------------------------------------------------
