@@ -76,9 +76,6 @@ class InvoiceController extends Controller
         return view('invoice.index', compact('invoices', 'salesAgents', 'companies', 'customers'));
     }
 
-
-
-
     public function create()
     {
         return view('invoice.create', [

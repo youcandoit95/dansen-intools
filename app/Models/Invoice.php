@@ -75,8 +75,8 @@ class Invoice extends Model
     public static function generateInvoiceNumber(): string
     {
         $initial = strtoupper(session('cabang_initial', 'XXX')); // fallback jika tidak ada
-        $timestamp = now()->format('YmdHis');
+        $timestamp = now()->format('Ymd/His');
 
-        return 'INV' . $initial . $timestamp;
+        return 'INV/' . $initial .'/'. $timestamp;
     }
 }

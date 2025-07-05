@@ -91,21 +91,15 @@
                     <td class="px-3 py-2">{{ $inv->inv_no }}</td>
                     <td class="px-3 py-2">{{ $inv->platform_text ?? 'Offline' }}</td>
                     <td class="px-3 py-2">
-                        <div class="font-medium">{{ $inv->company?->name ?? '-' }}</div>
-                        <div>{{ $inv->customer->name ?? '-' }}</div>
-                        <div class="text-gray-500 text-xs">{{ $inv->customer->address ?? '-' }}</div>
+                        <div class="font-medium">{{ $inv->company?->nama ?? '-' }}</div>
+                        <div>{{ $inv->customer->nama ?? '-' }}</div>
+                        <div class="text-gray-500 text-xs">{{ $inv->customer->alamat_lengkap ?? '-' }}</div>
                     </td>
                     <td class="px-3 py-2 text-right">Rp {{ number_format($inv->g_total_invoice_amount, 0, ',', '.') }}</td>
                     <td class="px-3 py-2">
-                        @if ($inv->cancel)
-                            <span class="text-red-600 font-semibold">Batal</span>
-                        @elseif ($inv->lunas_at)
-                            <span class="text-green-600 font-semibold">Lunas</span>
-                        @elseif ($inv->checked_finance_at)
-                            <span class="text-yellow-600 font-semibold">Checked</span>
-                        @else
-                            <span class="text-gray-500">-</span>
-                        @endif
+                        @if($inv->cancel)<span class="text-red-600 font-semibold">Batal</span>@endif
+                        @if($inv->lunas_at)<span class="text-green-600 font-semibold">Lunas</span>@else<span class="text-red-600">Belum Lunas</span>@endif
+                        @if($inv->checked_finance_at)<span class="text-yellow-600 font-semibold">Checked Finance</span>@endif
                     </td>
                     <td class="px-3 py-2">
                         <a href="{{ route('invoice.show', $inv->id) }}" class="text-blue-600 hover:underline">Lihat</a>
