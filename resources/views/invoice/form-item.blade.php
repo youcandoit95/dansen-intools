@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
     stokData.forEach(stok => {
         stokTomSelect.addOption({
             value: stok.id,
-            text: `ID ${stok.id} - ${stok.berat_kg} kg`
+            text: `${stok.berat_kg} kg - ${stok.kategori_label} - ${stok.barcode_stok}`
         });
     });
     stokTomSelect.refreshOptions();

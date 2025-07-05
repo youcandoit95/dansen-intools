@@ -14,11 +14,11 @@ class InvoiceSupportController extends Controller
      */
     public function stokByProduct($product_id)
     {
-        $stok = Stok::where('product_id', $product_id)
-        ->where('temp', false)
-            ->select('id', 'berat_kg')
-            ->orderBy('created_at', 'desc')
-            ->get();
+       $stok = Stok::where('product_id', $product_id)
+                    ->where('temp', false)
+                    ->where('cabang_id', session('cabang_id'))
+                    ->orderBy('created_at', 'desc')
+                    ->get(['id', 'barcode_stok', 'berat_kg', 'kategori']);
 
         return response()->json($stok);
     }
