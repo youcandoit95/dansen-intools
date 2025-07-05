@@ -57,31 +57,39 @@ document.addEventListener('DOMContentLoaded', function () {
     const sellPriceInput = document.getElementById('sellPriceInput');
 
     productSelect.addEventListener('change', async function () {
-        const productId = this.value;
+    const productId = this.value;
 
-        if (!productId) return;
+    if (!productId) return;
 
-        // Fetch stok berdasarkan produk
-        const stokRes = await fetch(`/api/stok-by-product/${productId}`);
-        const stokData = await stokRes.json();
+    // Fetch stok berdasarkan produk
+    const stokRes = await fetch(`/api/stok-by-product/${productId}`);
+    const stokData = await stokRes.json();
 
-        stokSelect.innerHTML = '<option value="">Pilih Stok</option>';
-        stokData.forEach(stok => {
-            stokSelect.innerHTML += `<option value="${stok.id}">ID ${stok.id} - ${stok.berat_kg} kg</option>`;
-        });
-
-        // Refresh tomselect setelah update option
-        if (stokSelect.tomselect) {
-            stokSelect.tomselect.destroy();
-        }
-        new TomSelect(stokSelect);
-
-        // Fetch harga customer
-        const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${productId}`);
-        const hargaData = await hargaRes.json();
-
-        sellPriceInput.value = hargaData && hargaData.harga ? hargaData.harga : 0;
+    if (stokSelect.tomselect) {
+        stokSelect.tomselect.destroy();
+    }
+    const stokTomSelect = new TomSelect(stokSelect, {
+        create: false,
+        sortField: 'text'
     });
+
+    stokTomSelect.clearOptions();
+    stokTomSelect.addOption({ value: '', text: 'Pilih Stok' });
+
+    stokData.forEach(stok => {
+        stokTomSelect.addOption({
+            value: stok.id,
+            text: `ID ${stok.id} - ${stok.berat_kg} kg`
+        });
+    });
+    stokTomSelect.refreshOptions();
+
+    // Fetch harga customer
+    const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${productId}`);
+    const hargaData = await hargaRes.json();
+    sellPriceInput.value = hargaData && hargaData.harga ? hargaData.harga : 0;
+});
+
 });
 </script>
 @endsection
