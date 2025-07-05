@@ -70,15 +70,17 @@ document.addEventListener('DOMContentLoaded', function () {
             stokSelect.innerHTML += `<option value="${stok.id}">ID ${stok.id} - ${stok.berat_kg} kg</option>`;
         });
 
+        // Refresh tomselect setelah update option
+        if (stokSelect.tomselect) {
+            stokSelect.tomselect.destroy();
+        }
+        new TomSelect(stokSelect);
+
         // Fetch harga customer
         const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${productId}`);
         const hargaData = await hargaRes.json();
 
-        if (hargaData && hargaData.harga) {
-            sellPriceInput.value = hargaData.harga;
-        } else {
-            sellPriceInput.value = 0;
-        }
+        sellPriceInput.value = hargaData && hargaData.harga ? hargaData.harga : 0;
     });
 });
 </script>
