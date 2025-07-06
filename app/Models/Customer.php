@@ -17,6 +17,7 @@ class Customer extends Model
         'alamat_lengkap',
         'is_blacklisted',
         'alasan_blacklist',
+        'company_id',
     ];
 
     public function salesAgent()
@@ -28,4 +29,10 @@ class Customer extends Model
     {
         return $this->belongsTo(Domisili::class, 'domisili');
     }
+
+    public function company()
+{
+    return $this->belongsTo(Company::class, 'company_id');
+}
+
 }

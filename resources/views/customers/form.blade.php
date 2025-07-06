@@ -4,6 +4,22 @@
 
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
 
+{{-- Company (nullable) --}}
+<div class="mb-4">
+    <label for="company_id" class="block text-sm font-medium text-gray-700">Perusahaan (Opsional)</label>
+    <select name="company_id" id="company_id"
+        class="company-select tomselect w-full border rounded px-3 py-2">
+        <option value="">-- Pilih Perusahaan --</option>
+        @foreach($companies as $company)
+            <option value="{{ $company->id }}"
+                {{ old('company_id', $customer->company_id ?? '') == $company->id ? 'selected' : '' }}>
+                {{ $company->nama }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+
 {{-- Nama --}}
 <div class="mb-4">
     <label for="nama" class="block text-sm font-medium text-gray-700">Nama <span class="text-red-500">*</span></label>
@@ -80,6 +96,15 @@
                 direction: "asc"
             },
             placeholder: "Cari sales agent...",
+        });
+
+        new TomSelect('.company-select', {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            },
+            placeholder: "Cari perusahaan..."
         });
     });
 </script>
