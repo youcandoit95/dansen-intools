@@ -92,12 +92,14 @@ class InvoiceController extends Controller
         $validated = $request->validate([
             'company_id'    => 'required|exists:companies,id',
             'customer_id'   => 'required|exists:customers,id',
-            'sales_agents_id' => 'nullable|exists:sales_agents,id',
             'platform_id'   => 'nullable|integer',
             'invoice_transaction_date' => 'required|date',
         ]);
 
-        // Default total 0, dihitung dari item nanti
+        // Ambil sales_agents_id dari customer
+        $customer = Customer::find($validated['customer_id']);
+        $validated['sales_agents_id'] = $customer->sales_agent_id;
+
         $validated['inv_no'] = Invoice::generateInvoiceNumber();
         $validated['g_total_invoice_amount'] = 0;
         $validated['created_by'] = session('user_id');
@@ -108,16 +110,17 @@ class InvoiceController extends Controller
             ->with('success', 'Invoice berhasil dibuat. Silakan tambahkan produk.');
     }
 
+
     public function edit(Invoice $invoice)
     {
         return view('invoice.edit', [
             'invoice'     => $invoice,
             'companies'   => Company::orderBy('nama')->get(),
             'customers' => Customer::with('salesAgent:id,nama')
-    ->select('id', 'nama', 'sales_agent_id')
-    ->where('is_blacklisted', false)
-    ->orderBy('nama')
-    ->get(),
+                ->select('id', 'nama', 'sales_agent_id')
+                ->where('is_blacklisted', false)
+                ->orderBy('nama')
+                ->get(),
 
             'salesAgents' => SalesAgent::orderBy('nama')->get(),
             'products'    => Product::where('status', 1)->orderBy('nama')->get(), // hanya status aktif dan tidak terhapus
