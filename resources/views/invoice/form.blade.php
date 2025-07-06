@@ -8,32 +8,27 @@
     </div>
 
     <div>
-        <label class="block mb-1">Perusahaan</label>
-        <select name="company_id" class="tomselect w-full border rounded px-3 py-2 @error('company_id') border-red-500 @enderror">
-            <option value="">Pilih Perusahaan</option>
-            @foreach($companies as $company)
-            <option value="{{ $company->id }}" @selected(old('company_id', $invoice->company_id) == $company->id)>
-                {{ $company->nama }}
-            </option>
-            @endforeach
-        </select>
-        @error('company_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-    </div>
-
-    <div>
-        <label class="block mb-1">Customer</label>
+        <label class="block mb-1">Customer {{ $invoice->customer_id }}</label>
         <select name="customer_id" id="customerSelect"
             class="tomselect w-full border rounded px-3 py-2 @error('customer_id') border-red-500 @enderror">
             <option value="">Pilih Customer</option>
             @foreach($customers as $customer)
             <option value="{{ $customer->id }}"
                 data-agent-name="{{ $customer->salesAgent->nama ?? '' }}"
-                @selected(old('customer_id', $invoice->customer_id) == $customer->id)>
-                {{ $customer->nama }}
+                data-company-name="{{ $customer->company->nama ?? '' }}"
+                {{ old('customer_id', $invoice->customer_id ?? '') == $customer->id ? 'selected' : '' }}>
+                {{ $customer->id }} - {{ $customer->nama }}
             </option>
             @endforeach
         </select>
         @error('customer_id') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+    </div>
+
+    <div>
+        <label class="block mb-1">Perusahaan</label>
+        <input type="text" name="company_name" id="companyName"
+            class="w-full border rounded px-3 py-2 bg-gray-100"
+            value="{{ $invoice->customer->company->nama ?? '-' }}" readonly>
     </div>
 
     <div>
@@ -58,30 +53,40 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll(".tomselect").forEach(el => {
-            new TomSelect(el, {
-                create: false
-            });
-        });
-    });
-</script>
-
 @section('scripts')
 @parent
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inisialisasi TomSelect hanya jika belum diinisialisasi
+        document.querySelectorAll(".tomselect").forEach(el => {
+            if (!el.tomselect) {
+                new TomSelect(el, { create: false });
+            }
+        });
 
         const customerSelect = document.getElementById('customerSelect');
         const salesAgentInput = document.getElementById('salesAgentName');
+        const companyInput = document.getElementById('companyName');
 
-        customerSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const agentName = selectedOption.getAttribute('data-agent-name') || '';
-            salesAgentInput.value = agentName;
-        });
+        // Atur selectedValue secara manual jika belum ter-set
+        if (customerSelect && customerSelect.tomselect) {
+            const selectedValue = "{{ old('customer_id', $invoice->customer_id) }}";
+            customerSelect.tomselect.setValue(selectedValue);
+        }
+
+        // Update tampilan nama sales agent dan perusahaan saat customer dipilih
+        if (customerSelect) {
+            customerSelect.addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                const agentName = selectedOption.getAttribute('data-agent-name') || '';
+                const companyName = selectedOption.getAttribute('data-company-name') || '';
+
+                salesAgentInput.value = agentName;
+                companyInput.value = companyName;
+            });
+        }
     });
 </script>
 @endsection
+

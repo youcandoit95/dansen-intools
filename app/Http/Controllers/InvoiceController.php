@@ -81,8 +81,15 @@ class InvoiceController extends Controller
     {
         return view('invoice.create', [
             'invoice' => new Invoice(),
-            'companies' => Company::orderBy('nama')->get(),
-            'customers' => Customer::orderBy('nama')->get(),
+            'customers' => Customer::with(['salesAgent', 'company'])
+    ->whereNull('deleted_at')
+    ->where('is_blacklisted', false)
+    ->whereHas('company', function ($q) {
+        $q->whereNull('deleted_at')->where('is_blacklisted', false);
+    })
+    ->orderBy('nama')
+    ->get(),
+
             'salesAgents' => SalesAgent::orderBy('nama')->get(),
         ]);
     }
@@ -115,12 +122,18 @@ class InvoiceController extends Controller
     {
         return view('invoice.edit', [
             'invoice'     => $invoice,
-            'companies'   => Company::orderBy('nama')->get(),
-            'customers' => Customer::with('salesAgent:id,nama')
-                ->select('id', 'nama', 'sales_agent_id')
-                ->where('is_blacklisted', false)
-                ->orderBy('nama')
-                ->get(),
+            'customers' => Customer::with(['salesAgent', 'company'])
+    ->whereNull('deleted_at')
+    ->where('is_blacklisted', false)
+    ->where(function ($q) {
+        $q->whereHas('company', function ($sub) {
+            $sub->whereNull('deleted_at')
+                ->where('blacklist', false);
+        })->orWhereNull('company_id');
+    })
+    ->orderBy('nama')
+    ->get(),
+
 
             'salesAgents' => SalesAgent::orderBy('nama')->get(),
             'products'    => Product::where('status', 1)->orderBy('nama')->get(), // hanya status aktif dan tidak terhapus
