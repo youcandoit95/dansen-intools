@@ -14,7 +14,7 @@ class CustomerController extends Controller
     {
         $activeMenu = 'customers';
         $customers = Customer::with(['salesAgent', 'domisiliRef'])->latest()->get();
-        return view('customers.index', compact('activeMenu','customers'));
+        return view('customers.index', compact('activeMenu', 'customers'));
     }
 
     public function create()
@@ -22,9 +22,9 @@ class CustomerController extends Controller
         $salesAgents = SalesAgent::all();
         $domisiliList = Domisili::all();
         $companies = Company::whereNull('deleted_at')
-                        ->where('blacklist', false)
-                        ->orderBy('nama')
-                        ->get();
+            ->where('blacklist', false)
+            ->orderBy('nama')
+            ->get();
 
         return view('customers.create', compact('salesAgents', 'domisiliList', 'companies'));
     }
@@ -35,44 +35,44 @@ class CustomerController extends Controller
         $salesAgents = SalesAgent::all();
         $domisiliList = Domisili::all();
         $companies = Company::whereNull('deleted_at')
-                        ->where('blacklist', false)
-                        ->orderBy('nama')
-                        ->get();
+            ->where('blacklist', false)
+            ->orderBy('nama')
+            ->get();
 
         return view('customers.edit', compact('activeMenu', 'customer', 'salesAgents', 'domisiliList', 'companies'));
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'nama' => 'required|string',
-        'sales_agent_id' => 'nullable|exists:sales_agents,id',
-        'no_tlp' => 'required|string|max:50',
-        'domisili' => 'required|exists:domisili,id',
-        'alamat_lengkap' => 'required|string',
-        'company_id' => 'nullable|exists:companies,id',
-    ]);
+    {
+        $request->validate([
+            'nama' => 'required|string',
+            'sales_agent_id' => 'nullable|exists:sales_agents,id',
+            'no_tlp' => 'required|string|max:50',
+            'domisili' => 'required|exists:domisili,id',
+            'alamat_lengkap' => 'required|string',
+            'company_id' => 'nullable|exists:companies,id',
+        ]);
 
-    Customer::create($request->all());
+        Customer::create($request->all());
 
-    return redirect()->route('customers.index')->with('success', 'Customer berhasil ditambahkan.');
-}
+        return redirect()->route('customers.index')->with('success', 'Customer berhasil ditambahkan.');
+    }
 
-   public function update(Request $request, Customer $customer)
-{
-    $request->validate([
-        'nama' => 'required|string',
-        'sales_agent_id' => 'nullable|exists:sales_agents,id',
-        'no_tlp' => 'required|string|max:50',
-        'domisili' => 'required|exists:domisili,id',
-        'alamat_lengkap' => 'required|string',
-        'company_id' => 'nullable|exists:companies,id',
-    ]);
+    public function update(Request $request, Customer $customer)
+    {
+        $request->validate([
+            'nama' => 'required|string',
+            'sales_agent_id' => 'nullable|exists:sales_agents,id',
+            'no_tlp' => 'required|string|max:50',
+            'domisili' => 'required|exists:domisili,id',
+            'alamat_lengkap' => 'required|string',
+            'company_id' => 'nullable|exists:companies,id',
+        ]);
 
-    $customer->update($request->all());
+        $customer->update($request->all());
 
-    return redirect()->route('customers.index')->with('success', 'Customer berhasil diperbarui.');
-}
+        return redirect()->route('customers.index')->with('success', 'Customer berhasil diperbarui.');
+    }
 
 
     public function destroy(Customer $customer)
