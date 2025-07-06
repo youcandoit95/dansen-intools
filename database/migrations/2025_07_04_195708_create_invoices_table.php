@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('inv_no')->unique();
-            $table->foreignId('sales_agents_id')->constrained('sales_agents');
-            $table->foreignId('company_id')->nullable()->constrained('companies');
             $table->foreignId('customer_id')->constrained('customers');
 
             $table->bigInteger('g_total_purchase_price')->nullable();

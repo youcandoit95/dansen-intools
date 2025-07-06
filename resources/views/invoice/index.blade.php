@@ -91,8 +91,9 @@
                     <td class="px-3 py-2">{{ $inv->inv_no }}</td>
                     <td class="px-3 py-2">{{ $inv->platform_text ?? 'Offline' }}</td>
                     <td class="px-3 py-2">
-                        <div class="font-medium">{{ $inv->company?->nama ?? '-' }}</div>
-                        <div>{{ $inv->customer->nama ?? '-' }}</div>
+                        <div class="font-medium">Company : {{ $inv->customer->company?->nama ?? '-' }}</div>
+                        <div class="font-medium">Sales Agent : {{ $inv->customer->salesAgent?->nama ?? '-' }}</div>
+                        <div>Nama Customer : {{ $inv->customer->nama ?? '-' }}</div>
                         <div class="text-gray-500 text-xs">{{ $inv->customer->alamat_lengkap ?? '-' }}</div>
                     </td>
                     <td class="px-3 py-2 text-right">Rp {{ number_format($inv->g_total_invoice_amount, 0, ',', '.') }}</td>

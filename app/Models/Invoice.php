@@ -8,8 +8,6 @@ class Invoice extends Model
 {
     protected $fillable = [
         'inv_no',
-        'sales_agents_id',
-        'company_id',
         'customer_id',
         'invoice_transaction_date',
         'g_total_invoice_amount',
@@ -29,16 +27,6 @@ class Invoice extends Model
     ];
 
     // ===== RELATIONSHIPS =====
-
-    public function salesAgent()
-    {
-        return $this->belongsTo(SalesAgent::class, 'sales_agents_id');
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
-    }
 
     public function customer()
     {

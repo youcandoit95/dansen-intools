@@ -2,7 +2,10 @@
 @section('title', 'Edit Invoice')
 
 @section('content')
-    <h1 class="text-lg font-semibold mb-4">Edit Invoice</h1>
+    <h1 class="text-lg font-semibold mb-4">Edit Invoice | {{ $invoice->id }} | {{ $invoice->inv_no }}</h1>
+
+    <x-alert-success />
+    <x-alert-error />
 
     <form action="{{ route('invoice.update', $invoice->id) }}" method="POST" class="bg-white rounded shadow p-4 max-w-2xl mb-6">
         @csrf

@@ -14,9 +14,19 @@
         <h2 class="font-semibold mb-2">Informasi Invoice</h2>
         <p><strong>Invoice No:</strong> {{ $invoice->inv_no }}</p>
         <p><strong>Tanggal Transaksi:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_transaction_date)->translatedFormat('d F Y') }}</p>
-        <p><strong>Perusahaan:</strong> {{ $invoice->company->nama ?? '-' }}</p>
-        <p><strong>Customer:</strong> {{ $invoice->customer->nama ?? '-' }}</p>
-        <p><strong>Sales Agent:</strong> {{ $invoice->salesAgent->nama ?? '-' }}</p>
+        <p><strong>Perusahaan:</strong> {{ $invoice->customer->company->nama ?? '-' }}
+            @if ($invoice->customer->company?->blacklist)
+                <span class="text-red-600 font-semibold">(sedang black list)</span>
+            @endif
+        </p>
+        <p>
+            <strong>Customer :</strong> {{ $invoice->customer->nama ?? '-' }}
+            @if ($invoice->customer?->is_blacklisted)
+                <span class="text-red-600 font-semibold">(sedang black list)</span>
+            @endif
+        </p>
+
+        <p><strong>Sales Agent:</strong> {{ $invoice->customer->salesAgent->nama ?? '-' }}</p>
         <p><strong>Platform:</strong> {{ $invoice->platform_text ?? 'Offline' }}</p>
     </div>
 
