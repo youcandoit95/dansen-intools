@@ -12,6 +12,11 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
     @csrf
     @if(isset($price)) @method('PUT') @endif
 
+    @if(isset($price->id))
+    <input type="hidden" name="id" value="{{ $price->id }}">
+@endif
+
+
     <!-- Customer -->
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Customer <span class="text-red-500">*</span></label>
@@ -63,6 +68,10 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
 
     <!-- Harga Jual -->
     <div>
+        @error('harga_jual')
+    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+@enderror
+
         <label class="block text-sm font-medium text-gray-700 mb-1">Harga Jual (Rp) <span class="text-red-500">*</span></label>
         <input type="text" name="harga_jual" class="rupiah-input w-full border rounded px-3 py-2"
             value="{{ 'Rp ' . number_format((int)preg_replace('/[^0-9]/', '', $hargaJual), 0, ',', '.') }}">
