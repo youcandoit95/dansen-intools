@@ -12,11 +12,11 @@
                     class="tomselect w-full border rounded px-3 py-2 @error('product_id') border-red-500 @enderror">
                     <option value="">Pilih Produk</option>
                     @foreach ($products as $product)
-                    <option value="{{ $product->id }}">{{ $product->nama }}</option>
+                        <option value="{{ $product->id }}">{{ $product->nama }}</option>
                     @endforeach
                 </select>
                 @error('product_id')
-                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
                 <p class="text-xs text-gray-500 mt-1">Jika produk tidak muncul, silakan hubungi Admin.</p>
             </div>
@@ -39,13 +39,27 @@
                 @error('sell_price') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Qty --}}
+            {{-- Qty Inbound (Stok Masuk) --}}
             <div>
-                <label class="block mb-1">Qty</label>
-                <input type="number" name="qty" id="qtyInput" readonly min="1"
+                <label class="block mb-1">Qty Inbound (Stok Masuk)</label>
+                <input type="number" name="qty" id="qtyInput" readonly
                     class="w-full border rounded px-3 py-2 bg-gray-100 @error('qty') border-red-500 @enderror">
                 @error('qty') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-                <p class="text-sm text-gray-700 mt-2">Total Harga: <span id="totalHargaText" class="font-semibold">Rp 0</span></p>
+                <p class="text-sm text-gray-700 mt-2">Total Harga Berat Inbound: <span id="totalHargaText" class="font-semibold">Rp 0</span></p>
+            </div>
+
+            {{-- Qty Outbound --}}
+            <div>
+                <label class="block mb-1">Qty Outbound (Stok Keluar)</label>
+                <input type="number" name="qty_out" id="qtyOutInput" step="0.001" min="0.001"
+                    class="w-full border rounded px-3 py-2 @error('qty_out') border-red-500 @enderror">
+                @error('qty_out') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Informasi Susut dan Harga Outbound --}}
+            <div class="space-y-1 text-sm text-gray-700">
+                <p>Susut (Waste): <span id="wasteText" class="font-semibold text-gray-800">0.000 kg</span></p>
+                <p>Total Harga Jual Outbound: <span id="totalHargaOutText" class="font-semibold text-blue-600">Rp 0</span></p>
             </div>
 
             <div class="text-right pt-3">
@@ -96,98 +110,124 @@
 @section('scripts')
 @parent
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const productSelect = document.getElementById('productSelect');
-        const stokSelect = document.getElementById('stokSelect');
-        const sellPriceInput = document.getElementById('sellPriceInput');
-        const qtyInput = document.getElementById('qtyInput');
-        const totalHargaText = document.getElementById('totalHargaText');
+document.addEventListener('DOMContentLoaded', function () {
+    const productSelect = document.getElementById('productSelect');
+    const stokSelect = document.getElementById('stokSelect');
+    const sellPriceInput = document.getElementById('sellPriceInput');
+    const qtyInput = document.getElementById('qtyInput');
+    const qtyOutInput = document.getElementById('qtyOutInput');
+    const totalHargaText = document.getElementById('totalHargaText');
+    const totalHargaOutText = document.getElementById('totalHargaOutText');
+    const wasteText = document.getElementById('wasteText');
 
-        const namaProduk = document.getElementById('namaProduk');
-        const kategoriProduk = document.getElementById('kategoriProduk');
-        const brandProduk = document.getElementById('brandProduk');
-        const mbsProduk = document.getElementById('mbsProduk');
-        const bagianProduk = document.getElementById('bagianProduk');
-        const deskripsiProduk = document.getElementById('deskripsiProduk');
-        const fotoProduk = document.getElementById('fotoProduk');
-        const hargaCustomer = document.getElementById('hargaCustomer');
-        const productDetails = document.getElementById('productDetails');
-        const priceTableBody = document.getElementById('priceTableBody');
+    const namaProduk = document.getElementById('namaProduk');
+    const kategoriProduk = document.getElementById('kategoriProduk');
+    const brandProduk = document.getElementById('brandProduk');
+    const mbsProduk = document.getElementById('mbsProduk');
+    const bagianProduk = document.getElementById('bagianProduk');
+    const deskripsiProduk = document.getElementById('deskripsiProduk');
+    const fotoProduk = document.getElementById('fotoProduk');
+    const hargaCustomer = document.getElementById('hargaCustomer');
+    const productDetails = document.getElementById('productDetails');
+    const priceTableBody = document.getElementById('priceTableBody');
 
-        function updateTotalHarga() {
-            const qty = parseFloat(qtyInput.value) || 0;
-            const harga = parseFloat(sellPriceInput.value) || 0;
-            const total = qty * harga;
-            totalHargaText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(total))}`;
+    function updateTotalHarga() {
+        const qty = parseFloat(qtyInput.value) || 0;
+        const harga = parseFloat(sellPriceInput.value) || 0;
+        const total = qty * harga;
+        totalHargaText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(total))}`;
+    }
 
+    function updateWasteAndHargaOut() {
+        const qtyIn = parseFloat(qtyInput.value) || 0;
+        const qtyOut = parseFloat(qtyOutInput.value) || 0;
+        const harga = parseFloat(sellPriceInput.value) || 0;
+
+        let waste = qtyIn - qtyOut;
+        if (waste < 0) {
+            waste = 0;
+            wasteText.classList.add('text-red-600');
+        } else {
+            wasteText.classList.remove('text-red-600');
         }
 
-        productSelect.addEventListener('change', async function () {
-            const productId = this.value;
-            if (!productId) return;
+        const totalOut = qtyOut * harga;
 
-            // STOK
-            const stokRes = await fetch(`/api/stok-by-product/${productId}`);
-            const stokData = await stokRes.json();
-            if (stokSelect.tomselect) stokSelect.tomselect.destroy();
-            const stokTomSelect = new TomSelect(stokSelect, { create: false, sortField: 'text' });
-            stokTomSelect.clearOptions();
-            stokData.forEach(stok => {
-                stokTomSelect.addOption({
-                    value: stok.id,
-                    text: `${stok.berat_kg} kg - ${stok.kategori} - ${stok.barcode_stok}`,
-                    data: stok // penting: simpan data berat di data-* atribut
-                });
-            });
-            stokTomSelect.refreshOptions();
+        wasteText.innerText = `${waste.toFixed(3)} kg`;
+        totalHargaOutText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(totalOut))}`;
+    }
 
-            // HARGA CUSTOMER
-            const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${productId}?platform={{ $platform }}`);
-            const hargaData = await hargaRes.json();
-            sellPriceInput.value = hargaData.harga ?? 0;
-            hargaCustomer.innerText = hargaData.harga
-                ? `Rp ${new Intl.NumberFormat('id-ID').format(hargaData.harga)}`
-                : 'Tidak tersedia';
-            updateTotalHarga();
+    productSelect.addEventListener('change', async function () {
+        const productId = this.value;
+        if (!productId) return;
 
-            // DETAIL PRODUK
-            const detailRes = await fetch(`/api/product-detail/${productId}`);
-            const d = await detailRes.json();
-            productDetails.classList.remove('hidden');
-            namaProduk.innerText = d.nama;
-            kategoriProduk.innerText = d.kategori;
-            brandProduk.innerText = d.brand;
-            mbsProduk.innerText = d.mbs;
-            bagianProduk.innerText = d.bagian;
-            deskripsiProduk.innerText = d.deskripsi;
-            fotoProduk.innerHTML = '';
-            d.images.forEach(img => {
-                fotoProduk.innerHTML += `<img src="${img}" class="w-20 h-20 object-cover rounded" />`;
-            });
-
-            // Harga Persent
-            priceTableBody.innerHTML = '';
-            Object.entries(d.hargaPersent).forEach(([tipe, harga]) => {
-                priceTableBody.innerHTML += `
-                    <tr><td class="px-2 py-1 capitalize">${tipe}</td>
-                    <td class="px-2 py-1 text-right">Rp ${new Intl.NumberFormat('id-ID').format(harga)}</td></tr>`;
+        // STOK
+        const stokRes = await fetch(`/api/stok-by-product/${productId}`);
+        const stokData = await stokRes.json();
+        if (stokSelect.tomselect) stokSelect.tomselect.destroy();
+        const stokTomSelect = new TomSelect(stokSelect, { create: false, sortField: 'text' });
+        stokTomSelect.clearOptions();
+        stokData.forEach(stok => {
+            stokTomSelect.addOption({
+                value: stok.id,
+                text: `${stok.berat_kg} kg - ${stok.kategori} - ${stok.barcode_stok}`,
+                data: stok
             });
         });
+        stokTomSelect.refreshOptions();
 
-        // Ketika stok dipilih, isi qty berdasarkan berat stok
-        document.addEventListener('change', function (e) {
-            if (e.target.id === 'stokSelect') {
-                const selectedOption = e.target.selectedOptions[0];
-                if (!selectedOption) return;
-                const label = selectedOption.textContent;
-                const match = label.match(/^([\d.]+) kg/);
-                if (match) {
-                    const berat = parseFloat(match[1]) || 1;
-                    qtyInput.value = berat;
-                    updateTotalHarga();
-                }
-            }
+        // HARGA CUSTOMER
+        const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${productId}?platform={{ $platform }}`);
+        const hargaData = await hargaRes.json();
+        sellPriceInput.value = hargaData.harga ?? 0;
+        hargaCustomer.innerText = hargaData.harga
+            ? `Rp ${new Intl.NumberFormat('id-ID').format(hargaData.harga)}`
+            : 'Tidak tersedia';
+        updateTotalHarga();
+        updateWasteAndHargaOut();
+
+        // DETAIL PRODUK
+        const detailRes = await fetch(`/api/product-detail/${productId}`);
+        const d = await detailRes.json();
+        productDetails.classList.remove('hidden');
+        namaProduk.innerText = d.nama;
+        kategoriProduk.innerText = d.kategori;
+        brandProduk.innerText = d.brand;
+        mbsProduk.innerText = d.mbs;
+        bagianProduk.innerText = d.bagian;
+        deskripsiProduk.innerText = d.deskripsi;
+        fotoProduk.innerHTML = '';
+        d.images.forEach(img => {
+            fotoProduk.innerHTML += `<img src="${img}" class="w-20 h-20 object-cover rounded" />`;
+        });
+
+        // Harga Persent
+        priceTableBody.innerHTML = '';
+        Object.entries(d.hargaPersent).forEach(([tipe, harga]) => {
+            priceTableBody.innerHTML += `
+                <tr><td class="px-2 py-1 capitalize">${tipe}</td>
+                <td class="px-2 py-1 text-right">Rp ${new Intl.NumberFormat('id-ID').format(harga)}</td></tr>`;
         });
     });
+
+    document.addEventListener('change', function (e) {
+        if (e.target.id === 'stokSelect') {
+            const selectedOption = e.target.selectedOptions[0];
+            if (!selectedOption) return;
+            const label = selectedOption.textContent;
+            const match = label.match(/^([\d.]+) kg/);
+            if (match) {
+                const berat = parseFloat(match[1]) || 1;
+                qtyInput.value = berat;
+                updateTotalHarga();
+                updateWasteAndHargaOut();
+            }
+        }
+    });
+
+    qtyOutInput.addEventListener('input', function () {
+        updateWasteAndHargaOut();
+    });
+});
 </script>
 @endsection

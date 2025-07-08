@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('inv_id')->constrained('invoices')->onDelete('cascade');
-            $table->foreignId('default_sell_price_id')->constrained('product_prices');
 
             $table->bigInteger('ss_online_sell_price')->default(0);
             $table->bigInteger('ss_offline_sell_price')->default(0);
@@ -32,7 +31,7 @@ return new class extends Migration
             $table->bigInteger('ss_komisi_sales');
             $table->bigInteger('profit_gross');
 
-            $table->integer('qty');
+            $table->decimal('qty', 10, 3);
             $table->bigInteger('total_purchase_price');
             $table->bigInteger('total_sell_price');
             $table->bigInteger('total_komisi_sales');
