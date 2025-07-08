@@ -25,7 +25,6 @@ return new class extends Migration
             $table->foreignId('stok_id')->nullable()->constrained('stok');
 
             $table->bigInteger('purchase_price');
-            $table->foreignId('customer_price_id')->constrained('customer_prices');
 
             $table->bigInteger('sell_price');
             $table->bigInteger('ss_komisi_sales');

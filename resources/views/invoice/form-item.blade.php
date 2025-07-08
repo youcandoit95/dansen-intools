@@ -39,12 +39,11 @@
                 @error('sell_price') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Qty Inbound (Stok Masuk) --}}
+            {{-- Qty Inbound (readonly dari stok) --}}
             <div>
                 <label class="block mb-1">Qty Inbound (Stok Masuk)</label>
                 <input type="number" name="qty" id="qtyInput" readonly
                     class="w-full border rounded px-3 py-2 bg-gray-100 @error('qty') border-red-500 @enderror">
-                @error('qty') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                 <p class="text-sm text-gray-700 mt-2">Total Harga Berat Inbound: <span id="totalHargaText" class="font-semibold">Rp 0</span></p>
             </div>
 
@@ -56,10 +55,18 @@
                 @error('qty_out') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Informasi Susut dan Harga Outbound --}}
+            {{-- Informasi Susut dan Total Harga Out --}}
             <div class="space-y-1 text-sm text-gray-700">
                 <p>Susut (Waste): <span id="wasteText" class="font-semibold text-gray-800">0.000 kg</span></p>
                 <p>Total Harga Jual Outbound: <span id="totalHargaOutText" class="font-semibold text-blue-600">Rp 0</span></p>
+            </div>
+
+            {{-- Catatan --}}
+            <div>
+                <label class="block mb-1">Catatan</label>
+                <textarea name="note" rows="2"
+                    class="w-full border rounded px-3 py-2 @error('note') border-red-500 @enderror">{{ old('note') }}</textarea>
+                @error('note') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="text-right pt-3">
