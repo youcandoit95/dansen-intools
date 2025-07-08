@@ -59,7 +59,10 @@ class InvoiceItemController extends Controller
 
         // Hitung waste
         $waste_kg     = max(0, $qty_inbound - $qty_outbound);
-        $waste_amount = (int) ceil($waste_kg * $purchase_price);
+        $waste_amount = $waste_kg * $purchase_price;
+
+        echo $waste_amount;
+        exit();
 
         // Hitung total
         $total_purchase_price = (int) ceil($qty_inbound * $purchase_price);
@@ -89,6 +92,8 @@ class InvoiceItemController extends Controller
             $hargaPersent[$key] = max($purchase_price + 5000, $hasil);
         }
 
+        $final_profit_gross_after_waste = $total_profit_gross - $waste_amount;
+
         InvoiceItem::create([
             'inv_id'                   => $validated['inv_id'],
             'product_id'              => $validated['product_id'],
@@ -109,6 +114,7 @@ class InvoiceItemController extends Controller
             'ss_bottom_sell_price'    => $hargaPersent['bottom'],
             'ss_komisi_sales'         => $komisi_sales,
             'total_komisi_sales'      => $total_komisi_sales,
+            'final_profit_gross_after_waste' => $final_profit_gross_after_waste,
             'note'                    => $validated['note'],
             'created_by'              => session('user_id'),
         ]);

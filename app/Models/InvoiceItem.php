@@ -28,6 +28,7 @@ class InvoiceItem extends Model
         'ss_bottom_sell_price',
         'ss_komisi_sales',
         'total_komisi_sales',
+        'final_profit_gross_after_waste',
         'note',
         'created_by',
     ];
