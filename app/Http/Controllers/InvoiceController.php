@@ -142,12 +142,20 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice)
     {
+        // Redirect jika invoice sudah dibatalkan
+        if ($invoice->cancel) {
+            return redirect()->route('invoice.show', $invoice->id)
+                ->with('error', 'Invoice sudah dibatalkan dan tidak dapat diedit.');
+        }
+
+        // Load relasi invoice
         $invoice->load([
             'customer.salesAgent',
             'customer.company',
             'items.product'
         ]);
 
+        // Ambil daftar customer yang tidak blacklist dan aktif
         $customer = Customer::with(['salesAgent', 'company'])
             ->whereNull('deleted_at')
             ->where('is_blacklisted', false)
@@ -162,11 +170,12 @@ class InvoiceController extends Controller
 
         return view('invoice.edit', [
             'invoice'     => $invoice,
-            'customers' => $customer,
+            'customers'   => $customer,
             'salesAgents' => SalesAgent::orderBy('nama')->get(),
-            'products'    => Product::where('status', 1)->orderBy('nama')->get(), // hanya status aktif dan tidak terhapus
+            'products'    => Product::where('status', 1)->orderBy('nama')->get(),
         ]);
     }
+
 
 
     public function update(Request $request, Invoice $invoice)
@@ -190,18 +199,17 @@ class InvoiceController extends Controller
     }
 
     public function cancel(Request $request, Invoice $invoice)
-{
-    $validated = $request->validate([
-        'cancel_reason' => 'required|string|max:1000',
-    ]);
+    {
+        $validated = $request->validate([
+            'cancel_reason' => 'required|string|max:1000',
+        ]);
 
-    $invoice->update([
-        'cancel' => true,
-        'cancel_reason' => $validated['cancel_reason'],
-    ]);
+        $invoice->update([
+            'cancel' => true,
+            'cancel_reason' => $validated['cancel_reason'],
+        ]);
 
-    return redirect()->route('invoice.edit', $invoice->id)
-        ->with('success', 'Invoice berhasil dibatalkan.');
-}
-
+        return redirect()->route('invoice.edit', $invoice->id)
+            ->with('success', 'Invoice berhasil dibatalkan.');
+    }
 }
