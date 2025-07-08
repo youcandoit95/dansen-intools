@@ -1,18 +1,18 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
 
-<input type="hidden" name="id" value="{{ $invoice->id }}">
+    <input type="hidden" name="id" value="{{ $invoice->id }}">
 
     <div>
         <label class="block mb-1">Tanggal Transaksi</label>
         <input type="date" name="invoice_transaction_date" value="{{ old('invoice_transaction_date', $invoice->invoice_transaction_date ? \Carbon\Carbon::parse($invoice->invoice_transaction_date)->format('Y-m-d') : '') }}"
-            class="w-full border rounded px-3 py-2 @error('invoice_transaction_date') border-red-500 @enderror">
+            class="w-full border rounded px-3 py-2 @error('invoice_transaction_date') border-red-500 @enderror" required>
         @error('invoice_transaction_date') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
     </div>
 
     <div>
         <label class="block mb-1">Customer</label>
         <select name="customer_id" id="customerSelect"
-            class="tomselect w-full border rounded px-3 py-2 @error('customer_id') border-red-500 @enderror">
+            class="tomselect w-full border rounded px-3 py-2 @error('customer_id') border-red-500 @enderror" @if(isset($invoice->id)) disabled @endif required>
             <option value="">Pilih Customer</option>
             @foreach($customers as $customer)
             <option value="{{ $customer->id }}"
@@ -27,21 +27,22 @@
     </div>
 
     <div>
-    <label class="block mb-1">Perusahaan</label>
-    <input type="text" name="company_name" id="companyName"
-        class="w-full border rounded px-3 py-2 bg-gray-100"
-        value="{{ $invoice->customer->company->nama ?? '-' }}" readonly>
-        @if ($invoice->customer->company?->blacklist)
-                <span class="text-red-600 font-semibold">(sedang black list)</span>
-            @endif
-</div>
+        <label class="block mb-1">Perusahaan</label>
+        <input type="text" name="company_name" id="companyName"
+            class="w-full border rounded px-3 py-2 bg-gray-100"
+            value="{{ $invoice->customer?->company?->nama ?? '-' }}" readonly>
 
-<div>
-    <label class="block mb-1">Sales Agent</label>
-    <input type="text" name="sales_agents_name" id="salesAgentName"
-        class="w-full border rounded px-3 py-2 bg-gray-100"
-        value="{{ $invoice->customer->salesAgent->nama ?? '-' }}" readonly>
-</div>
+        @if ($invoice->customer?->company?->blacklist)
+        <span class="text-red-600 font-semibold">(sedang black list)</span>
+        @endif
+    </div>
+
+    <div>
+        <label class="block mb-1">Sales Agent</label>
+        <input type="text" name="sales_agents_name" id="salesAgentName"
+            class="w-full border rounded px-3 py-2 bg-gray-100"
+            value="{{ $invoice->customer?->salesAgent?->nama ?? '-' }}" readonly>
+    </div>
 
 
 
@@ -62,11 +63,13 @@
 @parent
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Inisialisasi TomSelect hanya jika belum diinisialisasi
         document.querySelectorAll(".tomselect").forEach(el => {
             if (!el.tomselect) {
-                new TomSelect(el, { create: false });
+                new TomSelect(el, {
+                    create: false
+                });
             }
         });
 
@@ -82,7 +85,7 @@
 
         // // Update tampilan nama sales agent dan perusahaan saat customer dipilih
         if (customerSelect) {
-            customerSelect.addEventListener('change', function () {
+            customerSelect.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const agentName = selectedOption.getAttribute('data-agent-name') || '';
                 const companyName = selectedOption.getAttribute('data-company-name') || '';
@@ -94,4 +97,3 @@
     });
 </script>
 @endsection
-
