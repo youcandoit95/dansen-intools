@@ -31,7 +31,7 @@ class InvoiceSupportController extends Controller
      */
     public function customerPrice(Request $request, $customer_id, $product_id)
     {
-        $platform = $request->query('platform', 'offline'); // default ke offline jika tidak dikirim
+        $platform = $request->query('platform', 'online'); // default ke offline jika tidak dikirim
         $invoice_id = $request->query('invoice_id'); // opsional, jika ingin cek invoice yang sedang dibuat
 
         $price = CustomerPrice::where('customer_id', $customer_id)
@@ -106,7 +106,10 @@ class InvoiceSupportController extends Controller
             'mbs' => $product->mbs->nama ?? '-',
             'bagian' => $product->bagianDaging->nama ?? '-',
             'deskripsi' => $product->deskripsi ?? '-',
-            'images' => $product->productImages->pluck('path')->toArray(),
+            'images' => $product->productImages->map(function ($img) {
+    return asset('storage/' . ltrim($img->path, '/'));
+})->toArray(),
+
             'hargaPersent' => $hargaPersent
         ]);
     }

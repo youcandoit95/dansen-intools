@@ -42,7 +42,7 @@
 
 
 {{-- Tambah item produk --}}
-<div class="bg-white rounded shadow p-4 max-w-3xl">
+<div class="bg-white rounded shadow p-4">
     <h2 class="text-md font-semibold mb-3">Tambah Produk ke Invoice</h2>
     @include('invoice.form-item', ['invoice' => $invoice, 'products' => $products])
 </div>
