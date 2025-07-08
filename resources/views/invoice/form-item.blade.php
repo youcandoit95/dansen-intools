@@ -7,7 +7,7 @@
         <div class="space-y-3">
             {{-- Produk --}}
             <div>
-                <label class="block mb-1">Produk</label>
+                <label class="block mb-1 text-sm">Produk</label>
                 <select name="product_id" id="productSelect"
                     class="tomselect w-full border rounded px-3 py-2 @error('product_id') border-red-500 @enderror">
                     <option value="">Pilih Produk</option>
@@ -23,7 +23,7 @@
 
             {{-- Stok ID --}}
             <div>
-                <label class="block mb-1">Stok ID</label>
+                <label class="block mb-1 text-sm">Stok ID</label>
                 <select name="stok_id" id="stokSelect"
                     class="tomselect w-full border rounded px-3 py-2 @error('stok_id') border-red-500 @enderror">
                     <option value="">Pilih Stok</option>
@@ -33,7 +33,7 @@
 
             {{-- Harga Jual --}}
             <div>
-                <label class="block mb-1">Harga Jual</label>
+                <label class="block mb-1 text-sm">Harga Jual</label>
                 <input type="number" name="sell_price" id="sellPriceInput" readonly
                     class="w-full border rounded px-3 py-2 bg-gray-100 @error('sell_price') border-red-500 @enderror">
                 @error('sell_price') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
@@ -41,7 +41,7 @@
 
             {{-- Qty Inbound (readonly dari stok) --}}
             <div>
-                <label class="block mb-1">Qty Inbound (Stok Masuk)</label>
+                <label class="block mb-1 text-sm">Qty Inbound (Stok Masuk)</label>
                 <input type="number" name="qty" id="qtyInput" readonly
                     class="w-full border rounded px-3 py-2 bg-gray-100 @error('qty') border-red-500 @enderror">
                 <p class="text-sm text-gray-700 mt-2">Total Harga Berat Inbound: <span id="totalHargaText" class="font-semibold">Rp 0</span></p>
@@ -49,7 +49,7 @@
 
             {{-- Qty Outbound --}}
             <div>
-                <label class="block mb-1">Qty Outbound (Stok Keluar)</label>
+                <label class="block mb-1 text-sm">Qty Outbound (Stok Keluar)</label>
                 <input type="number" name="qty_out" id="qtyOutInput" step="0.001" min="0.001"
                     class="w-full border rounded px-3 py-2 @error('qty_out') border-red-500 @enderror">
                 @error('qty_out') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
@@ -63,7 +63,7 @@
 
             {{-- Catatan --}}
             <div>
-                <label class="block mb-1">Catatan</label>
+                <label class="block mb-1 text-sm">Catatan</label>
                 <textarea name="note" rows="2"
                     class="w-full border rounded px-3 py-2 @error('note') border-red-500 @enderror">{{ old('note') }}</textarea>
                 @error('note') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
