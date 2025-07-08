@@ -73,5 +73,9 @@ class Product extends Model
         return $this->hasOne(DefaultSellPrice::class);
     }
 
+    public function productImages()
+{
+    return $this->hasMany(\App\Models\ProductImage::class);
+}
 
 }

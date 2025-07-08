@@ -23,6 +23,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\SellPriceSettingController;
+use App\Http\Controllers\Api\InvoiceSupportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -157,9 +158,12 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         |--------------------------------------------------------------------------
         */
         // API Stok berdasarkan produk
-        Route::get('/api/stok-by-product/{product_id}', [\App\Http\Controllers\Api\InvoiceSupportController::class, 'stokByProduct']);
+        Route::get('/api/stok-by-product/{product_id}', [InvoiceSupportController::class, 'stokByProduct']);
         // API Customer Price berdasarkan product dan customer
-        Route::get('/api/customer-price-by-product/{customer_id}/{product_id}', [\App\Http\Controllers\Api\InvoiceSupportController::class, 'customerPrice']);
+        Route::get('/api/customer-price-by-product/{customer_id}/{product_id}', [InvoiceSupportController::class, 'customerPrice']);
+
+        Route::get('/api/product-detail/{id}', [InvoiceSupportController::class, 'productDetail']);
+
 
         /*
         |--------------------------------------------------------------------------

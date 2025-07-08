@@ -17,11 +17,11 @@ class InvoiceSupportController extends Controller
      */
     public function stokByProduct($product_id)
     {
-       $stok = Stok::where('product_id', $product_id)
-                    ->where('temp', false)
-                    ->where('cabang_id', session('cabang_id'))
-                    ->orderBy('created_at', 'desc')
-                    ->get(['id', 'barcode_stok', 'berat_kg', 'kategori']);
+        $stok = Stok::where('product_id', $product_id)
+            ->where('temp', false)
+            ->where('cabang_id', session('cabang_id'))
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'barcode_stok', 'berat_kg', 'kategori']);
 
         return response()->json($stok);
     }
@@ -30,52 +30,84 @@ class InvoiceSupportController extends Controller
      * Ambil harga customer berdasarkan produk.
      */
     public function customerPrice(Request $request, $customer_id, $product_id)
-{
-    $platform = $request->query('platform', 'offline'); // default ke offline jika tidak dikirim
-    $invoice_id = $request->query('invoice_id'); // opsional, jika ingin cek invoice yang sedang dibuat
+    {
+        $platform = $request->query('platform', 'offline'); // default ke offline jika tidak dikirim
+        $invoice_id = $request->query('invoice_id'); // opsional, jika ingin cek invoice yang sedang dibuat
 
-    $price = CustomerPrice::where('customer_id', $customer_id)
-        ->where('product_id', $product_id)
-        ->whereNull('deleted_at')
-        ->orderByDesc('id')
-        ->first();
+        $price = CustomerPrice::where('customer_id', $customer_id)
+            ->where('product_id', $product_id)
+            ->whereNull('deleted_at')
+            ->orderByDesc('id')
+            ->first();
 
-    if ($price) {
+        if ($price) {
+            return response()->json([
+                'harga' => $price->harga_jual,
+                'sumber' => 'customer_price'
+            ]);
+        }
+
+        // Fallback: Ambil harga supplier tertinggi dari product price
+        $productPrice = ProductPrice::where('product_id', $product_id)
+            ->orderByDesc('harga')
+            ->first();
+
+        if (!$productPrice) {
+            return response()->json([
+                'harga' => null,
+                'sumber' => 'not_found'
+            ]);
+        }
+
+        // Ambil setting persentase aktif terakhir
+        $setting = SellPriceSetting::latest('id')->whereNull('deleted_at')->first();
+        $percent = 0;
+
+        if ($setting) {
+            $percent = $platform === 'offline'
+                ? ($setting->offline ?? 0)
+                : ($setting->online ?? 0);
+        }
+
+        $harga = (int) ceil($productPrice->harga * (1 + $percent / 100));
+
         return response()->json([
-            'harga' => $price->harga_jual,
-            'sumber' => 'customer_price'
+            'harga' => $harga,
+            'sumber' => 'product_price_fallback',
+            'platform' => $platform,
+            'persentase' => $percent
         ]);
     }
 
-    // Fallback: Ambil harga supplier tertinggi dari product price
-    $productPrice = ProductPrice::where('product_id', $product_id)
-        ->orderByDesc('harga')
-        ->first();
+    public function productDetail($id)
+    {
+        $product = \App\Models\Product::with([
+            'mbs',
+            'bagianDaging',
+            'productImages',
+            'productPrices'
+        ])->findOrFail($id);
 
-    if (!$productPrice) {
+        $maxHarga = $product->productPrices->max('harga') ?? 0;
+
+        $setting = \App\Models\SellPriceSetting::latest()->first();
+        $hargaPersent = [];
+
+        foreach (['online', 'offline', 'reseller', 'resto', 'bottom'] as $key) {
+            $persen = $setting?->$key ?? 0;
+            $hasil = ceil($maxHarga * (1 + $persen / 100));
+            $hargaPersent[$key] = max($maxHarga + 5000, $hasil);
+        }
+
         return response()->json([
-            'harga' => null,
-            'sumber' => 'not_found'
+            'nama' => $product->nama,
+            'kategori' => $product->kategori_label,
+            'brand' => $product->brand,
+            'mbs' => $product->mbs->nama ?? '-',
+            'bagian' => $product->bagianDaging->nama ?? '-',
+            'deskripsi' => $product->deskripsi ?? '-',
+            'images' => $product->productImages->pluck('path')->toArray(),
+            'hargaPersent' => $hargaPersent
         ]);
     }
-
-    // Ambil setting persentase aktif terakhir
-    $setting = SellPriceSetting::latest('id')->whereNull('deleted_at')->first();
-    $percent = 0;
-
-    if ($setting) {
-        $percent = $platform === 'offline'
-            ? ($setting->offline ?? 0)
-            : ($setting->online ?? 0);
-    }
-
-    $harga = (int) ceil($productPrice->harga * (1 + $percent / 100));
-
-    return response()->json([
-        'harga' => $harga,
-        'sumber' => 'product_price_fallback',
-        'platform' => $platform,
-        'persentase' => $percent
-    ]);
-}
 }

@@ -172,7 +172,13 @@ class InvoiceController extends Controller
             'invoice'     => $invoice,
             'customers'   => $customer,
             'salesAgents' => SalesAgent::orderBy('nama')->get(),
-            'products'    => Product::where('status', 1)->orderBy('nama')->get(),
+            'products' => Product::where('status', 1)
+                ->whereHas('productPrices', function ($q) {
+                    $q->whereNull('deleted_at');
+                })
+                ->orderBy('nama')
+                ->get(),
+
         ]);
     }
 
