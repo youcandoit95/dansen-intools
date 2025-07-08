@@ -108,8 +108,8 @@ class InvoiceSupportController extends Controller
             'bagian' => $product->bagianDaging->nama ?? '-',
             'deskripsi' => $product->deskripsi ?? '-',
             'images' => $product->productImages->map(function ($img) {
-    return asset('storage/' . ltrim($img->path, '/'));
-})->toArray(),
+                return asset('storage/' . ltrim($img->path, '/'));
+            })->toArray(),
 
             'hargaPersent' => $hargaPersent
         ]);

@@ -35,16 +35,17 @@
             <div>
                 <label class="block mb-1">Harga Jual</label>
                 <input type="number" name="sell_price" id="sellPriceInput" readonly
-                    class="w-full border rounded px-3 py-2 @error('sell_price') border-red-500 @enderror">
+                    class="w-full border rounded px-3 py-2 bg-gray-100 @error('sell_price') border-red-500 @enderror">
                 @error('sell_price') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             {{-- Qty --}}
             <div>
                 <label class="block mb-1">Qty</label>
-                <input type="number" name="qty" min="1" value="1"
-                    class="w-full border rounded px-3 py-2 @error('qty') border-red-500 @enderror">
+                <input type="number" name="qty" id="qtyInput" readonly min="1"
+                    class="w-full border rounded px-3 py-2 bg-gray-100 @error('qty') border-red-500 @enderror">
                 @error('qty') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                <p class="text-sm text-gray-700 mt-2">Total Harga: <span id="totalHargaText" class="font-semibold">Rp 0</span></p>
             </div>
 
             <div class="text-right pt-3">
@@ -81,7 +82,7 @@
             </table>
 
             <div class="mt-4">
-                <strong>Harga Khusus Customer:</strong>
+                <strong>Harga Jual Customer:</strong>
                 <p id="hargaCustomer" class="text-blue-600 font-semibold mt-1"></p>
             </div>
         </div>
@@ -89,17 +90,18 @@
 </form>
 
 @php
-    $platform = $invoice->platform_id == "" ? 'offline' : 'online';
+    $platform = $invoice->platform_id == '' ? 'offline' : 'online';
 @endphp
-
 
 @section('scripts')
 @parent
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const productSelect = document.getElementById('productSelect');
         const stokSelect = document.getElementById('stokSelect');
         const sellPriceInput = document.getElementById('sellPriceInput');
+        const qtyInput = document.getElementById('qtyInput');
+        const totalHargaText = document.getElementById('totalHargaText');
 
         const namaProduk = document.getElementById('namaProduk');
         const kategoriProduk = document.getElementById('kategoriProduk');
@@ -112,7 +114,15 @@
         const productDetails = document.getElementById('productDetails');
         const priceTableBody = document.getElementById('priceTableBody');
 
-        productSelect.addEventListener('change', async function() {
+        function updateTotalHarga() {
+            const qty = parseFloat(qtyInput.value) || 0;
+            const harga = parseFloat(sellPriceInput.value) || 0;
+            const total = qty * harga;
+            totalHargaText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(total))}`;
+
+        }
+
+        productSelect.addEventListener('change', async function () {
             const productId = this.value;
             if (!productId) return;
 
@@ -125,20 +135,20 @@
             stokData.forEach(stok => {
                 stokTomSelect.addOption({
                     value: stok.id,
-                    text: `${stok.berat_kg} kg - ${stok.kategori} - ${stok.barcode_stok}`
+                    text: `${stok.berat_kg} kg - ${stok.kategori} - ${stok.barcode_stok}`,
+                    data: stok // penting: simpan data berat di data-* atribut
                 });
             });
             stokTomSelect.refreshOptions();
 
             // HARGA CUSTOMER
             const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${productId}?platform={{ $platform }}`);
-
             const hargaData = await hargaRes.json();
-
             sellPriceInput.value = hargaData.harga ?? 0;
             hargaCustomer.innerText = hargaData.harga
                 ? `Rp ${new Intl.NumberFormat('id-ID').format(hargaData.harga)}`
                 : 'Tidak tersedia';
+            updateTotalHarga();
 
             // DETAIL PRODUK
             const detailRes = await fetch(`/api/product-detail/${productId}`);
@@ -162,6 +172,21 @@
                     <tr><td class="px-2 py-1 capitalize">${tipe}</td>
                     <td class="px-2 py-1 text-right">Rp ${new Intl.NumberFormat('id-ID').format(harga)}</td></tr>`;
             });
+        });
+
+        // Ketika stok dipilih, isi qty berdasarkan berat stok
+        document.addEventListener('change', function (e) {
+            if (e.target.id === 'stokSelect') {
+                const selectedOption = e.target.selectedOptions[0];
+                if (!selectedOption) return;
+                const label = selectedOption.textContent;
+                const match = label.match(/^([\d.]+) kg/);
+                if (match) {
+                    const berat = parseFloat(match[1]) || 1;
+                    qtyInput.value = berat;
+                    updateTotalHarga();
+                }
+            }
         });
     });
 </script>
