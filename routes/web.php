@@ -22,6 +22,7 @@ use App\Http\Controllers\CetakLabelController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
+use App\Http\Controllers\SellPriceSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -186,6 +187,12 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
 
         // Suppliers
         Route::resource('suppliers', SupplierController::class);
+
+        Route::prefix('sell-price-settings')->middleware(['auth'])->group(function () {
+            Route::get('/', [SellPriceSettingController::class, 'index'])->name('sell-price-settings.index');
+            Route::get('/create', [SellPriceSettingController::class, 'create'])->name('sell-price-settings.create');
+            Route::post('/', [SellPriceSettingController::class, 'store'])->name('sell-price-settings.store');
+        });
 
         // Customers
         Route::resource('customers', CustomerController::class);

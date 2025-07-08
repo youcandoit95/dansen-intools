@@ -64,6 +64,16 @@
                 <i class="bi bi-building"></i> Suppliers
             </a>
 
+            <!-- Sell Price Setting -->
+<a href="{{ route('sell-price-settings.index') }}"
+    class="flex items-center gap-2 p-2 rounded ml-4
+        {{ ($activeMenu ?? '') === 'sell-price-settings'
+            ? 'bg-blue-600 text-white'
+            : 'text-gray-700 hover:bg-gray-100' }}">
+    <i class="bi bi-percent"></i> Harga Jual (%)
+</a>
+
+
             <!-- Product -->
             <a href="/products"
                 class="flex items-center gap-2 p-2 rounded ml-4

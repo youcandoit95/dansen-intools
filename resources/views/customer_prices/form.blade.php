@@ -14,7 +14,7 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
 
     @if(isset($price->id))
     <input type="hidden" name="id" value="{{ $price->id }}">
-@endif
+    @endif
 
 
     <!-- Customer -->
@@ -26,11 +26,11 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
             required>
             <option value="">-- Pilih Customer --</option>
             @foreach($customers as $cust)
-                <option value="{{ $cust->id }}"
-                    data-sales-agent="{{ $cust->salesAgent->nama ?? '' }}"
-                    {{ $customerSelected == $cust->id ? 'selected' : '' }}>
-                    {{ $cust->nama }}
-                </option>
+            <option value="{{ $cust->id }}"
+                data-sales-agent="{{ $cust->salesAgent->nama ?? '' }}"
+                {{ $customerSelected == $cust->id ? 'selected' : '' }}>
+                {{ $cust->nama }}
+            </option>
             @endforeach
         </select>
         <div id="salesAgentInfo" class="mt-2 text-sm text-gray-600 hidden">
@@ -44,9 +44,9 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
         <select name="product_id" id="productSelect" class="tom-select w-full border rounded px-3 py-2" required>
             <option value="">-- Pilih Produk --</option>
             @foreach($products as $p)
-                <option value="{{ $p->id }}"
-                    {{ $selectedProduct == $p->id ? 'selected' : '' }}
-                    data-info="{{ json_encode([
+            <option value="{{ $p->id }}"
+                {{ $selectedProduct == $p->id ? 'selected' : '' }}
+                data-info="{{ json_encode([
                         'nama' => $p->nama,
                         'max_supplier_price' => $p->productPrices->max('harga'),
                         'default_prices' => [
@@ -57,8 +57,8 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
                             'bottom' => $p->defaultSellPrice->bottom_sell_price ?? 0
                         ]
                     ]) }}">
-                    {{ $p->nama }}
-                </option>
+                {{ $p->nama }}
+            </option>
             @endforeach
         </select>
     </div>
@@ -69,8 +69,8 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
     <!-- Harga Jual -->
     <div>
         @error('harga_jual')
-    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-@enderror
+        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+        @enderror
 
         <label class="block text-sm font-medium text-gray-700 mb-1">Harga Jual (Rp) <span class="text-red-500">*</span></label>
         <input type="text" name="harga_jual" class="rupiah-input w-full border rounded px-3 py-2"
@@ -92,53 +92,53 @@ $customerSelected = old('customer_id', $price->customer_id ?? '');
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    new TomSelect('#productSelect');
-    new TomSelect('#customerSelect');
+    document.addEventListener('DOMContentLoaded', function() {
+        new TomSelect('#productSelect');
+        new TomSelect('#customerSelect');
 
-    const customerSelect = document.getElementById('customerSelect');
-    const salesAgentInfo = document.getElementById('salesAgentInfo');
-    const salesAgentName = document.getElementById('salesAgentName');
-    const komisiInput = document.getElementById('komisi_sales');
+        const customerSelect = document.getElementById('customerSelect');
+        const salesAgentInfo = document.getElementById('salesAgentInfo');
+        const salesAgentName = document.getElementById('salesAgentName');
+        const komisiInput = document.getElementById('komisi_sales');
 
-    // Tampilkan sales agent saat pilih customer
-    customerSelect?.addEventListener('change', function () {
-        const selected = this.selectedOptions[0];
-        const agentName = selected.getAttribute('data-sales-agent');
-        if (agentName) {
-            salesAgentName.textContent = agentName;
-            salesAgentInfo.classList.remove('hidden');
-            komisiInput.disabled = false;
-        } else {
-            salesAgentName.textContent = '-';
-            salesAgentInfo.classList.add('hidden');
-            komisiInput.value = '';
-            komisiInput.disabled = true;
+        // Tampilkan sales agent saat pilih customer
+        customerSelect?.addEventListener('change', function() {
+            const selected = this.selectedOptions[0];
+            const agentName = selected.getAttribute('data-sales-agent');
+            if (agentName) {
+                salesAgentName.textContent = agentName;
+                salesAgentInfo.classList.remove('hidden');
+                komisiInput.disabled = false;
+            } else {
+                salesAgentName.textContent = '-';
+                salesAgentInfo.classList.add('hidden');
+                komisiInput.value = '';
+                komisiInput.disabled = true;
+            }
+        });
+
+        // Trigger saat halaman dimuat
+        const initialCustomer = customerSelect?.selectedOptions[0];
+        if (initialCustomer) {
+            const agentName = initialCustomer.getAttribute('data-sales-agent');
+            if (agentName) {
+                salesAgentName.textContent = agentName;
+                salesAgentInfo.classList.remove('hidden');
+            }
         }
-    });
 
-    // Trigger saat halaman dimuat
-    const initialCustomer = customerSelect?.selectedOptions[0];
-    if (initialCustomer) {
-        const agentName = initialCustomer.getAttribute('data-sales-agent');
-        if (agentName) {
-            salesAgentName.textContent = agentName;
-            salesAgentInfo.classList.remove('hidden');
-        }
-    }
+        // Produk info harga
+        const productSelect = document.getElementById('productSelect');
+        const hargaInfo = document.getElementById('hargaInfo');
 
-    // Produk info harga
-    const productSelect = document.getElementById('productSelect');
-    const hargaInfo = document.getElementById('hargaInfo');
+        productSelect?.addEventListener('change', function() {
+            const selected = this.selectedOptions[0];
+            if (!selected) return hargaInfo.classList.add('hidden');
 
-    productSelect?.addEventListener('change', function () {
-        const selected = this.selectedOptions[0];
-        if (!selected) return hargaInfo.classList.add('hidden');
+            const info = JSON.parse(selected.getAttribute('data-info'));
+            const d = info.default_prices;
 
-        const info = JSON.parse(selected.getAttribute('data-info'));
-        const d = info.default_prices;
-
-        hargaInfo.innerHTML = `
+            hargaInfo.innerHTML = `
             <table class="w-full text-sm border border-gray-300">
                 <thead class="bg-gray-100">
                     <tr><th class="px-3 py-2 text-left">Channel</th><th class="px-3 py-2 text-left">Harga</th></tr>
@@ -152,19 +152,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     <tr><td class="px-3 py-2">Bottom</td><td class="px-3 py-2">Rp ${Number(d.bottom).toLocaleString()}</td></tr>
                 </tbody>
             </table>`;
-        hargaInfo.classList.remove('hidden');
-    });
+            hargaInfo.classList.remove('hidden');
+        });
 
-    // Format input Rp
-    document.querySelectorAll('.rupiah-input').forEach(input => {
-        input.addEventListener('input', function() {
-            const angka = this.value.replace(/\D/g, '');
-            this.value = new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(angka || 0);
+        // Format input Rp
+        document.querySelectorAll('.rupiah-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const angka = this.value.replace(/\D/g, '');
+                this.value = new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0
+                }).format(angka || 0);
+            });
         });
     });
-});
 </script>
