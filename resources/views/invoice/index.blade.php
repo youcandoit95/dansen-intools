@@ -15,21 +15,21 @@
     <select name="sales_agents_id" class="tomselect w-full border rounded px-2 py-1.5">
         <option value="">Sales Agent</option>
         @foreach ($salesAgents as $agent)
-            <option value="{{ $agent->id }}" @selected(request('sales_agents_id') == $agent->id)>{{ $agent->nama }}</option>
+        <option value="{{ $agent->id }}" @selected(request('sales_agents_id')==$agent->id)>{{ $agent->nama }}</option>
         @endforeach
     </select>
 
     <select name="company_id" class="tomselect w-full border rounded px-2 py-1.5">
         <option value="">Perusahaan</option>
         @foreach ($companies as $company)
-            <option value="{{ $company->id }}" @selected(request('company_id') == $company->id)>{{ $company->nama }}</option>
+        <option value="{{ $company->id }}" @selected(request('company_id')==$company->id)>{{ $company->nama }}</option>
         @endforeach
     </select>
 
     <select name="customer_id" class="tomselect w-full border rounded px-2 py-1.5">
         <option value="">Customer</option>
         @foreach ($customers as $customer)
-            <option value="{{ $customer->id }}" @selected(request('customer_id') == $customer->id)>{{ $customer->nama }}</option>
+        <option value="{{ $customer->id }}" @selected(request('customer_id')==$customer->id)>{{ $customer->nama }}</option>
         @endforeach
     </select>
 
@@ -38,27 +38,27 @@
 
     <select name="platform_id" class="tomselect w-full border rounded px-2 py-1.5">
         <option value="">Platform</option>
-        <option value="1" @selected(request('platform_id') == '1')>Tokopedia</option>
-        <option value="2" @selected(request('platform_id') == '2')>TiktokShop</option>
-        <option value="3" @selected(request('platform_id') == '3')>Shopee</option>
-        <option value="4" @selected(request('platform_id') == '4')>Blibli</option>
-        <option value="5" @selected(request('platform_id') == '5')>Toco</option>
-        <option value="0" @selected(request('platform_id') === '0')>Offline</option>
+        <option value="1" @selected(request('platform_id')=='1' )>Tokopedia</option>
+        <option value="2" @selected(request('platform_id')=='2' )>TiktokShop</option>
+        <option value="3" @selected(request('platform_id')=='3' )>Shopee</option>
+        <option value="4" @selected(request('platform_id')=='4' )>Blibli</option>
+        <option value="5" @selected(request('platform_id')=='5' )>Toco</option>
+        <option value="0" @selected(request('platform_id')==='0' )>Offline</option>
     </select>
 
     {{-- Toggle Switches --}}
     <label class="flex items-center gap-2">
-        <input type="checkbox" name="lunas" value="1" @checked(request('lunas') == '1') class="toggle-checkbox">
+        <input type="checkbox" name="lunas" value="1" @checked(request('lunas')=='1' ) class="toggle-checkbox">
         <span class="select-none">Lunas</span>
     </label>
 
     <label class="flex items-center gap-2">
-        <input type="checkbox" name="checked" value="1" @checked(request('checked') == '1') class="toggle-checkbox">
+        <input type="checkbox" name="checked" value="1" @checked(request('checked')=='1' ) class="toggle-checkbox">
         <span class="select-none">Checked</span>
     </label>
 
     <label class="flex items-center gap-2">
-        <input type="checkbox" name="cancel" value="1" @checked(request('cancel') == '1') class="toggle-checkbox">
+        <input type="checkbox" name="cancel" value="1" @checked(request('cancel')=='1' ) class="toggle-checkbox">
         <span class="select-none">Batal</span>
     </label>
 
@@ -86,26 +86,47 @@
         </thead>
         <tbody>
             @foreach ($invoices as $inv)
-                <tr class="border-t">
-                    <td class="px-3 py-2">{{ $inv->id }}</td>
-                    <td class="px-3 py-2">{{ $inv->inv_no }}</td>
-                    <td class="px-3 py-2">{{ $inv->platform_text ?? 'Offline' }}</td>
-                    <td class="px-3 py-2">
-                        <div class="font-medium">Company : {{ $inv->customer->company?->nama ?? '-' }}</div>
-                        <div class="font-medium">Sales Agent : {{ $inv->customer->salesAgent?->nama ?? '-' }}</div>
-                        <div>Nama Customer : {{ $inv->customer->nama ?? '-' }}</div>
-                        <div class="text-gray-500 text-xs">{{ $inv->customer->alamat_lengkap ?? '-' }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-right">Rp {{ number_format($inv->g_total_invoice_amount, 0, ',', '.') }}</td>
-                    <td class="px-3 py-2">
-                        @if($inv->cancel)<span class="text-red-600 font-semibold">Batal</span>@endif
-                        @if($inv->lunas_at)<span class="text-green-600 font-semibold">Lunas</span>@else<span class="text-red-600">Belum Lunas</span>@endif
-                        @if($inv->checked_finance_at)<span class="text-yellow-600 font-semibold">Checked Finance</span>@endif
-                    </td>
-                    <td class="px-3 py-2">
-                        <a href="{{ route('invoice.show', $inv->id) }}" class="text-blue-600 hover:underline">Lihat</a>
-                    </td>
-                </tr>
+            <tr class="border-t">
+                <td class="px-3 py-2">{{ $inv->id }}</td>
+                <td class="px-3 py-2">{{ $inv->inv_no }}</td>
+                <td class="px-3 py-2">{{ $inv->platform_text ?? 'Offline' }}</td>
+                <td class="px-3 py-2">
+                    <div class="font-medium">Company : {{ $inv->customer->company?->nama ?? '-' }}</div>
+                    <div class="font-medium">Sales Agent : {{ $inv->customer->salesAgent?->nama ?? '-' }}</div>
+                    <div>Nama Customer : {{ $inv->customer->nama ?? '-' }}</div>
+                    <div class="text-gray-500 text-xs">{{ $inv->customer->alamat_lengkap ?? '-' }}</div>
+                </td>
+                <td class="px-3 py-2 text-right">Rp {{ number_format($inv->g_total_invoice_amount, 0, ',', '.') }}</td>
+                <td class="px-3 py-2">
+                    <div class="flex flex-col gap-1 text-xs font-semibold">
+                        @if($inv->cancel)
+                        <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full w-fit">
+                            Dibatalkan
+                        </span>
+                        @endif
+
+                        @if($inv->lunas_at)
+                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full w-fit">
+                            Lunas
+                        </span>
+                        @else
+                        <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full w-fit">
+                            Belum Lunas
+                        </span>
+                        @endif
+
+                        @if($inv->checked_finance_at)
+                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full w-fit">
+                            Checked Finance
+                        </span>
+                        @endif
+                    </div>
+
+                </td>
+                <td class="px-3 py-2">
+                    <a href="{{ route('invoice.show', $inv->id) }}" class="text-blue-600 hover:underline">Lihat</a>
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>
@@ -122,12 +143,15 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         // TomSelect
         document.querySelectorAll('.tomselect').forEach(el => {
             new TomSelect(el, {
                 create: false,
-                sortField: { field: "text", direction: "asc" }
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
             });
         });
 
@@ -147,34 +171,37 @@
 </script>
 
 <style>
-/* Toggle Switch Styling */
-.toggle-checkbox {
-    appearance: none;
-    width: 32px;
-    height: 16px;
-    background: #d1d5db;
-    border-radius: 9999px;
-    position: relative;
-    cursor: pointer;
-    outline: none;
-    transition: background 0.3s;
-}
-.toggle-checkbox:checked {
-    background: #2563eb;
-}
-.toggle-checkbox::before {
-    content: "";
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    border-radius: 9999px;
-    top: 1px;
-    left: 1px;
-    background: white;
-    transition: transform 0.3s;
-}
-.toggle-checkbox:checked::before {
-    transform: translateX(16px);
-}
+    /* Toggle Switch Styling */
+    .toggle-checkbox {
+        appearance: none;
+        width: 32px;
+        height: 16px;
+        background: #d1d5db;
+        border-radius: 9999px;
+        position: relative;
+        cursor: pointer;
+        outline: none;
+        transition: background 0.3s;
+    }
+
+    .toggle-checkbox:checked {
+        background: #2563eb;
+    }
+
+    .toggle-checkbox::before {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 9999px;
+        top: 1px;
+        left: 1px;
+        background: white;
+        transition: transform 0.3s;
+    }
+
+    .toggle-checkbox:checked::before {
+        transform: translateX(16px);
+    }
 </style>
 @endsection

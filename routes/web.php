@@ -148,6 +148,7 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         |--------------------------------------------------------------------------
         */
         Route::post('/invoice-item/store', [InvoiceItemController::class, 'store'])->name('invoice-item.store');
+        Route::post('/invoice/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoice.cancel');
 
         /*
         |--------------------------------------------------------------------------

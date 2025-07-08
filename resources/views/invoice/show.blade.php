@@ -4,66 +4,102 @@
 @section('content')
 <div class="flex items-center justify-between mb-4">
     <h1 class="text-lg font-semibold">Detail Invoice #{{ $invoice->inv_no }}</h1>
-    <a href="{{ route('invoice.edit', $invoice->id) }}" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">
-        Edit Invoice
-    </a>
+    @if(!$invoice->cancel)
+        <a href="{{ route('invoice.edit', $invoice->id) }}" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm hover:bg-blue-700">
+            Edit Invoice
+        </a>
+    @endif
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+    <!-- Informasi Invoice -->
     <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-semibold mb-2">Informasi Invoice</h2>
-        <p><strong>Invoice No:</strong> {{ $invoice->inv_no }}</p>
-        <p><strong>Tanggal Transaksi:</strong> {{ \Carbon\Carbon::parse($invoice->invoice_transaction_date)->translatedFormat('d F Y') }}</p>
-        <p><strong>Perusahaan:</strong> {{ $invoice->customer->company->nama ?? '-' }}
-            @if ($invoice->customer->company?->blacklist)
-                <span class="text-red-600 font-semibold">(sedang black list)</span>
-            @endif
-        </p>
-        <p>
-            <strong>Customer :</strong> {{ $invoice->customer->nama ?? '-' }}
-            @if ($invoice->customer?->is_blacklisted)
-                <span class="text-red-600 font-semibold">(sedang black list)</span>
-            @endif
-        </p>
-
-        <p><strong>Sales Agent:</strong> {{ $invoice->customer->salesAgent->nama ?? '-' }}</p>
-        <p><strong>Platform:</strong> {{ $invoice->platform_text ?? 'Offline' }}</p>
+        <h2 class="font-semibold mb-3 text-base">Informasi Invoice</h2>
+        <div class="grid grid-cols-1 gap-y-2">
+            <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Invoice No</p>
+                <p class="col-span-2 font-medium">{{ $invoice->inv_no }}</p>
+            </div>
+            <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Tanggal Transaksi</p>
+                <p class="col-span-2 font-medium">{{ \Carbon\Carbon::parse($invoice->invoice_transaction_date)->translatedFormat('d F Y') }}</p>
+            </div>
+            <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Perusahaan</p>
+                <p class="col-span-2 font-medium">
+                    {{ $invoice->customer->company->nama ?? '-' }}
+                    @if ($invoice->customer->company?->blacklist)
+                        <span class="text-red-600 font-semibold">(sedang black list)</span>
+                    @endif
+                </p>
+            </div>
+            <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Customer</p>
+                <p class="col-span-2 font-medium">
+                    {{ $invoice->customer->nama ?? '-' }}
+                    @if ($invoice->customer?->is_blacklisted)
+                        <span class="text-red-600 font-semibold">(sedang black list)</span>
+                    @endif
+                </p>
+            </div>
+            <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Sales Agent</p>
+                <p class="col-span-2 font-medium">{{ $invoice->customer->salesAgent->nama ?? '-' }}</p>
+            </div>
+            <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Platform</p>
+                <p class="col-span-2 font-medium">{{ $invoice->platform_text ?? 'Offline' }}</p>
+            </div>
+        </div>
     </div>
 
+    <!-- Ringkasan Status -->
     <div class="bg-white p-4 rounded shadow">
-        <h2 class="font-semibold mb-2">Ringkasan</h2>
-        <p><strong>Total Invoice:</strong> Rp {{ number_format($invoice->g_total_invoice_amount, 0, ',', '.') }}</p>
+        <h2 class="font-semibold mb-3 text-base">Ringkasan</h2>
+        <div class="grid grid-cols-1 gap-y-2">
+            <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Total Invoice</p>
+                <p class="col-span-2 font-medium">Rp {{ number_format($invoice->g_total_invoice_amount, 0, ',', '.') }}</p>
+            </div>
 
-        <p><strong>Status:</strong></p>
-        <ul class="ml-4 list-disc mt-1">
-            <li>
-                @if($invoice->cancel)
-                    <span class="text-red-600 font-semibold">Batal</span>
-                @elseif($invoice->lunas_at)
-                    <span class="text-green-600 font-semibold">Lunas</span>
-                @else
-                    <span class="text-gray-600">Belum Lunas</span>
-                @endif
-            </li>
-            <li>
-                @if($invoice->checked_finance_at)
-                    <span class="text-yellow-600 font-semibold">Checked</span>
-                @else
-                    <span class="text-gray-600">Belum Dicek</span>
-                @endif
-            </li>
-        </ul>
+            <div class="grid grid-cols-3 items-start">
+                <p class="col-span-1 text-gray-500">Status</p>
+                <div class="col-span-2 flex flex-col gap-1 text-xs font-semibold">
+                    @if($invoice->cancel)
+                        <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full w-fit">Dibatalkan</span>
+                    @endif
+                    @if($invoice->lunas_at)
+                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full w-fit">Lunas</span>
+                    @else
+                        <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full w-fit">Belum Lunas</span>
+                    @endif
+                    @if($invoice->checked_finance_at)
+                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full w-fit">Checked Finance</span>
+                    @else
+                        <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full w-fit">Belum Dicek</span>
+                    @endif
+                </div>
+            </div>
+
+            @if($invoice->cancel_reason)
+                <div class="grid grid-cols-3">
+                    <p class="col-span-1 text-gray-500">Alasan Batal</p>
+                    <p class="col-span-2 text-red-800 text-sm">{{ $invoice->cancel_reason }}</p>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 
+<!-- Detail Produk -->
 <div class="bg-white shadow rounded overflow-x-auto">
-    <h2 class="font-semibold px-4 pt-4">Detail Produk</h2>
+    <h2 class="font-semibold px-4 pt-4 text-base">Detail Produk</h2>
     <table class="min-w-full text-sm mt-2">
         <thead class="bg-gray-100">
             <tr>
-                <th class="px-4 py-2">#</th>
-                <th class="px-4 py-2">Produk</th>
-                <th class="px-4 py-2">Stok ID</th>
+                <th class="px-4 py-2 text-left">#</th>
+                <th class="px-4 py-2 text-left">Produk</th>
+                <th class="px-4 py-2 text-left">Stok ID</th>
                 <th class="px-4 py-2 text-right">Harga Jual</th>
                 <th class="px-4 py-2 text-center">Qty</th>
                 <th class="px-4 py-2 text-right">Total</th>

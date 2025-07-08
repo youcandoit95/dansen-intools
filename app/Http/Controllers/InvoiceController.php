@@ -172,14 +172,14 @@ class InvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         $validated = $request->validate([
-            'customer_id'   => 'required|exists:customers,id',
             'platform_id'   => 'nullable|integer',
             'invoice_transaction_date' => 'required|date',
         ]);
 
         $invoice->update($validated);
 
-        return redirect()->route('invoice.index')->with('success', 'Invoice berhasil diperbarui.');
+        return redirect()->route('invoice.edit', $invoice->id)
+            ->with('success', 'Invoice berhasil diubah. Silakan lanjutkan tambahkan produk.');
     }
 
     public function show(Invoice $invoice)
@@ -188,4 +188,20 @@ class InvoiceController extends Controller
 
         return view('invoice.show', compact('invoice'));
     }
+
+    public function cancel(Request $request, Invoice $invoice)
+{
+    $validated = $request->validate([
+        'cancel_reason' => 'required|string|max:1000',
+    ]);
+
+    $invoice->update([
+        'cancel' => true,
+        'cancel_reason' => $validated['cancel_reason'],
+    ]);
+
+    return redirect()->route('invoice.edit', $invoice->id)
+        ->with('success', 'Invoice berhasil dibatalkan.');
+}
+
 }
