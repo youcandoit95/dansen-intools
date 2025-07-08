@@ -27,7 +27,6 @@ class CustomerPriceController extends Controller
         $activeMenu = 'customer-prices';
 
         $customers = Customer::orderBy('nama')->get();
-        $salesAgents = SalesAgent::orderBy('nama')->get();
         $products = Product::with([
             'productPrices.supplier',
             'mbs',
@@ -37,7 +36,7 @@ class CustomerPriceController extends Controller
 
         $isEdit = false;
 
-        return view('customer_prices.create', compact('customers', 'salesAgents', 'products', 'isEdit', 'activeMenu'));
+        return view('customer_prices.create', compact('customers', 'products', 'isEdit', 'activeMenu'));
     }
 
     public function store(Request $request)
@@ -45,7 +44,6 @@ class CustomerPriceController extends Controller
         $data = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'product_id' => 'required|exists:products,id',
-            'sales_agent_id' => 'nullable|exists:sales_agents,id',
             'harga_jual' => 'required|string',
             'komisi_sales' => 'nullable|string'
         ]);
@@ -69,11 +67,10 @@ class CustomerPriceController extends Controller
 
         $price = CustomerPrice::findOrFail($id);
         $customers = Customer::orderBy('nama')->get();
-        $salesAgents = SalesAgent::orderBy('nama')->get();
         $products = Product::with(['productPrices.supplier', 'defaultSellPrice'])->get();
         $isEdit = true;
 
-        return view('customer_prices.edit', compact('price', 'customers', 'salesAgents', 'products', 'isEdit', 'activeMenu'));
+        return view('customer_prices.edit', compact('price', 'customers', 'products', 'isEdit', 'activeMenu'));
     }
 
     public function update(Request $request, $id)
@@ -83,7 +80,6 @@ class CustomerPriceController extends Controller
         $data = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'product_id' => 'required|exists:products,id',
-            'sales_agent_id' => 'nullable|exists:sales_agents,id',
             'harga_jual' => 'required|string',
             'komisi_sales' => 'nullable|string'
         ]);

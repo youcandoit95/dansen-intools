@@ -12,7 +12,6 @@ return new class extends Migration {
 
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('product_id');
-            $table->unsignedBigInteger('sales_agent_id')->nullable();
 
             $table->unsignedBigInteger('harga_jual');
             $table->unsignedBigInteger('komisi_sales')->nullable();
@@ -27,9 +26,6 @@ return new class extends Migration {
 
             $table->foreign('product_id', 'fk_customer_prices_product')
                   ->references('id')->on('products')->cascadeOnDelete();
-
-            $table->foreign('sales_agent_id', 'fk_customer_prices_sales_agent')
-                  ->references('id')->on('sales_agents')->nullOnDelete();
         });
     }
 
