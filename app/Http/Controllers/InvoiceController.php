@@ -176,12 +176,9 @@ class InvoiceController extends Controller
         ]);
     }
 
-
-
     public function update(Request $request, Invoice $invoice)
     {
         $validated = $request->validate([
-            'platform_id'   => 'nullable|integer',
             'invoice_transaction_date' => 'required|date',
         ]);
 

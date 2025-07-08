@@ -48,7 +48,7 @@
 
     <div>
         <label class="block mb-1">Platform</label>
-        <select name="platform_id" class="tomselect w-full border rounded px-3 py-2">
+        <select name="platform_id" class="tomselect w-full border rounded px-3 py-2" @if(isset($invoice->id)) disabled @endif>
             <option value="">Offline</option>
             <option value="1" @selected(old('platform_id', $invoice->platform_id) == '1')>Tokopedia</option>
             <option value="2" @selected(old('platform_id', $invoice->platform_id) == '2')>TiktokShop</option>

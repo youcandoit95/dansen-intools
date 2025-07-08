@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h1 class="text-xl font-semibold mb-4">Master Harga Produk</h1>
+<h1 class="text-xl font-semibold mb-4">Master Harga Produk (Harga Beli)</h1>
 
 @if (session('success'))
     <div class="mb-4 bg-green-100 border border-green-300 text-green-800 text-sm px-4 py-3 rounded">

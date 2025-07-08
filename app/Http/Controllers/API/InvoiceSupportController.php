@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\CustomerPrice;
 use App\Models\Stok;
 use Illuminate\Http\Request;
+use App\Models\ProductPrice;
+use App\Models\SellPriceSetting;
+use App\Models\Invoice;
 
 class InvoiceSupportController extends Controller
 {
@@ -26,15 +29,53 @@ class InvoiceSupportController extends Controller
     /**
      * Ambil harga customer berdasarkan produk.
      */
-    public function customerPrice($customer_id, $product_id)
-    {
-        $price = CustomerPrice::where('customer_id', $customer_id)
-            ->where('product_id', $product_id)
-            ->orderByDesc('id')
-            ->first();
+    public function customerPrice(Request $request, $customer_id, $product_id)
+{
+    $platform = $request->query('platform', 'offline'); // default ke offline jika tidak dikirim
+    $invoice_id = $request->query('invoice_id'); // opsional, jika ingin cek invoice yang sedang dibuat
 
+    $price = CustomerPrice::where('customer_id', $customer_id)
+        ->where('product_id', $product_id)
+        ->whereNull('deleted_at')
+        ->orderByDesc('id')
+        ->first();
+
+    if ($price) {
         return response()->json([
-            'harga' => $price?->harga ?? null,
+            'harga' => $price->harga_jual,
+            'sumber' => 'customer_price'
         ]);
     }
+
+    // Fallback: Ambil harga supplier tertinggi dari product price
+    $productPrice = ProductPrice::where('product_id', $product_id)
+        ->orderByDesc('harga')
+        ->first();
+
+    if (!$productPrice) {
+        return response()->json([
+            'harga' => null,
+            'sumber' => 'not_found'
+        ]);
+    }
+
+    // Ambil setting persentase aktif terakhir
+    $setting = SellPriceSetting::latest('id')->whereNull('deleted_at')->first();
+    $percent = 0;
+
+    if ($setting) {
+        $percent = $platform === 'offline'
+            ? ($setting->offline ?? 0)
+            : ($setting->online ?? 0);
+    }
+
+    $harga = (int) ceil($productPrice->harga * (1 + $percent / 100));
+
+    return response()->json([
+        'harga' => $harga,
+        'sumber' => 'product_price_fallback',
+        'platform' => $platform,
+        'persentase' => $percent
+    ]);
+}
 }
