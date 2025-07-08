@@ -59,10 +59,7 @@ class InvoiceItemController extends Controller
 
         // Hitung waste
         $waste_kg     = max(0, $qty_inbound - $qty_outbound);
-        $waste_amount = $waste_kg * $purchase_price;
-
-        echo $waste_amount;
-        exit();
+        $waste_amount = round($waste_kg * $purchase_price);
 
         // Hitung total
         $total_purchase_price = (int) ceil($qty_inbound * $purchase_price);
