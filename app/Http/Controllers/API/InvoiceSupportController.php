@@ -102,8 +102,9 @@ class InvoiceSupportController extends Controller
         return response()->json([
             'nama' => $product->nama,
             'kategori' => $product->kategori_label,
-            'brand' => $product->brand,
-            'mbs' => $product->mbs->nama ?? '-',
+            'brand' => $product->brand_label,
+            'mbs' => $product->mbs ? "{$product->mbs->a_grade} - {$product->mbs->bms}" : '-',
+
             'bagian' => $product->bagianDaging->nama ?? '-',
             'deskripsi' => $product->deskripsi ?? '-',
             'images' => $product->productImages->map(function ($img) {
