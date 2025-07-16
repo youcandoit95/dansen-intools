@@ -20,6 +20,8 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $query = Invoice::with(['customer.salesAgent', 'customer.company']);
+         $query->where('cabang_id', session('cabang_id'));
+
 
         if ($request->inv_no) {
             $query->where('inv_no', 'like', '%' . $request->inv_no . '%');
@@ -132,6 +134,7 @@ class InvoiceController extends Controller
         $validated['inv_no'] = Invoice::generateInvoiceNumber();
         $validated['g_total_invoice_amount'] = 0;
         $validated['created_by'] = session('user_id');
+         $validated['cabang_id'] = session('cabang_id');
 
         $invoice = Invoice::create($validated);
 
@@ -196,10 +199,21 @@ class InvoiceController extends Controller
 
     public function show(Invoice $invoice)
     {
-        $invoice->load(['customer.company', 'customer.salesAgent', 'items.product']);
+        // Validasi akses hanya untuk invoice dari cabang yang sama
+        if ($invoice->cabang_id !== session('cabang_id')) {
+            abort(403, 'Anda tidak memiliki akses ke invoice ini.');
+        }
+
+        $invoice->load([
+            'customer.company',
+            'customer.salesAgent',
+            'items.product',
+            'items.stok' // tambahkan jika butuh stok->barcode
+        ]);
 
         return view('invoice.show', compact('invoice'));
     }
+
 
     public function cancel(Request $request, Invoice $invoice)
     {

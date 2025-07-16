@@ -8,6 +8,7 @@ class Invoice extends Model
 {
     protected $fillable = [
         'inv_no',
+        'cabang_id',
         'customer_id',
         'invoice_transaction_date',
         'g_total_invoice_amount',
@@ -67,4 +68,10 @@ class Invoice extends Model
 
         return 'INV/' . $initial .'/'. $timestamp;
     }
+
+    public function cabang()
+{
+    return $this->belongsTo(Cabang::class);
+}
+
 }
