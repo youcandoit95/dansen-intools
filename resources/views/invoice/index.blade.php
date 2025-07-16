@@ -84,7 +84,7 @@
                 <th class="px-3 py-2">Aksi</th>
             </tr>
         </thead>
-        <tbody>
+         <tbody class="[&>tr:nth-child(even)]:bg-gray-50 [&>tr:hover]:bg-yellow-50 transition-colors">
             @foreach ($invoices as $inv)
             <tr class="border-t">
                 <td class="px-3 py-2">{{ $inv->id }}</td>
@@ -203,5 +203,13 @@
     .toggle-checkbox:checked::before {
         transform: translateX(16px);
     }
+
+    #invoiceTable tbody tr:nth-child(even) {
+    background-color: #f3f4f6; /* bg-gray-100 */
+}
+#invoiceTable tbody tr:hover {
+    background-color: #fff7ed; /* bg-orange-50 */
+}
+
 </style>
 @endsection
