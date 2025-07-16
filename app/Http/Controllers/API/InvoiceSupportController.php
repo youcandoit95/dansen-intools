@@ -19,6 +19,7 @@ class InvoiceSupportController extends Controller
     {
         $stok = Stok::where('product_id', $product_id)
             ->where('temp', false)
+            ->whereNull('invoice_id')
             ->where('cabang_id', session('cabang_id'))
             ->orderBy('created_at', 'desc')
             ->get(['id', 'barcode_stok', 'berat_kg', 'kategori']);
@@ -90,7 +91,7 @@ class InvoiceSupportController extends Controller
 
         $maxHarga = $product->productPrices->max('harga') ?? 0;
 
-        $setting = \App\Models\SellPriceSetting::latest()->first();
+        $setting = SellPriceSetting::latest()->first();
         $hargaPersent = [];
 
         foreach (['online', 'offline', 'reseller', 'resto', 'bottom'] as $key) {
@@ -104,7 +105,6 @@ class InvoiceSupportController extends Controller
             'kategori' => $product->kategori_label,
             'brand' => $product->brand_label,
             'mbs' => $product->mbs ? "{$product->mbs->a_grade} - {$product->mbs->bms}" : '-',
-
             'bagian' => $product->bagianDaging->nama ?? '-',
             'deskripsi' => $product->deskripsi ?? '-',
             'images' => $product->productImages->map(function ($img) {

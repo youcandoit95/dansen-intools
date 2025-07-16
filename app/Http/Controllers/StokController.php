@@ -43,7 +43,7 @@ class StokController extends Controller
         $validated = $request->validate([
             'product_id'    => 'required|exists:products,id',
             'inbound_id'    => 'required|exists:inbounds,id',
-            'kategori'      => 'required|in:1,2,3,99',
+            'kategori'      => 'required|in:1,2,3,4,99',
             'berat_kg'      => 'required|numeric|min:0',
         ]);
 

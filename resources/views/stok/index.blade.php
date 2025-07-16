@@ -46,6 +46,7 @@
             </select>
         </div>
 
+
         <button type="submit" class="bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700">
             Filter
         </button>
@@ -61,6 +62,7 @@
                 <th class="px-3 py-2 text-left">Berat (kg)</th>
                 <th class="px-3 py-2 text-left">Destroy Info</th>
                 <th class="px-3 py-2 text-left">Tanggal Masuk</th>
+                <th class="px-3 py-2 text-left">Invoice</th>
                 <th class="px-3 py-2 text-left">Aksi</th>
             </tr>
         </thead>
@@ -84,6 +86,15 @@
                     @endif
                 </td>
                 <td class="px-3 py-2">{{ \Carbon\Carbon::parse($stok->created_at)->translatedFormat('l, d F Y H:i') }}</td>
+                <td class="px-3 py-2">
+    @if ($stok->invoice_id)
+        <span class="text-green-600 font-mono">{{ $stok->invoice_id }}</span><br>
+        <span class="text-sm">{{ $stok->invoice->customer->nama ?? '-' }}</span>
+    @else
+        <span class="text-gray-500">Belum</span>
+    @endif
+</td>
+
                 <td class="px-3 py-2">
                     <a href="{{ route('stok.show', $stok->id) }}"
                         class="btn btn-sm bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">

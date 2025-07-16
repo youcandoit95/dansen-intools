@@ -9,10 +9,12 @@ class CetakLabelController extends Controller
 {
     public function show(Request $request)
     {
-        $nama = $request->query('nama', 'PRODUK');
+        $nama = $request->query('nama', '-');
         $barcode = $request->query('barcode', '-');
+        $berat = $request->query('berat', '-');
+        $kategori = $request->query('kategori', '-');
 
-        return view('cetak.label', compact('nama', 'barcode'));
+        return view('cetak.label', compact('nama', 'barcode', 'berat', 'kategori'));
     }
 
     public function markAsPrinted(Request $request)

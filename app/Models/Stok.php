@@ -97,6 +97,7 @@ class Stok extends Model
             1 => 'loaf/kg',
             2 => 'cut/kg',
             3 => 'pcs/pack',
+            4 => 'karton/kg',
             99 => 'waste',
             default => 'unknown',
         };

@@ -5,7 +5,7 @@
 @section('content')
     <div class="label">
         <div class="qrcode" id="qrcode"></div>
-        <div class="nama-produk">{{ $nama }}</div>
+        <div class="nama-produk">{{ $nama }} - {{ $berat }} - {{ $kategori }}</div>
         <!-- <div class="barcode-number">{{ $barcode }}</div> -->
     </div>
 
