@@ -36,123 +36,155 @@
             Alasan: {{ $invoice->cancel_reason }}
         </div>
         @endif
+
+        <!-- Summary Invoice -->
+        @php
+        $totalQtyOut = $invoice->items->sum('qty_outbound');
+        $totalHargaProduk = $invoice->items->sum('total_sell_price');
+        $totalHargaAddon = $invoice->addons->sum('total');
+        $totalFinal = $totalHargaProduk + $totalHargaAddon;
+        @endphp
+
+        <div class="bg-gray-50 border border-gray-200 p-4 rounded mt-4 text-sm">
+            <h3 class="font-semibold mb-2 text-gray-700">Ringkasan Invoice</h3>
+            <div class="grid grid-cols-1 gap-2">
+                <div class="flex justify-between">
+                    <span>Total Qty Out:</span>
+                    <span>{{ number_format($totalQtyOut, 3) }} kg</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Total Harga Produk:</span>
+                    <span>Rp {{ number_format($totalHargaProduk) }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Total Biaya Tambahan:</span>
+                    <span>Rp {{ number_format($totalHargaAddon) }}</span>
+                </div>
+                <hr class="my-2">
+                <div class="flex justify-between font-bold text-base text-gray-800">
+                    <span>Total Final:</span>
+                    <span>Rp {{ number_format($totalFinal) }}</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 {{-- Daftar item produk --}}
 @if($invoice->items && $invoice->items->count())
-    <div class="bg-white rounded shadow p-4 mt-6 mb-6">
-        <h2 class="text-md font-semibold mb-3">Daftar Produk dalam Invoice</h2>
-        <table class="w-full text-sm border">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-3 py-2 text-left w-1/3">Produk</th>
-                    <th class="px-3 py-2 text-left w-1/6">Qty Out</th>
-                    <th class="px-3 py-2 text-left w-1/6">Harga</th>
-                    <th class="px-3 py-2 text-left">Subtotal</th>
-                    <th class="px-3 py-2 text-left">Catatan</th>
-                    <th class="px-3 py-2 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $totalQtyOut = 0;
-                    $totalSubtotal = 0;
-                @endphp
+<div class="bg-white rounded shadow p-4 mt-6 mb-6">
+    <h2 class="text-md font-semibold mb-3">Daftar Produk dalam Invoice</h2>
+    <table class="w-full text-sm border">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-3 py-2 text-left w-1/3">Produk</th>
+                <th class="px-3 py-2 text-left w-1/6">Qty Out</th>
+                <th class="px-3 py-2 text-left w-1/6">Harga</th>
+                <th class="px-3 py-2 text-left">Subtotal</th>
+                <th class="px-3 py-2 text-left">Catatan</th>
+                <th class="px-3 py-2 text-center">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+            $totalQtyOut = 0;
+            $totalSubtotal = 0;
+            @endphp
 
-                @foreach ($invoice->items as $item)
-                    @php
-                        $totalQtyOut += $item->qty_outbound;
-                        $totalSubtotal += $item->total_sell_price;
-                    @endphp
-                    <tr class="border-t align-top">
-                        <td class="px-3 py-2">
-                            {{ $item->product->nama ?? '-' }}<br>
-                            <span class="text-xs text-gray-500">{{ $item->stok->barcode_stok ?? '-' }}</span>
-                        </td>
-                        <td class="px-3 py-2">
-                            {{ number_format($item->qty_outbound, 3) }} kg
-                            <div class="text-xs text-gray-500 mt-1">
-                                In: {{ number_format($item->qty_outbound + $item->waste_kg, 3) }} kg<br>
-                                Waste: {{ number_format($item->waste_kg, 3) }} kg
-                            </div>
-                        </td>
-                        <td class="px-3 py-2">Rp {{ number_format($item->sell_price) }}</td>
-                        <td class="px-3 py-2">Rp {{ number_format($item->total_sell_price) }}</td>
-                        <td class="px-3 py-2">{{ $item->note }}</td>
-                        <td class="px-3 py-2 text-center">
-                            <form action="{{ route('invoice-item.destroy', $item->id) }}" method="POST"
-                                  onsubmit="return confirm('Hapus item ini dari invoice?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="text-red-600 hover:underline text-sm">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
+            @foreach ($invoice->items as $item)
+            @php
+            $totalQtyOut += $item->qty_outbound;
+            $totalSubtotal += $item->total_sell_price;
+            @endphp
+            <tr class="border-t align-top">
+                <td class="px-3 py-2">
+                    {{ $item->product->nama ?? '-' }}<br>
+                    <span class="text-xs text-gray-500">{{ $item->stok->barcode_stok ?? '-' }}</span>
+                </td>
+                <td class="px-3 py-2">
+                    {{ number_format($item->qty_outbound, 3) }} kg
+                    <div class="text-xs text-gray-500 mt-1">
+                        In: {{ number_format($item->qty_outbound + $item->waste_kg, 3) }} kg<br>
+                        Waste: {{ number_format($item->waste_kg, 3) }} kg
+                    </div>
+                </td>
+                <td class="px-3 py-2">Rp {{ number_format($item->sell_price) }}</td>
+                <td class="px-3 py-2">Rp {{ number_format($item->total_sell_price) }}</td>
+                <td class="px-3 py-2">{{ $item->note }}</td>
+                <td class="px-3 py-2 text-center">
+                    <form action="{{ route('invoice-item.destroy', $item->id) }}" method="POST"
+                        onsubmit="return confirm('Hapus item ini dari invoice?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="text-red-600 hover:underline text-sm">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
 
-            <tfoot class="bg-gray-50 border-t font-semibold">
-                <tr>
-                    <td class="px-3 py-2 text-right" colspan="1">Total:</td>
-                    <td class="px-3 py-2">{{ number_format($totalQtyOut, 3) }} kg</td>
-                    <td class="px-3 py-2"></td>
-                    <td class="px-3 py-2">Rp {{ number_format($totalSubtotal) }}</td>
-                    <td colspan="2"></td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+        <tfoot class="bg-gray-50 border-t font-semibold">
+            <tr>
+                <td class="px-3 py-2 text-right" colspan="1">Total:</td>
+                <td class="px-3 py-2">{{ number_format($totalQtyOut, 3) }} kg</td>
+                <td class="px-3 py-2"></td>
+                <td class="px-3 py-2">Rp {{ number_format($totalSubtotal) }}</td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
 @endif
 
 {{-- Daftar biaya tambahan --}}
 @if($invoice->addons && $invoice->addons->count())
-    <div class="bg-white rounded shadow p-4 mt-6 mb-6">
-        <h2 class="text-md font-semibold mb-3">Biaya Tambahan</h2>
-        <table class="w-full text-sm border">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-3 py-2 text-left w-1/3">Nama</th>
-                    <th class="px-3 py-2 text-left w-1/6">Qty</th>
-                    <th class="px-3 py-2 text-left w-1/6">Harga</th>
-                    <th class="px-3 py-2 text-left">Subtotal</th>
-                    <th class="px-3 py-2 text-center">Catatan</th>
-                    <th class="px-3 py-2 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $totalAddon = 0; @endphp
-                @foreach ($invoice->addons as $addon)
-                    @php $totalAddon += $addon->total; @endphp
-                    <tr class="border-t align-top">
-                        <td class="px-3 py-2 text-left">{{ $addon->nama }}</td>
-                        <td class="px-3 py-2 text-left">{{ $addon->qty }}</td>
-                        <td class="px-3 py-2 text-left">Rp {{ number_format($addon->harga) }}</td>
-                        <td class="px-3 py-2 text-left">Rp {{ number_format($addon->total) }}</td>
-                        <td class="px-3 py-2">{{ $addon->catatan }}</td>
-                        <td class="px-3 py-2 text-center">
-                            <form action="{{ route('invoice-addon.destroy', $addon->id) }}" method="POST"
-                                  onsubmit="return confirm('Hapus biaya tambahan ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="text-red-600 hover:underline text-sm">Hapus</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-            <tfoot class="bg-gray-50 border-t font-semibold">
-                <tr>
-                    <td class="px-3 py-2 text-right" colspan="1">Total Biaya Tambahan:</td>
-                    <td class="px-3 py-2"></td>
-                    <td class="px-3 py-2"></td>
-                    <td class="px-3 py-2">Rp {{ number_format($totalAddon) }}</td>
-                    <td colspan="2"></td>
-                </tr>
-            </tfoot>
+<div class="bg-white rounded shadow p-4 mt-6 mb-6">
+    <h2 class="text-md font-semibold mb-3">Biaya Tambahan</h2>
+    <table class="w-full text-sm border">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="px-3 py-2 text-left w-1/3">Nama</th>
+                <th class="px-3 py-2 text-left w-1/6">Qty</th>
+                <th class="px-3 py-2 text-left w-1/6">Harga</th>
+                <th class="px-3 py-2 text-left">Subtotal</th>
+                <th class="px-3 py-2 text-center">Catatan</th>
+                <th class="px-3 py-2 text-center">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $totalAddon = 0; @endphp
+            @foreach ($invoice->addons as $addon)
+            @php $totalAddon += $addon->total; @endphp
+            <tr class="border-t align-top">
+                <td class="px-3 py-2 text-left">{{ $addon->nama }}</td>
+                <td class="px-3 py-2 text-left">{{ $addon->qty }}</td>
+                <td class="px-3 py-2 text-left">Rp {{ number_format($addon->harga) }}</td>
+                <td class="px-3 py-2 text-left">Rp {{ number_format($addon->total) }}</td>
+                <td class="px-3 py-2">{{ $addon->catatan }}</td>
+                <td class="px-3 py-2 text-center">
+                    <form action="{{ route('invoice-addon.destroy', $addon->id) }}" method="POST"
+                        onsubmit="return confirm('Hapus biaya tambahan ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="text-red-600 hover:underline text-sm">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+        <tfoot class="bg-gray-50 border-t font-semibold">
+            <tr>
+                <td class="px-3 py-2 text-right" colspan="1">Total Biaya Tambahan:</td>
+                <td class="px-3 py-2"></td>
+                <td class="px-3 py-2"></td>
+                <td class="px-3 py-2">Rp {{ number_format($totalAddon) }}</td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
 
-        </table>
-    </div>
+    </table>
+</div>
 @endif
 
 

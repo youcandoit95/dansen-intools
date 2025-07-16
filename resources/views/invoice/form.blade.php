@@ -18,6 +18,7 @@
             <option value="{{ $customer->id }}"
                 data-agent-name="{{ $customer->salesAgent->nama ?? '' }}"
                 data-company-name="{{ $customer->company->nama ?? '' }}"
+                data-alamat="{{ $customer->alamat_lengkap ?? '' }}"
                 {{ old('customer_id', $invoice->customer_id ?? '') == $customer->id ? 'selected' : '' }}>
                 {{ $customer->id }} - {{ $customer->nama }}
             </option>
@@ -42,6 +43,37 @@
         <input type="text" name="sales_agents_name" id="salesAgentName"
             class="w-full border rounded px-3 py-2 bg-gray-100"
             value="{{ $invoice->customer?->salesAgent?->nama ?? '-' }}" readonly>
+    </div>
+
+    <div class="md:col-span-2">
+        <label class="block mb-1">Alamat Customer</label>
+        <textarea name="alamat_customer" id="alamatCustomer" rows="2"
+            class="w-full border rounded px-3 py-2 bg-gray-100" readonly>{{ $invoice->customer?->alamat_lengkap ?? '-' }}</textarea>
+    </div>
+
+    <div>
+        <label class="block mb-1">No Telepon</label>
+        @php
+        $noWa = $invoice->customer?->no_tlp;
+        $waLink = null;
+        if ($noWa && preg_match('/^08\d+$/', $noWa)) {
+        $waLink = 'https://wa.me/' . preg_replace('/^08/', '628', $noWa);
+        } elseif ($noWa && preg_match('/^\+628\d+$/', $noWa)) {
+        $waLink = 'https://wa.me/' . preg_replace('/^\+/', '', $noWa);
+        }
+        @endphp
+
+        <input type="text" name="no_wa" id="noWa"
+            class="w-full border rounded px-3 py-2 bg-gray-100"
+            value="{{ $noWa ?? '-' }}" readonly>
+
+        @if ($waLink)
+        <div class="mt-1">
+            <a href="{{ $waLink }}" target="_blank" class="text-blue-600 underline text-sm">
+                Hubungi via WhatsApp
+            </a>
+        </div>
+        @endif
     </div>
 
 
@@ -76,6 +108,8 @@
         const customerSelect = document.getElementById('customerSelect');
         const salesAgentInput = document.getElementById('salesAgentName');
         const companyInput = document.getElementById('companyName');
+        const alamatInput = document.getElementById('alamatCustomer');
+
 
         // Atur selectedValue secara manual jika belum ter-set
         if (customerSelect && customerSelect.tomselect) {
@@ -89,9 +123,11 @@
                 const selectedOption = this.options[this.selectedIndex];
                 const agentName = selectedOption.getAttribute('data-agent-name') || '';
                 const companyName = selectedOption.getAttribute('data-company-name') || '';
+                const alamat = selectedOption.getAttribute('data-alamat') || '';
 
                 salesAgentInput.value = agentName;
                 companyInput.value = companyName;
+                alamatInput.value = alamat;
             });
         }
     });
