@@ -43,6 +43,10 @@
                 </p>
             </div>
             <div class="grid grid-cols-3">
+                <p class="col-span-1 text-gray-500">Alamat Customer</p>
+                <p class="col-span-2 font-medium">{{ $invoice->customer->alamat_lengkap ?? '-' }}</p>
+            </div>
+            <div class="grid grid-cols-3">
                 <p class="col-span-1 text-gray-500">Sales Agent</p>
                 <p class="col-span-2 font-medium">{{ $invoice->customer->salesAgent->nama ?? '-' }}</p>
             </div>
@@ -69,12 +73,12 @@
                         <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full w-fit">Dibatalkan</span>
                     @endif
                     @if($invoice->lunas_at)
-                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full w-fit">Lunas</span>
+                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full w-fit">Lunas ({{ \Carbon\Carbon::parse($invoice->lunas_at)->format('d/m/Y') }})</span>
                     @else
                         <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full w-fit">Belum Lunas</span>
                     @endif
                     @if($invoice->checked_finance_at)
-                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full w-fit">Checked Finance</span>
+                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full w-fit">Checked ({{ \Carbon\Carbon::parse($invoice->checked_finance_at)->format('d/m/Y') }})</span>
                     @else
                         <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full w-fit">Belum Dicek</span>
                     @endif
@@ -92,39 +96,60 @@
 </div>
 
 <!-- Detail Produk -->
-<div class="bg-white shadow rounded overflow-x-auto">
-    <h2 class="font-semibold px-4 pt-4 text-base">Detail Produk</h2>
-    <table class="min-w-full text-sm mt-2">
+@if($invoice->items && $invoice->items->count())
+<div class="bg-white rounded shadow p-4 mt-6 mb-6">
+    <h2 class="text-md font-semibold mb-3">Daftar Produk dalam Invoice</h2>
+    <table class="w-full text-sm border">
         <thead class="bg-gray-100">
             <tr>
-                <th class="px-4 py-2 text-left">#</th>
-                <th class="px-4 py-2 text-left">Produk</th>
-                <th class="px-4 py-2 text-left">Stok ID</th>
-                <th class="px-4 py-2 text-right">Harga Jual</th>
-                <th class="px-4 py-2 text-center">Qty</th>
-                <th class="px-4 py-2 text-right">Total</th>
+                <th class="px-3 py-2 text-left">Produk</th>
+                <th class="px-3 py-2 text-left">Qty Out</th>
+                <th class="px-3 py-2 text-left">Harga</th>
+                <th class="px-3 py-2 text-left">Subtotal</th>
+                <th class="px-3 py-2 text-left">Catatan</th>
             </tr>
         </thead>
         <tbody>
-            @php $grandTotal = 0; @endphp
+            @php
+                $totalQtyOut = 0;
+                $totalSubtotal = 0;
+            @endphp
+
             @foreach ($invoice->items as $item)
-                @php $grandTotal += $item->total_sell_price; @endphp
-                <tr class="border-t">
-                    <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                    <td class="px-4 py-2">{{ $item->product->nama ?? '-' }}</td>
-                    <td class="px-4 py-2">{{ $item->stok_id ?? '-' }}</td>
-                    <td class="px-4 py-2 text-right">Rp {{ number_format($item->sell_price, 0, ',', '.') }}</td>
-                    <td class="px-4 py-2 text-center">{{ $item->qty }}</td>
-                    <td class="px-4 py-2 text-right">Rp {{ number_format($item->total_sell_price, 0, ',', '.') }}</td>
+                @php
+                    $totalQtyOut += $item->qty_outbound;
+                    $totalSubtotal += $item->total_sell_price;
+                @endphp
+                <tr class="border-t align-top">
+                    <td class="px-3 py-2">
+                        {{ $item->product->nama ?? '-' }}<br>
+                        <span class="text-xs text-gray-500">{{ $item->stok->barcode_stok ?? '-' }}</span>
+                    </td>
+                    <td class="px-3 py-2">
+                        {{ number_format($item->qty_outbound, 3) }} kg
+                        <div class="text-xs text-gray-500 mt-1">
+                            In: {{ number_format($item->qty_outbound + $item->waste_kg, 3) }} kg<br>
+                            Waste: {{ number_format($item->waste_kg, 3) }} kg
+                        </div>
+                    </td>
+                    <td class="px-3 py-2">Rp {{ number_format($item->sell_price) }}</td>
+                    <td class="px-3 py-2">Rp {{ number_format($item->total_sell_price) }}</td>
+                    <td class="px-3 py-2">{{ $item->note }}</td>
                 </tr>
             @endforeach
         </tbody>
-        <tfoot>
-            <tr class="font-semibold border-t bg-gray-50">
-                <td colspan="5" class="px-4 py-2 text-right">Grand Total</td>
-                <td class="px-4 py-2 text-right">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
+
+        <tfoot class="bg-gray-50 border-t font-semibold">
+            <tr>
+                <td class="px-3 py-2 text-right" colspan="1">Total:</td>
+                <td class="px-3 py-2">{{ number_format($totalQtyOut, 3) }} kg</td>
+                <td class="px-3 py-2"></td>
+                <td class="px-3 py-2">Rp {{ number_format($totalSubtotal) }}</td>
+                <td class="px-3 py-2"></td>
             </tr>
         </tfoot>
     </table>
 </div>
+@endif
+
 @endsection
