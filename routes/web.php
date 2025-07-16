@@ -24,7 +24,8 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceItemController;
 use App\Http\Controllers\SellPriceSettingController;
 use App\Http\Controllers\Api\InvoiceSupportController;
-use Illuminate\Support\Facades\Auth; // pastikan ini di atas
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\InvoiceAddonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,6 +151,9 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         // Tambah produk satuan setelah invoice dibuat
         Route::get('invoice/{invoice}/produk', [InvoiceController::class, 'produk'])->name('invoice.produk');
         Route::post('invoice/{invoice}/produk', [InvoiceController::class, 'tambahProduk'])->name('invoice.produk.store');
+
+        Route::post('/invoice-addon', [InvoiceAddonController::class, 'store'])->name('invoice-addon.store');
+        Route::delete('/invoice-addon/{id}', [InvoiceAddonController::class, 'destroy'])->name('invoice-addon.destroy');
 
         /*
         |--------------------------------------------------------------------------

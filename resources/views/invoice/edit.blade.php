@@ -46,9 +46,9 @@
         <table class="w-full text-sm border">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-3 py-2 text-left">Produk</th>
-                    <th class="px-3 py-2 text-left">Qty Out</th>
-                    <th class="px-3 py-2 text-left">Harga</th>
+                    <th class="px-3 py-2 text-left w-1/3">Produk</th>
+                    <th class="px-3 py-2 text-left w-1/6">Qty Out</th>
+                    <th class="px-3 py-2 text-left w-1/6">Harga</th>
                     <th class="px-3 py-2 text-left">Subtotal</th>
                     <th class="px-3 py-2 text-left">Catatan</th>
                     <th class="px-3 py-2 text-center">Aksi</th>
@@ -105,11 +105,97 @@
     </div>
 @endif
 
+{{-- Daftar biaya tambahan --}}
+@if($invoice->addons && $invoice->addons->count())
+    <div class="bg-white rounded shadow p-4 mt-6 mb-6">
+        <h2 class="text-md font-semibold mb-3">Biaya Tambahan</h2>
+        <table class="w-full text-sm border">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-3 py-2 text-left w-1/3">Nama</th>
+                    <th class="px-3 py-2 text-left w-1/6">Qty</th>
+                    <th class="px-3 py-2 text-left w-1/6">Harga</th>
+                    <th class="px-3 py-2 text-left">Subtotal</th>
+                    <th class="px-3 py-2 text-center">Catatan</th>
+                    <th class="px-3 py-2 text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $totalAddon = 0; @endphp
+                @foreach ($invoice->addons as $addon)
+                    @php $totalAddon += $addon->total; @endphp
+                    <tr class="border-t align-top">
+                        <td class="px-3 py-2 text-left">{{ $addon->nama }}</td>
+                        <td class="px-3 py-2 text-left">{{ $addon->qty }}</td>
+                        <td class="px-3 py-2 text-left">Rp {{ number_format($addon->harga) }}</td>
+                        <td class="px-3 py-2 text-left">Rp {{ number_format($addon->total) }}</td>
+                        <td class="px-3 py-2">{{ $addon->catatan }}</td>
+                        <td class="px-3 py-2 text-center">
+                            <form action="{{ route('invoice-addon.destroy', $addon->id) }}" method="POST"
+                                  onsubmit="return confirm('Hapus biaya tambahan ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="text-red-600 hover:underline text-sm">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+            <tfoot class="bg-gray-50 border-t font-semibold">
+                <tr>
+                    <td class="px-3 py-2 text-right" colspan="1">Total Biaya Tambahan:</td>
+                    <td class="px-3 py-2"></td>
+                    <td class="px-3 py-2"></td>
+                    <td class="px-3 py-2">Rp {{ number_format($totalAddon) }}</td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+@endif
+
+
 
 {{-- Tambah item produk --}}
-<div class="bg-white rounded shadow p-4">
+<div class="bg-white rounded shadow p-4 mb-6">
     <h2 class="text-md font-semibold mb-3">Tambah Produk ke Invoice</h2>
     @include('invoice.form-item', ['invoice' => $invoice, 'products' => $products])
+</div>
+
+{{-- Tambah biaya tambahan --}}
+<div class="w-full md:w-1/2 bg-white rounded shadow p-4">
+    <h2 class="text-md font-semibold mb-3">Tambah Biaya Tambahan</h2>
+    <form action="{{ route('invoice-addon.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        @csrf
+        <input type="hidden" name="inv_id" value="{{ $invoice->id }}">
+
+        <div>
+            <label class="block font-medium mb-1">Nama Biaya <span class="text-red-500">*</span></label>
+            <input type="text" name="nama" class="w-full border px-3 py-2 rounded" required>
+        </div>
+
+        <div>
+            <label class="block font-medium mb-1">Qty <span class="text-red-500">*</span></label>
+            <input type="number" name="qty" class="w-full border px-3 py-2 rounded" value="1" required min="1">
+        </div>
+
+        <div>
+            <label class="block font-medium mb-1">Harga Satuan <span class="text-red-500">*</span></label>
+            <input type="number" name="harga" class="w-full border px-3 py-2 rounded" value="0" required min="0">
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block font-medium mb-1">Catatan</label>
+            <textarea name="catatan" rows="2" class="w-full border px-3 py-2 rounded"></textarea>
+        </div>
+
+        <div class="md:col-span-2 text-right">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Tambahkan Biaya
+            </button>
+        </div>
+    </form>
 </div>
 
 @endsection
