@@ -13,6 +13,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" />
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.min.css" rel="stylesheet">
+    <style>
+        #globalLoadingOverlay {
+            display: none;
+        }
+
+        #globalLoadingOverlay.active {
+            display: flex !important;
+        }
+    </style>
+
 
 
 </head>
@@ -184,18 +194,76 @@
         @yield('content')
     </main>
 
+    <!-- Global Loading Popup -->
+    <div id="globalLoadingOverlay" class="fixed inset-0 z-[9999] bg-black/50 hidden items-center justify-center">
+        <div class="bg-white px-6 py-4 rounded shadow text-center">
+            <p class="text-sm font-medium text-gray-700">Sedang proses data...</p>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         setInterval(() => {
-    fetch('/check-session')
-        .then(res => res.status === 401 ? Promise.reject() : res.json())
-        .catch(() => {
-            alert('Sesi anda sudah habis. Silakan login ulang.');
-            window.location.href = '/login';
-        });
-}, 30000); // Cek tiap 30 detik
+            fetch('/check-session')
+                .then(res => res.status === 401 ? Promise.reject() : res.json())
+                .catch(() => {
+                    alert('Sesi anda sudah habis. Silakan login ulang.');
+                    window.location.href = '/login';
+                });
+        }, 30000); // Cek tiap 30 detik
 
+
+        (function() {
+            const overlay = document.getElementById('globalLoadingOverlay');
+            let activeRequests = 0;
+
+            // Show/Hide Overlay
+            const showOverlay = () => overlay.classList.add('active');
+            const hideOverlay = () => overlay.classList.remove('active');
+
+            // Wrap Fetch API
+            const originalFetch = window.fetch;
+            window.fetch = async function(...args) {
+                activeRequests++;
+                showOverlay();
+
+                try {
+                    const response = await originalFetch(...args);
+                    return response;
+                } finally {
+                    activeRequests--;
+                    if (activeRequests <= 0) hideOverlay();
+                }
+            };
+
+            // Handle jQuery AJAX (if you use jQuery)
+            if (window.jQuery) {
+                $(document).ajaxStart(() => {
+                    activeRequests++;
+                    showOverlay();
+                });
+                $(document).ajaxStop(() => {
+                    activeRequests--;
+                    if (activeRequests <= 0) hideOverlay();
+                });
+            }
+
+            // Handle XMLHttpRequest (for older libs)
+            const open = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function() {
+                this.addEventListener('loadstart', () => {
+                    activeRequests++;
+                    showOverlay();
+                });
+                this.addEventListener('loadend', () => {
+                    activeRequests--;
+                    if (activeRequests <= 0) hideOverlay();
+                });
+                return open.apply(this, arguments);
+            };
+        })();
     </script>
     @yield('scripts')
 </body>
