@@ -53,7 +53,15 @@
                 <input type="number" name="qty_out" id="qtyOutInput" step="0.001" min="0.001"
                     class="w-full border rounded px-3 py-2 @error('qty_out') border-red-500 @enderror">
                 @error('qty_out') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+
+                <div class="mt-2 text-right">
+                    <button type="button" id="copyQtyInbound"
+                        class="text-sm text-blue-600 hover:underline">
+                        Klik jika berat sama dengan inbound
+                    </button>
+                </div>
             </div>
+
 
             {{-- Informasi Susut dan Total Harga Out --}}
             <div class="space-y-1 text-sm text-gray-700">
@@ -117,6 +125,13 @@ $platform = $invoice->platform_id == '' ? 'offline' : 'online';
 @section('scripts')
 @parent
 <script>
+    document.getElementById('copyQtyInbound').addEventListener('click', function() {
+        const qtyInbound = parseFloat(qtyInput.value) || 0;
+        qtyOutInput.value = qtyInbound.toFixed(3);
+        updateWasteAndHargaOut();
+    });
+
+
     document.addEventListener('DOMContentLoaded', function() {
         const productSelect = document.getElementById('productSelect');
         const stokSelect = document.getElementById('stokSelect');
