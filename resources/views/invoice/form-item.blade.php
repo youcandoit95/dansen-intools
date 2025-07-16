@@ -12,11 +12,11 @@
                     class="tomselect w-full border rounded px-3 py-2 @error('product_id') border-red-500 @enderror">
                     <option value="">Pilih Produk</option>
                     @foreach ($products as $product)
-                        <option value="{{ $product->id }}">{{ $product->nama }}</option>
+                    <option value="{{ $product->id }}">{{ $product->nama }}</option>
                     @endforeach
                 </select>
                 @error('product_id')
-                    <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
                 <p class="text-xs text-gray-500 mt-1">Jika produk tidak muncul, silakan hubungi Admin.</p>
             </div>
@@ -111,130 +111,156 @@
 </form>
 
 @php
-    $platform = $invoice->platform_id == '' ? 'offline' : 'online';
+$platform = $invoice->platform_id == '' ? 'offline' : 'online';
 @endphp
 
 @section('scripts')
 @parent
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const productSelect = document.getElementById('productSelect');
-    const stokSelect = document.getElementById('stokSelect');
-    const sellPriceInput = document.getElementById('sellPriceInput');
-    const qtyInput = document.getElementById('qtyInput');
-    const qtyOutInput = document.getElementById('qtyOutInput');
-    const totalHargaText = document.getElementById('totalHargaText');
-    const totalHargaOutText = document.getElementById('totalHargaOutText');
-    const wasteText = document.getElementById('wasteText');
+    document.addEventListener('DOMContentLoaded', function() {
+        const productSelect = document.getElementById('productSelect');
+        const stokSelect = document.getElementById('stokSelect');
+        const sellPriceInput = document.getElementById('sellPriceInput');
+        const qtyInput = document.getElementById('qtyInput');
+        const qtyOutInput = document.getElementById('qtyOutInput');
+        const totalHargaText = document.getElementById('totalHargaText');
+        const totalHargaOutText = document.getElementById('totalHargaOutText');
+        const wasteText = document.getElementById('wasteText');
 
-    const namaProduk = document.getElementById('namaProduk');
-    const kategoriProduk = document.getElementById('kategoriProduk');
-    const brandProduk = document.getElementById('brandProduk');
-    const mbsProduk = document.getElementById('mbsProduk');
-    const bagianProduk = document.getElementById('bagianProduk');
-    const deskripsiProduk = document.getElementById('deskripsiProduk');
-    const fotoProduk = document.getElementById('fotoProduk');
-    const hargaCustomer = document.getElementById('hargaCustomer');
-    const productDetails = document.getElementById('productDetails');
-    const priceTableBody = document.getElementById('priceTableBody');
+        const namaProduk = document.getElementById('namaProduk');
+        const kategoriProduk = document.getElementById('kategoriProduk');
+        const brandProduk = document.getElementById('brandProduk');
+        const mbsProduk = document.getElementById('mbsProduk');
+        const bagianProduk = document.getElementById('bagianProduk');
+        const deskripsiProduk = document.getElementById('deskripsiProduk');
+        const fotoProduk = document.getElementById('fotoProduk');
+        const hargaCustomer = document.getElementById('hargaCustomer');
+        const productDetails = document.getElementById('productDetails');
+        const priceTableBody = document.getElementById('priceTableBody');
 
-    function updateTotalHarga() {
-        const qty = parseFloat(qtyInput.value) || 0;
-        const harga = parseFloat(sellPriceInput.value) || 0;
-        const total = qty * harga;
-        totalHargaText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(total))}`;
-    }
-
-    function updateWasteAndHargaOut() {
-        const qtyIn = parseFloat(qtyInput.value) || 0;
-        const qtyOut = parseFloat(qtyOutInput.value) || 0;
-        const harga = parseFloat(sellPriceInput.value) || 0;
-
-        let waste = qtyIn - qtyOut;
-        if (waste < 0) {
-            waste = 0;
-            wasteText.classList.add('text-red-600');
-        } else {
-            wasteText.classList.remove('text-red-600');
+        function updateTotalHarga() {
+            const qty = parseFloat(qtyInput.value) || 0;
+            const harga = parseFloat(sellPriceInput.value) || 0;
+            const total = qty * harga;
+            totalHargaText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(total))}`;
         }
 
-        const totalOut = qtyOut * harga;
+        function updateWasteAndHargaOut() {
+            const qtyIn = parseFloat(qtyInput.value) || 0;
+            const qtyOut = parseFloat(qtyOutInput.value) || 0;
+            const harga = parseFloat(sellPriceInput.value) || 0;
 
-        wasteText.innerText = `${waste.toFixed(3)} kg`;
-        totalHargaOutText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(totalOut))}`;
-    }
-
-    productSelect.addEventListener('change', async function () {
-        const productId = this.value;
-        if (!productId) return;
-
-        // STOK
-        const stokRes = await fetch(`/api/stok-by-product/${productId}`);
-        const stokData = await stokRes.json();
-        if (stokSelect.tomselect) stokSelect.tomselect.destroy();
-        const stokTomSelect = new TomSelect(stokSelect, { create: false, sortField: 'text' });
-        stokTomSelect.clearOptions();
-        stokData.forEach(stok => {
-            stokTomSelect.addOption({
-                value: stok.id,
-                text: `${stok.berat_kg} kg - ${stok.kategori} - ${stok.barcode_stok}`,
-                data: stok
-            });
-        });
-        stokTomSelect.refreshOptions();
-
-        // HARGA CUSTOMER
-        const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${productId}?platform={{ $platform }}`);
-        const hargaData = await hargaRes.json();
-        sellPriceInput.value = hargaData.harga ?? 0;
-        hargaCustomer.innerText = hargaData.harga
-            ? `Rp ${new Intl.NumberFormat('id-ID').format(hargaData.harga)}`
-            : 'Tidak tersedia';
-        updateTotalHarga();
-        updateWasteAndHargaOut();
-
-        // DETAIL PRODUK
-        const detailRes = await fetch(`/api/product-detail/${productId}`);
-        const d = await detailRes.json();
-        productDetails.classList.remove('hidden');
-        namaProduk.innerText = d.nama;
-        kategoriProduk.innerText = d.kategori;
-        brandProduk.innerText = d.brand;
-        mbsProduk.innerText = d.mbs;
-        bagianProduk.innerText = d.bagian;
-        deskripsiProduk.innerText = d.deskripsi;
-        fotoProduk.innerHTML = '';
-        d.images.forEach(img => {
-            fotoProduk.innerHTML += `<img src="${img}" class="w-20 h-20 object-cover rounded" />`;
-        });
-
-        // Harga Persent
-        priceTableBody.innerHTML = '';
-        Object.entries(d.hargaPersent).forEach(([tipe, harga]) => {
-            priceTableBody.innerHTML += `
-                <tr><td class="px-2 py-1 capitalize">${tipe}</td>
-                <td class="px-2 py-1 text-right">Rp ${new Intl.NumberFormat('id-ID').format(harga)}</td></tr>`;
-        });
-    });
-
-    document.addEventListener('change', function (e) {
-        if (e.target.id === 'stokSelect') {
-            const selectedOption = e.target.selectedOptions[0];
-            if (!selectedOption) return;
-            const label = selectedOption.textContent;
-            const match = label.match(/^([\d.]+) kg/);
-            if (match) {
-                const berat = parseFloat(match[1]) || 1;
-                qtyInput.value = berat;
-                updateTotalHarga();
-                updateWasteAndHargaOut();
+            let waste = qtyIn - qtyOut;
+            if (waste < 0) {
+                waste = 0;
+                wasteText.classList.add('text-red-600');
+            } else {
+                wasteText.classList.remove('text-red-600');
             }
-        }
-    });
 
-    qtyOutInput.addEventListener('input', function () {
-        updateWasteAndHargaOut();
+            const totalOut = qtyOut * harga;
+            wasteText.innerText = `${waste.toFixed(3)} kg`;
+            totalHargaOutText.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(Math.ceil(totalOut))}`;
+        }
+
+        productSelect.addEventListener('change', async function() {
+            const productId = this.value;
+            if (!productId) return;
+
+            // Fetch stok list berdasarkan produk
+            const stokRes = await fetch(`/api/stok-by-product/${productId}`);
+            const stokData = await stokRes.json();
+
+            if (stokSelect.tomselect) stokSelect.tomselect.destroy();
+            const stokTomSelect = new TomSelect(stokSelect, {
+                create: false,
+                sortField: 'text'
+            });
+            stokTomSelect.clearOptions();
+
+            stokData.forEach(stok => {
+                stokTomSelect.addOption({
+                    value: stok.id,
+                    text: `${stok.berat_kg} kg - ${stok.kategori} - ${stok.barcode_stok}`,
+                    data: stok
+                });
+            });
+
+            stokTomSelect.refreshOptions();
+        });
+
+        stokSelect.addEventListener('change', async function() {
+            const stokId = this.value;
+            if (!stokId) return;
+
+            // Ambil detail stok
+            const detailRes = await fetch(`/api/stock-detail/${stokId}`);
+            const d = await detailRes.json();
+
+            productDetails.classList.remove('hidden');
+            namaProduk.innerText = d.produk.nama;
+            kategoriProduk.innerText = d.kategori;
+            brandProduk.innerText = d.produk.brand;
+            mbsProduk.innerText = d.produk.mbs;
+            bagianProduk.innerText = d.produk.bagian;
+            deskripsiProduk.innerText = d.produk.deskripsi;
+
+            fotoProduk.innerHTML = '';
+
+            if (d.produk && Array.isArray(d.produk.images)) {
+                d.produk.images.forEach(img => {
+                    fotoProduk.innerHTML += `<img src="${img}" class="w-20 h-20 object-cover rounded" />`;
+                });
+            } else {
+                fotoProduk.innerHTML = `<p class="text-gray-500 italic">Tidak ada foto produk</p>`;
+            }
+
+
+            // Tampilkan harga persentase
+            priceTableBody.innerHTML = '';
+
+            if (d.produk && d.produk.hargaPersent) {
+                Object.entries(d.produk.hargaPersent).forEach(([tipe, harga]) => {
+                    priceTableBody.innerHTML += `
+            <tr>
+                <td class="px-2 py-1 capitalize">${tipe}</td>
+                <td class="px-2 py-1 text-right">Rp ${new Intl.NumberFormat('id-ID').format(harga)}</td>
+            </tr>`;
+                });
+            }
+
+
+            // Harga customer
+            const hargaRes = await fetch(`/api/customer-price-by-product/{{ $invoice->customer_id }}/${d.produk_id}?platform={{ $platform }}`);
+            const hargaData = await hargaRes.json();
+            sellPriceInput.value = hargaData.harga ?? 0;
+            hargaCustomer.innerText = hargaData.harga ?
+                `Rp ${new Intl.NumberFormat('id-ID').format(hargaData.harga)}` :
+                'Tidak tersedia';
+
+            updateTotalHarga();
+            updateWasteAndHargaOut();
+        });
+
+        // Ambil qty dari label stok
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'stokSelect') {
+                const selectedOption = e.target.selectedOptions[0];
+                if (!selectedOption) return;
+                const label = selectedOption.textContent;
+                const match = label.match(/^([\d.]+) kg/);
+                if (match) {
+                    const berat = parseFloat(match[1]) || 1;
+                    qtyInput.value = berat;
+                    updateTotalHarga();
+                    updateWasteAndHargaOut();
+                }
+            }
+        });
+
+        qtyOutInput.addEventListener('input', function() {
+            updateWasteAndHargaOut();
+        });
     });
-});
 </script>
 @endsection

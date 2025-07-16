@@ -186,6 +186,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        setInterval(() => {
+    fetch('/check-session')
+        .then(res => res.status === 401 ? Promise.reject() : res.json())
+        .catch(() => {
+            alert('Sesi anda sudah habis. Silakan login ulang.');
+            window.location.href = '/login';
+        });
+}, 30000); // Cek tiap 30 detik
+
+    </script>
     @yield('scripts')
 </body>
 

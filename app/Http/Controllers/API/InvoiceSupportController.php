@@ -114,4 +114,48 @@ class InvoiceSupportController extends Controller
             'hargaPersent' => $hargaPersent
         ]);
     }
+
+    public function stokDetail($id)
+    {
+        $stok = Stok::with([
+            'product.mbs',
+            'product.bagianDaging',
+            'product.productImages',
+            'cabang'
+        ])->findOrFail($id);
+
+        $product = $stok->product;
+
+        $maxHarga = $product->productPrices->max('harga') ?? 0;
+
+        $setting = \App\Models\SellPriceSetting::latest()->first();
+        $hargaPersent = [];
+
+        foreach (['online', 'offline', 'reseller', 'resto', 'bottom'] as $key) {
+            $persen = $setting?->$key ?? 0;
+            $hasil = ceil($maxHarga * (1 + $persen / 100));
+            $hargaPersent[$key] = max($maxHarga + 5000, $hasil);
+        }
+
+        return response()->json([
+            'produk_id' => $product->id,
+            'barcode_stok' => $stok->barcode_stok,
+            'berat_kg' => $stok->berat_kg,
+            'kategori' => $stok->kategori_label,
+            'cabang' => $stok->cabang->nama_cabang ?? '-',
+            'tanggal_masuk' => $stok->created_at->translatedFormat('l, d F Y H:i'),
+            'produk' => [
+                'nama' => $product->nama,
+                'kategori' => $product->kategori_label,
+                'brand' => $product->brand_label,
+                'mbs' => $product->mbs ? "{$product->mbs->a_grade} - {$product->mbs->bms}" : '-',
+                'bagian' => $product->bagianDaging->nama ?? '-',
+                'deskripsi' => $product->deskripsi ?? '-',
+                'images' => $product->productImages->map(function ($img) {
+                    return asset('storage/' . ltrim($img->path, '/'));
+                })->toArray(),
+                'hargaPersent' => $hargaPersent
+            ]
+        ]);
+    }
 }
