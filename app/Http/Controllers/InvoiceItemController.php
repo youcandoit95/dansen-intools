@@ -131,4 +131,27 @@ class InvoiceItemController extends Controller
             return redirect()->back()->withErrors(['error' => 'Gagal menyimpan item: ' . $e->getMessage()]);
         }
     }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $item = InvoiceItem::findOrFail($id);
+            $stok = Stok::find($item->stok_id);
+
+            // Clear invoice_id pada stok (rollback)
+            if ($stok && $stok->invoice_id == $item->inv_id) {
+                $stok->invoice_id = null;
+                $stok->save();
+            }
+
+            $item->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Item berhasil dihapus dari invoice.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Gagal menghapus item: ' . $e->getMessage()]);
+        }
+    }
 }

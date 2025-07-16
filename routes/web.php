@@ -145,6 +145,7 @@ Route::middleware(['auth', 'check.user.status', 'check.cabang.status'])->group(f
         Route::get('invoice/{invoice}', [InvoiceController::class, 'show'])->name('invoice.show');
         Route::get('invoice/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoice.edit');
         Route::put('invoice/{invoice}', [InvoiceController::class, 'update'])->name('invoice.update');
+        Route::delete('/invoice-item/{id}', [InvoiceItemController::class, 'destroy'])->name('invoice-item.destroy');
 
         // Tambah produk satuan setelah invoice dibuat
         Route::get('invoice/{invoice}/produk', [InvoiceController::class, 'produk'])->name('invoice.produk');
